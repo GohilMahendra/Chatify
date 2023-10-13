@@ -16,7 +16,7 @@ export const light:ThemeType =
 {
     primary_color:purple,
     secondary_color:white,
-    background_color:white,
+    background_color:silver,
     button_color:purple,
     text_color:black,
     placeholder_color:silver,
