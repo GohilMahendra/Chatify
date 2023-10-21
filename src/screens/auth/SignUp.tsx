@@ -1,16 +1,122 @@
 import React,{useState,} from 'react';
-import { View,Text,SafeAreaView, TouchableOpacity,TextInput, StyleSheet, Dimensions} from 'react-native';
+import { View,Text,SafeAreaView, TouchableOpacity,TextInput, StyleSheet, Dimensions, Alert} from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { silver, white } from "../../globals/Colors";
 import { useNavigation , NavigationProp} from "@react-navigation/native";
 import { RootStackParams } from '../../navigation/RootNavigation';
+import Auth ,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 const {height,width} = Dimensions.get("window")
+
+export type SignUpFieldError=
+{
+    name: string | null,
+    email: string | null,
+    password: string | null,
+    user_name:string | null
+}
 const SignUp = () =>
 {
+    const [userName,setUserName] = useState<string>("")
+    const [fullName,setFullName] = useState<string>("")
     const [userEmail,setUserEmail] = useState<string>("")
     const [password,setPassword] = useState<string>("")
+    const [emptyErrors,setEmptyErrors] = useState<SignUpFieldError>({
+        email:null,
+        name:null,
+        password:null,
+        user_name:null
+    })
     const {theme} = UseTheme()
     const navigation = useNavigation<NavigationProp<RootStackParams,"SignUp">>()
+
+    const checkPassword = ( password: string) =>
+    {
+        if(password == "")
+        return false
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=]).{8,}$/;
+        return passwordRegex.test(password);
+    }
+    const checkEmail = ( email: string) =>
+    {
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+        return emailRegex.test(email);
+    }
+    const checkEmptyField = (field:string) =>
+    {
+        return field.trim().length == 0
+    }
+    const restoreErrors=()=>
+    {
+        setEmptyErrors({
+            email:null,
+            name:null,
+            password:null,
+            user_name:null
+        })
+    }
+    const checkFields = () =>
+    {
+        restoreErrors()
+        if(checkEmptyField(userName))
+        {
+            setEmptyErrors({...emptyErrors,user_name:"* userName cant be empty"})
+            return false   
+        }
+        if(checkEmptyField(fullName))
+        {
+            setEmptyErrors({...emptyErrors,name:"* name can't be empty"})
+            return false   
+        }
+        if(checkEmptyField(userEmail))
+        {
+            setEmptyErrors({...emptyErrors,email:"* Email cant't be empty"})
+            return false
+        }
+        if(!checkEmail(userEmail))
+        {
+            setEmptyErrors({...emptyErrors,email:"* Given Email format is not valid"})
+            return false
+        }
+        if(checkEmptyField(password))
+        {
+            setEmptyErrors({...emptyErrors,password:"* Password can't be empty"})
+            return false   
+        }
+        if(!checkPassword(password))
+        {
+            setEmptyErrors({...emptyErrors,password:"* Password should have length 8 , special charcter and atelase one Uppercase"})
+            return false   
+        }
+        
+
+        return true
+    }
+      
+    const registerUser = async() =>
+    {
+     //  checkFields()
+        try
+        {
+        const signUp:FirebaseAuthTypes.UserCredential= await Auth().createUserWithEmailAndPassword(userEmail,password)
+        const userId = signUp.user.uid
+
+        const newUser = await firestore().collection("users").doc(userId).set
+        ({
+            name: fullName,
+            email: userEmail,
+            picture: "",
+            user_name: userName
+        })
+        console.log(newUser)
+        }
+        catch(err)
+        {
+            console.log(err)
+        }
+        
+    }
+
     return(
         <SafeAreaView
         style={styles.container}
@@ -28,6 +134,8 @@ const SignUp = () =>
                     Chatify !
                 </Text>
                 <TextInput
+                value={userName}
+                onChangeText={(text:string)=>setUserName(text)}
                 placeholder='username ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -36,7 +144,18 @@ const SignUp = () =>
                     color:theme.text_color
                 }]}
                 />
-                 <TextInput
+                {
+                    emptyErrors.user_name &&
+                    <Text style={{
+                        color: "red",
+                        fontSize:15,
+                        alignSelf:"flex-start",
+                        marginLeft: width * 5/100
+                    }}>{emptyErrors.user_name}</Text>
+                }
+                <TextInput
+                value={fullName}
+                onChangeText={(text:string)=>setFullName(text)}
                 placeholder='name ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -45,7 +164,18 @@ const SignUp = () =>
                     color:theme.text_color
                 }]}
                 />
+                {
+                    emptyErrors.name &&
+                    <Text style={{
+                        color: "red",
+                        fontSize:15,
+                        alignSelf:"flex-start",
+                        marginLeft: width * 5/100
+                    }}>{emptyErrors.name}</Text>
+                }
                 <TextInput
+                value={userEmail}
+                onChangeText={(text:string)=>setUserEmail(text)}
                 placeholder='email ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -54,7 +184,18 @@ const SignUp = () =>
                     color:theme.text_color
                 }]}
                 />
+                {
+                    emptyErrors.email &&
+                    <Text style={{
+                        color: "red",
+                        fontSize:15,
+                        alignSelf:"flex-start",
+                        marginLeft: width * 5/100
+                    }}>{emptyErrors.email}</Text>
+                }
                 <TextInput
+                value={password}
+                onChangeText={(text:string)=>setPassword(text)}
                 placeholder='password ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -63,7 +204,17 @@ const SignUp = () =>
                     color: theme.text_color
                 }]}
                 />
+                {
+                    emptyErrors.password &&
+                    <Text style={{
+                        color: "red",
+                        fontSize:15,
+                        alignSelf:"flex-start",
+                        marginLeft: width * 5/100
+                    }}>{emptyErrors.password}</Text>
+                }
                 <TouchableOpacity
+                onPress={()=>registerUser()}
                 style={{
                     padding:20,
                     borderRadius:10,
@@ -112,7 +263,7 @@ const styles  = StyleSheet.create({
         elevation:2,
         padding:15,
         borderRadius:10,
-        marginVertical:10,
+        marginTop:20,
         fontSize:14,
         borderWidth:1
     }

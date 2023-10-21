@@ -4,6 +4,8 @@ import UseTheme from '../../globals/UseTheme';
 import { silver, white } from "../../globals/Colors";
 import { useNavigation,NavigationProp } from "@react-navigation/native"
 import { RootStackParams } from '../../navigation/RootNavigation';
+import firestore from '@react-native-firebase/firestore'
+import Auth,{FirebaseAuthTypes} from "@react-native-firebase/auth";
 const {height,width} = Dimensions.get("window")
 const SignIn = () =>
 {
@@ -11,6 +13,23 @@ const SignIn = () =>
     const [password,setPassword] = useState<string>("")
     const {theme} = UseTheme()
     const navigation = useNavigation<NavigationProp<RootStackParams,"SignIn">>()
+
+    const SignInUser = async() =>
+    {
+        try
+        {
+        const signInResponse: FirebaseAuthTypes.UserCredential = await Auth()
+        .signInWithEmailAndPassword(userEmail,password)
+        console.log(signInResponse)
+        navigation.navigate("userTab")
+        }
+      
+        catch(err)
+        {
+            console.log(err)
+        }
+    
+    }
     return(
         <SafeAreaView
         style={styles.container}
@@ -28,6 +47,8 @@ const SignIn = () =>
                     Chatify !
                 </Text>
                 <TextInput
+                value={userEmail}
+                onChangeText={(text:string)=>setUserEmail(text)}
                 placeholder='email ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -37,6 +58,8 @@ const SignIn = () =>
                 }]}
                 />
                 <TextInput
+                value={password}
+                onChangeText={(text:string)=>setPassword(text)}
                 placeholder='password ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -59,6 +82,7 @@ const SignIn = () =>
                 </Text>
 
                 <TouchableOpacity
+                onPress={()=>SignInUser()}
                 style={{
                     padding:20,
                     borderRadius:10,

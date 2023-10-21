@@ -4,15 +4,13 @@ import { NativeStackNavigationProp, NativeStackNavigatorProps } from '@react-nav
 import { NavigationContainer } from '@react-navigation/native';
 import SignIn from '../screens/auth/SignIn';
 import SignUp from '../screens/auth/SignUp';
-import Home from '../screens/home/Home';
-import Chat from '../screens/chat/Chat';
+import UserTabNavigator, { userTabParams } from './UserTabNavigation';
 
 export type RootStackParams=
 {
     SignIn:undefined,
     SignUp:undefined,
-    Home: undefined,
-    Chat:undefined
+    userTab: undefined
 }
 export const RootNavigation=()=>
 {
@@ -23,7 +21,7 @@ export const RootNavigation=()=>
             screenOptions={{
                 headerShown:false
             }}
-            initialRouteName='Chat'
+            initialRouteName='SignIn'
             >
                 <rootstack.Screen
                 name='SignIn'
@@ -33,13 +31,9 @@ export const RootNavigation=()=>
                 name='SignUp'
                 component={SignUp}
                 />
-                 <rootstack.Screen
-                name='Home'
-                component={Home}
-                />
                 <rootstack.Screen
-                name='Chat'
-                component={Chat}
+                name='userTab'
+                component={UserTabNavigator}
                 />
             </rootstack.Navigator>
         </NavigationContainer>
