@@ -6,10 +6,11 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../globals/UseTheme';
 import ProfileStackNavigator, { ProfileStackParams } from './ProfileStackNavigation';
 import { NavigatorScreenParams } from '@react-navigation/native';
+import StoryStackNavigator from './StoryStackNavigation';
 export type userTabParams=
 {
     ChatStack:undefined,
-    Stories: undefined,
+    StoryStack: undefined,
     ProfileStack: NavigatorScreenParams<ProfileStackParams>
     
 }
@@ -25,8 +26,8 @@ export const UserTabNavigator=()=>
             initialRouteName='ChatStack'
             >
                 <userTab.Screen
-                name='Stories'
-                component={Stories}
+                name='StoryStack'
+                component={StoryStackNavigator}
                 options={{
                     tabBarLabel:()=>null,
                     tabBarIcon: ({ color, size,focused }) => (

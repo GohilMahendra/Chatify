@@ -1,12 +1,28 @@
 import  React,{useState} from 'react';
 import { Text,View,FlatList,TouchableOpacity,Image } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { craeteStoryParams, storyStackParams } from '../../navigation/StoryStackNavigation';
 export type StoryType =
 {
     id:string,
     user_image: string,
     user_name: string,
     no_of_stories: number
+}
+export type MediaType = "image" | "video"
+export type Story = 
+{
+    user_name: string,
+    name: string,
+    user_picture: string,
+    user_id: string,
+    content: string,
+    caption: string,
+    mediaType: MediaType,
+    timestamp: number,
+
 }
 const Stories = () =>
 {
@@ -49,11 +65,36 @@ const Stories = () =>
             no_of_stories:1
         }
 ])
+    const navigation = useNavigation<NavigationProp<storyStackParams,"Stories">>()
+  
+    const openImagePicker=async()=>
+    {
+    
+        const response = await launchImageLibrary({
+        mediaType:"photo",
+        presentationStyle:"popover",
+        selectionLimit:1
+        })
+
+        if(!response.didCancel)
+        {
+        if(response.assets?.[0])
+        {
+            navigation.navigate("CreateStory",{
+                type:response.assets[0].type || "",
+                uri:response.assets[0].uri || "",
+            })
+        }
+        }
+    } 
     return(
         <View style={{
             flex:1,
             backgroundColor: theme.background_color
         }}>
+            {/* header starts */}
+           
+            {/* header ends */}
             {/* story section starts */}
             <View style={{
                 
@@ -64,7 +105,9 @@ const Stories = () =>
              showsHorizontalScrollIndicator={false}
              ListHeaderComponent={()=>{
                  return(
-                     <TouchableOpacity style={{
+                     <TouchableOpacity 
+                     onPress={()=>openImagePicker()}
+                     style={{
                          height:70,
                          width:70,
                          justifyContent:"center",

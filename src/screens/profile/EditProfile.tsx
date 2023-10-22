@@ -83,6 +83,11 @@ const EditProfile = () =>
                 ...(imageChanged ? { picture: imagePath } : {})
             }
 
+        const user =  Auth().currentUser
+        await user?.updateProfile({
+            displayName: fullName,
+            ...(imageChanged ? { photoURL: imagePath } : {})
+        })
         const docRef =  firestore().collection("users").doc(userId)
         const updateResponse = await docRef.update(userData)
         console.log(updateResponse)

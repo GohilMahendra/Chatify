@@ -6,6 +6,7 @@ import SignIn from '../screens/auth/SignIn';
 import SignUp from '../screens/auth/SignUp';
 import UserTabNavigator, { userTabParams } from './UserTabNavigation';
 import SplashScreen from '../screens/splash/SplashScreen';
+import CreateStory from '../screens/stories/CreateStory';
 
 export type RootStackParams=
 {
