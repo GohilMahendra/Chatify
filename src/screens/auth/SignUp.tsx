@@ -106,7 +106,8 @@ const SignUp = () =>
             name: fullName,
             email: userEmail,
             picture: "",
-            user_name: userName
+            user_name: userName,
+            bio:""
         })
         console.log(newUser)
         }

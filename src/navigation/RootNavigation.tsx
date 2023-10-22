@@ -5,9 +5,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import SignIn from '../screens/auth/SignIn';
 import SignUp from '../screens/auth/SignUp';
 import UserTabNavigator, { userTabParams } from './UserTabNavigation';
+import SplashScreen from '../screens/splash/SplashScreen';
 
 export type RootStackParams=
 {
+    SplashScreen: undefined,
     SignIn:undefined,
     SignUp:undefined,
     userTab: undefined
@@ -21,8 +23,12 @@ export const RootNavigation=()=>
             screenOptions={{
                 headerShown:false
             }}
-            initialRouteName='SignIn'
+            initialRouteName='SplashScreen'
             >
+                <rootstack.Screen
+                name='SplashScreen'
+                component={SplashScreen}
+                />
                 <rootstack.Screen
                 name='SignIn'
                 component={SignIn}

@@ -1,18 +1,15 @@
 import * as React from 'react';
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NativeStackNavigationProp, NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";;
 import ChatStackNavigator from "./ChatStackNavigation";
 import Stories from '../screens/stories/Stories';
-import UserProfile from '../screens/profile/UserProfile';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import Feather from "react-native-vector-icons/Feather";
 import UseTheme from '../globals/UseTheme';
+import ProfileStackNavigator from './ProfileStackNavigation';
 export type userTabParams=
 {
     ChatStack:undefined,
     Stories: undefined,
-    UserProfile: undefined
+    ProfileStack: undefined
     
 }
 export const UserTabNavigator=()=>
@@ -47,8 +44,8 @@ export const UserTabNavigator=()=>
                 component={ChatStackNavigator}
                 />
                 <userTab.Screen
-                name='UserProfile'
-                component={UserProfile}
+                name='ProfileStack'
+                component={ProfileStackNavigator}
                 options={{
                     tabBarLabel:()=>null,
                     tabBarIcon: ({ color, size,focused }) => (
