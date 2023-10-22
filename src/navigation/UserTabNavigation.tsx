@@ -4,12 +4,13 @@ import ChatStackNavigator from "./ChatStackNavigation";
 import Stories from '../screens/stories/Stories';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../globals/UseTheme';
-import ProfileStackNavigator from './ProfileStackNavigation';
+import ProfileStackNavigator, { ProfileStackParams } from './ProfileStackNavigation';
+import { NavigatorScreenParams } from '@react-navigation/native';
 export type userTabParams=
 {
     ChatStack:undefined,
     Stories: undefined,
-    ProfileStack: undefined
+    ProfileStack: NavigatorScreenParams<ProfileStackParams>
     
 }
 export const UserTabNavigator=()=>

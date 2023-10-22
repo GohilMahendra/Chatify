@@ -4,12 +4,13 @@ import { NativeStackNavigationProp, NativeStackNavigatorProps } from '@react-nav
 import { NavigationContainer } from '@react-navigation/native';
 import ChatHome from '../screens/chat/ChatHome';
 import Chat from '../screens/chat/Chat';
+import FindChat from '../screens/chat/FindChat';
 
 export type chatStackParams=
 {
     Chat: undefined,
     ChatHome: undefined,
-    
+    FindChat: undefined
 }
 export const UserTabNavigator=()=>
 {
@@ -28,6 +29,10 @@ export const UserTabNavigator=()=>
                 <chatStack.Screen
                 name='Chat'
                 component={Chat}
+                />
+                <chatStack.Screen
+                name='FindChat'
+                component={FindChat}
                 />
             </chatStack.Navigator>
     )
