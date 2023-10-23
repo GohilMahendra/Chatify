@@ -4,8 +4,11 @@ import UseTheme from '../../globals/UseTheme';
 import { silver, white } from "../../globals/Colors";
 import { useNavigation,NavigationProp } from "@react-navigation/native"
 import { RootStackParams } from '../../navigation/RootNavigation';
-import firestore from '@react-native-firebase/firestore'
+import { useSelector  } from "react-redux";
 import Auth,{FirebaseAuthTypes} from "@react-native-firebase/auth";
+import { RootState, useAppDispatch } from '../../redux/store';
+import { fetchUserData, selectCurrentUser, signInUser } from '../../redux/slices/UserSlice';
+import Loader from '../../components/global/Loader';
 const {height,width} = Dimensions.get("window")
 const SignIn = () =>
 {
@@ -13,27 +16,26 @@ const SignIn = () =>
     const [password,setPassword] = useState<string>("")
     const {theme} = UseTheme()
     const navigation = useNavigation<NavigationProp<RootStackParams,"SignIn">>()
-
-    const SignInUser = async() =>
+    const dispatch = useAppDispatch()
+    const user = useSelector(selectCurrentUser)
+    const loading = useSelector((state:RootState)=>state.user.loading)
+    const error = useSelector((state:RootState)=>state.user.error)
+    const SignInCall = async() =>
     {
-        try
+        const fullFilled = await dispatch(signInUser({email:userEmail,password:password}))
+        if(signInUser.fulfilled.match(fullFilled))
         {
-        const signInResponse: FirebaseAuthTypes.UserCredential = await Auth()
-        .signInWithEmailAndPassword(userEmail,password)
-        console.log(signInResponse)
-        navigation.navigate("userTab")
+            navigation.navigate("userTab")
         }
-      
-        catch(err)
-        {
-            console.log(err)
-        }
-    
     }
     return(
         <SafeAreaView
         style={styles.container}
         >
+            {
+                loading &&
+                <Loader/>
+            }
             <View style={[styles.innerContainer,{         
                 backgroundColor: theme.background_color,
                 justifyContent:"center"
@@ -82,7 +84,7 @@ const SignIn = () =>
                 </Text>
 
                 <TouchableOpacity
-                onPress={()=>SignInUser()}
+                onPress={()=>SignInCall()}
                 style={{
                     padding:20,
                     borderRadius:10,

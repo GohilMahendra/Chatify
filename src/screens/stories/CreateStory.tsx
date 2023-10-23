@@ -11,6 +11,7 @@ const {height,width} = Dimensions.get("window")
 export type MediaType = "image" | "video"
 export type Story = 
 {
+    id:string,
     user_name: string,
     name: string,
     user_picture: string,
@@ -33,8 +34,7 @@ const CreateStory = () =>
 
     const addStory = async() =>
     {
-        const userId = Auth().currentUser?.uid
-        const isUserPresent = firestore().collection("stories").doc(userId)
+       
     }
     return(
         <View style={{
