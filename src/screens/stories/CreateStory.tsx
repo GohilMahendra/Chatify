@@ -7,6 +7,11 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { white } from '../../globals/Colors';
 import Auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
+import { StoryUpload } from '../../types/StoryTypes';
+import { RootState, useAppDispatch } from '../../redux/store';
+import { UploadStory } from '../../redux/slices/StorySlice';
+import { useSelector } from 'react-redux';
+import Loader from '../../components/global/Loader';
 const {height,width} = Dimensions.get("window")
 export type MediaType = "image" | "video"
 export type Story = 
@@ -31,9 +36,15 @@ const CreateStory = () =>
     const type = route.params.type
     const [caption,setCaption] = useState("")
     const {theme} = UseTheme()
-
+    const dispath = useAppDispatch()
+    const loading = useSelector((state:RootState)=>state.stories.loading)
     const addStory = async() =>
     {
+       dispath(UploadStory({
+        caption: caption,
+        mediaUrl: media,
+        mime: type
+       }))
        
     }
     return(
@@ -41,6 +52,10 @@ const CreateStory = () =>
             flex:1,
             backgroundColor: theme.background_color,
         }}>
+            {
+                loading &&
+                <Loader/>
+            }
              <View style={{
                 flexDirection:"row",
                 padding:5,
@@ -89,7 +104,9 @@ const CreateStory = () =>
                 placeholder={"caption ..."}
                 placeholderTextColor={theme.placeholder_color}
                 />
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>addStory()}
+                style={{
                     height:50,
                     width:50,
                     backgroundColor:theme.primary_color,

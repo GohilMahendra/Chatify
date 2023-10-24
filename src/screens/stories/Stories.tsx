@@ -5,14 +5,6 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { craeteStoryParams, storyStackParams } from '../../navigation/StoryStackNavigation';
 import { Story } from '../../types/StoryTypes';
-export type StoryType =
-{
-    id:string,
-    user_image: string,
-    user_name: string,
-    no_of_stories: number
-}
-
 const Stories = () =>
 {
     const {theme} = UseTheme()
