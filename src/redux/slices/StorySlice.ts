@@ -6,17 +6,28 @@ import firestore from "@react-native-firebase/firestore";
 import storage from "@react-native-firebase/storage";
 import Auth,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { RootState } from "../store";
+import { Story, StoryUpload, StoryUser, UserStory } from "../../types/StoryTypes";
+import { getMessage } from "@reduxjs/toolkit/dist/actionCreatorInvariantMiddleware";
 export type StoryType = 
 {
     loading: boolean,
-    error: string | null
+    error: string | null,
+    stories: UserStory[]
 }
 
 const initialState: StoryType= 
 {
     loading: false,
     error: null,
+    stories:[]
 
+}
+
+const getImageUrl = async(imageRef:string) =>
+{
+    const storageRef = storage().ref(imageRef)
+    const imageUrl = await storageRef.getDownloadURL()
+    return imageUrl
 }
   const UploadStoryMedia = async(path:string,name:string) =>
   {
@@ -62,17 +73,65 @@ const initialState: StoryType=
     const name = "stories/"+userId+"/"+mediaName
     const imageUrl = await UploadStoryMedia(mediaUrl,name)
     await storyRef.collection("userStories").add({
-      mediaUrl:imageUrl,
-      timestamp:firestore.FieldValue.serverTimestamp(),
+      mediaUrl:name,
+      timestamp:firestore.Timestamp.now().toDate().toString(),
       mime:mime,
       caption:caption
     })
     }
     catch(err)
     {
-      rejectWithValue(err)
+     return rejectWithValue(err as string)
     }
    
+  });
+
+  export const fetchStories = createAsyncThunk('story/fetchStories', async (args:string,{rejectWithValue}) => {
+    console.log("called ftech ")
+    try
+    {
+        // console.log("ftech method called")
+        const storiesRef = firestore().collection("stories")
+        const storiesSnapshot = await storiesRef.get()
+        const userStories:UserStory[] = []
+        for(const doc of storiesSnapshot.docs)
+        {
+          
+           const id = doc.id
+           const data = doc.data() as Omit<StoryUser,"id">
+        
+           const picture = await getImageUrl(data.picture)
+           data.picture = picture
+           const storyUser = {id,...data} as StoryUser
+           console.log(storyUser)
+           const userStory:UserStory = {...storyUser,stories:[]}
+           console.log(userStory)
+           const userStoriesRef = firestore()
+           .collection("stories")
+           .doc(id)
+           .collection("userStories")
+
+           const listStoriesSnapshot =await userStoriesRef.get()
+           for(const storyDoc of listStoriesSnapshot.docs)
+           {
+              const id = storyDoc.id
+              const data = storyDoc.data()
+              const picture = await getImageUrl(data.mediaUrl)
+              data.mediaUrl = picture
+              const story =  {id,...data} as Story
+              console.log(story)
+              userStory.stories.push(story)
+           }
+           userStories.push(userStory)
+          }
+         console.log(userStories,"userStries")
+        return userStories
+    }
+    catch(err)
+    {
+      console.log(err)
+      return rejectWithValue(err as string)
+    }
   });
   
 export const StorySlice = createSlice({
@@ -88,10 +147,23 @@ export const StorySlice = createSlice({
        builder.addCase(UploadStory.fulfilled,(state,action)=>{
         state.loading = false
        })
-       builder.addCase(UploadStory.rejected,(state,action:PayloadAction<string>)=>{
+       builder.addCase(UploadStory.rejected,(state,action)=>{
         state.loading = false
-        state.error = action.payload
+        state.error = action.payload as string
        })
+
+       builder.addCase(fetchStories.pending,(state)=>{
+        state.loading = true
+        state.error = null
+       })
+       builder.addCase(fetchStories.fulfilled,(state,action:PayloadAction<UserStory[] | undefined>)=>{
+        state.loading = false
+        state.stories = action.payload ? action.payload : []
+       })
+       builder.addCase(fetchStories.rejected,(state,action)=>{
+        state.loading = false
+        state.error = action.payload as string
+      })
        
     }
 })

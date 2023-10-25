@@ -50,6 +50,7 @@ const UserProfile = () =>
         const userId = user?.uid
         const userData  = await firestore().collection("users").doc(userId).get()
         const current_user = userData.data() as User
+        console.log(current_user)
         const profileImage = current_user.picture != "" ? await getImageUrl(current_user.picture) : ""
         current_user.picture = profileImage
         setUser(current_user)

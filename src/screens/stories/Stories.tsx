@@ -1,16 +1,24 @@
-import  React,{useState} from 'react';
+import  React,{useEffect, useState} from 'react';
 import { Text,View,FlatList,TouchableOpacity,Image } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { craeteStoryParams, storyStackParams } from '../../navigation/StoryStackNavigation';
-import { Story } from '../../types/StoryTypes';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import {  storyStackParams } from '../../navigation/StoryStackNavigation';
+import {  StoryUser } from '../../types/StoryTypes';
+import { RootState, useAppDispatch } from '../../redux/store';
+import { useSelector } from 'react-redux';
+import firestore from "@react-native-firebase/firestore";
+import storage from "@react-native-firebase/storage";
+import { fetchStories } from '../../redux/slices/StorySlice';
 const Stories = () =>
 {
     const {theme} = UseTheme()
-    const [stories,setStories] = useState<Story[]>([])
+    const [stories,setStories] = useState<StoryUser[]>([])
     const navigation = useNavigation<NavigationProp<storyStackParams,"Stories">>()
-  
+    const dispatch = useAppDispatch()
+    const loading = useSelector((state:RootState)=>state.stories.loading)
+    const data = useSelector((state:RootState)=>state.stories.stories)
+    const error = useSelector((state:RootState)=>state.stories.error)
     const openImagePicker=async()=>
     {
     
@@ -31,6 +39,15 @@ const Stories = () =>
         }
         }
     } 
+    const getStories = async() =>
+    {
+      const status =  await dispatch(fetchStories(""))  
+      console.log(status) 
+    }
+    useEffect(()=>{
+       getStories()
+    },[])
+
     return(
         <View style={{
             flex:1,
@@ -45,7 +62,7 @@ const Stories = () =>
             }}>
              <FlatList
              horizontal
-             data={stories}
+             data={data}
              showsHorizontalScrollIndicator={false}
              ListHeaderComponent={()=>{
                  return(
@@ -73,18 +90,24 @@ const Stories = () =>
              renderItem={({item,index})=>{
                  return(
                      <TouchableOpacity
-                     
+                     onPress={()=>navigation.navigate("StoryViewer",{user_id:item.id})}
+                     style={{
+                        padding:3,
+                        borderRadius:70,
+                        borderColor: theme.primary_color,
+                        borderWidth:2,
+                        margin:10
+                     }}
                      >
                          <Image
-                         source={{uri:item.user_picture}}
+                         resizeMode='contain'
+                         source={{uri:item.picture}}
                          style={{
                              height:70,
                              width:70,
                              borderRadius:70,
-                             margin:10
                          }}
                          />
-
                      </TouchableOpacity>
                  )
              }}

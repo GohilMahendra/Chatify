@@ -7,6 +7,7 @@ import Chat from '../screens/chat/Chat';
 import FindChat from '../screens/chat/FindChat';
 import Stories from '../screens/stories/Stories';
 import CreateStory from '../screens/stories/CreateStory';
+import StoryViewer from '../screens/stories/StoryViewer';
 export type craeteStoryParams = 
 {
     uri: string,
@@ -16,6 +17,9 @@ export type storyStackParams=
 {
     Stories: undefined,
     CreateStory: craeteStoryParams,
+    StoryViewer: {
+        user_id:string
+    }
 }
 export const StoryStackNavigator=()=>
 {
@@ -34,6 +38,10 @@ export const StoryStackNavigator=()=>
                 <storyStack.Screen
                 name='CreateStory'
                 component={CreateStory}
+                />
+                <storyStack.Screen
+                name='StoryViewer'
+                component={StoryViewer}
                 />
                 
             </storyStack.Navigator>

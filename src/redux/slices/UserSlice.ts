@@ -39,27 +39,27 @@ export const signInUser = createAsyncThunk(
         const id = doc.id
         const data = doc.data()
         const user = {id,...data} as UserResult
-        console.log(user)
         return user;
       } catch (error) {
         // Handle the error and reject the promise with a payload
         return rejectWithValue('Sign-in failed: ' + error);
-        console.log(error)
       }
     }
   );
-  export const fetchUserData = createAsyncThunk('user/fetchUserData', async (userId: string) => {
-    const userRef = firestore().collection('users').doc(userId);
-    const doc = await userRef.get();
-  
-    if (doc.exists) {
-
+  export const fetchUserData = createAsyncThunk('user/fetchUserData', async (userId: string,{rejectWithValue}) => {
+    try
+    {
+      const userRef = firestore().collection('users').doc(userId);
+      const doc = await userRef.get();
       const id = doc.id
       const data = doc.data()
       const user = {id,...data} as UserResult
       return user;
-    } else {
-      throw new Error('User data not found');
+    } 
+    catch(err)
+    {
+      console.log(err)
+      return rejectWithValue(err)
     }
   });
   

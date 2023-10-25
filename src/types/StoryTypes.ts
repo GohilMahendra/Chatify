@@ -1,15 +1,21 @@
-export type Story = 
+export type UserStory = 
 {
+    id:string
     user_name: string,
     name: string,
-    user_picture: string,
-    user_id: string,
-    content: string,
+    picture: string,
+    stories:Story[],
+    count: number
+}
+
+export type StoryUser = Omit<UserStory,"stories">
+export type Story = 
+{
+    id:string
+    mediaUrl: string,
     caption: string,
     mediaType: MediaType,
     timestamp: number,
-
 }
-
-export type StoryUpload = Omit<Story,"user_name" | "name" | "user_picture">
+export type StoryUpload = Omit<UserStory,"user_name" | "name" | "user_picture">
 export type MediaType = "image" | "video"

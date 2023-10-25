@@ -63,9 +63,6 @@ const EditProfile = () =>
             const userId = Auth().currentUser?.uid
 
             const imageChanged:boolean = profilePicture != profile_image
-
-            
-
             let imagePath = ""
             if(imageChanged)
             {

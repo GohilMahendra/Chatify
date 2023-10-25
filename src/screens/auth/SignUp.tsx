@@ -109,7 +109,6 @@ const SignUp = () =>
             user_name: userName,
             bio:""
         })
-        console.log(newUser)
         }
         catch(err)
         {
