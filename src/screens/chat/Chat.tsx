@@ -1,78 +1,56 @@
 import  React,{useState,useRef,useEffect} from 'react';
-import { View,Text,Image,SafeAreaView,FlatList,Dimensions} from 'react-native';
+import { View,Text,Image,SafeAreaView,FlatList,Dimensions, TextInput} from 'react-native';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../../globals/UseTheme';
 import { placeholder_image } from '../../globals/Data';
+import { Message, UserMessageType } from '../../types/MessageTypes';
+import { white } from '../../globals/Colors';
+import { TouchableOpacity } from 'react-native';
+import firestore from "@react-native-firebase/firestore";
+import Auth from "@react-native-firebase/auth";
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { chatStackParams } from '../../navigation/ChatStackNavigation';
+import { UserResult } from '../../types/UserTypes';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { launchImageLibrary } from 'react-native-image-picker';
+import storage from "@react-native-firebase/storage";
 const {height,width} = Dimensions.get("window")
-export type Chat = 
+export type fileType =
 {
-    id: string,
-    channel_id: string,
-    user_id: string,
-    text: string,
-    user_name: string,
-    user_image: string,
-    image?:string,
+    uri: string,
+    type:string
 }
 const Chat  = () =>
 {
     const {theme} = UseTheme()
-    const current_user_id = "tanjiro_kamado"
-    const [chats,setChats] = useState<Chat[]>([
+    const current_user_id = Auth().currentUser?.uid
+    const route = useRoute<RouteProp<chatStackParams,"Chat">>()
+    const user_id = route.params.id
+    const [chats,setChats] = useState<Message[]>([])
+    const current_user = useSelector((state:RootState)=>state.user.user)
+    const flatListRef = useRef<FlatList<Message> | null>(null)
+    const [text,setText] = useState("")
+
+    const openImagePicker=async()=>
+    {
+    
+        const response = await launchImageLibrary({
+        mediaType:"photo",
+        presentationStyle:"popover",
+        selectionLimit:1
+        })
+
+        if(!response.didCancel && response.assets)
         {
-            channel_id:"inosuke_tanjiro_combined",
-            id:'random_mesage_1',
-            text:"hi !! kamado munjiro very ong message sending you peas ",
-            user_id:"inosuke_hunter",
-            user_image:placeholder_image,
-            user_name:"Inosuke Hunter"
-        },
-        {
-            channel_id:"inosuke_tanjiro_combined",
-            id:'random_mesage_2',
-            text:"hi !! inosuke",
-            user_id:"tanjiro_kamado",
-            user_image:"https://picfiles.alphacoders.com/631/631729.png",
-            user_name:"Kamado Tanjiro"
-        },
-        {
-            channel_id:"inosuke_tanjiro_combined",
-            id:'random_mesage_3',
-            text:"what is the problem with you it's tanjiro",
-            user_id:"tanjiro_kamado",
-            user_image:"https://picfiles.alphacoders.com/631/631729.png",
-            user_name:"Kamado Tanjiro"
-        },
-        {
-            channel_id:"inosuke_tanjiro_combined",
-            id:'random_mesage_4',
-            text:"hi !! kamado munjiro , I have very sad news for you as anime fan !!",
-            user_id:"inosuke_hunter",
-            user_image:placeholder_image,
-            user_name:"Inosuke Hunter"
-        },
-        {
-            channel_id:"inosuke_tanjiro_combined",
-            id:'random_mesage_5',
-            text:"gojjo got killed bro here is the image",
-            user_id:"inosuke_hunter",
-            user_image:placeholder_image,
-            user_name:"Inosuke Hunter",
-            image:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3hEz0ncYpygzG2c8nQHMTFN_igIxzfh2WQA&usqp=CAU"
-        },
-        {
-            channel_id:"inosuke_tanjiro_combined",
-            id:'random_mesage_6',
-            text:"His death was more painfull",
-            user_id:"tanjiro_kamado",
-            user_image:placeholder_image,
-            user_name:"Tanjiro Kamado",
-            image:"https://w0.peakpx.com/wallpaper/152/193/HD-wallpaper-jiraiya-sensei-aesthetic-anime-legend-manga-naruto-sky-uzumaki.jpg"
-        },
-       
-    ])
-    const flatListRef = useRef<FlatList<Chat> | null>(null)
-    const renderMessage = ({item,index}:{item:Chat,index:number}) =>
+                const file:fileType = {
+                    type: response.assets[0].type || "",
+                    uri: response.assets[0].uri || ""
+                }
+            await createMessaage(user_id,file)
+        }
+    } 
+    const renderMessage = ({item,index}:{item:Message,index:number}) =>
     {
         return(
             item.user_id != current_user_id
@@ -100,9 +78,9 @@ const Chat  = () =>
                         <Text style={{
                             color: theme.text_color
                         }}>{item.text}</Text>
-                        {item.image && 
+                        {item.fileType?.includes("image") && item.fileUrl && 
                         <Image
-                        source={{uri:item.image}}
+                        source={{uri:item.fileUrl}}
                         style={{
                            height:width * 0.6 - 10,
                            width: width* 0.6 - 10,
@@ -123,19 +101,22 @@ const Chat  = () =>
                 borderRadius:20,
                 alignSelf:"flex-end"
             }}>
-                <Text style={{
+               {item.text && <Text style={{
                     color: theme.text_color
-                }}>{item.text}</Text>
-                {item.image && 
+                }}>{item.text}</Text> }
+                {item.fileUrl && 
                 <Image
                 //resizeMode='contain'
-                source={{uri:item.image}}
+                source={{uri:item.fileUrl}}
+                resizeMode='contain'
                 style={{
                     height:width * 0.6 - 10,
                     width: width* 0.6 - 10,
                     borderRadius:20,
                     alignSelf:'center',
-                    marginVertical:10
+                    alignContent:"center",
+                    justifyContent:"center",
+                  //  marginVertical:10
                 }}
                 />
                 }
@@ -144,8 +125,96 @@ const Chat  = () =>
         )
 
     }
+
+    const createMessaage = async(user_id:string,file:fileType|null = null)=>
+    {
+       const current_user_id = current_user.id
+
+       let filePath:string | null = null
+       let fileMime: string | null = null
+       if(file != null)
+       {
+        const url = file.uri
+        const type = file.type
+        const fileName =  Date.now().toString() + "." + type.split("/")[1]
+        const path = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
+        const Fiileref = storage().ref(path)
+        await Fiileref.putFile(url)
+        filePath = path
+        fileMime = type
+       }
+
+       const Message:UserMessageType = 
+       {
+        fileType:(fileMime)?fileMime:null,
+        fileUrl: (filePath)?filePath:null,
+        isRead: false,
+        text: text,
+        thumbnail: null,
+        user_id: current_user_id
+       }
+
+       const ref =  firestore()
+       .collection("messages")
+       .doc(current_user_id)
+       .collection("groups")
+       .doc(user_id)
+       .collection("groupMessages")
+
+       const senderRef = firestore()
+       .collection("messages")
+       .doc(user_id)
+       .collection("groups")
+       .doc(current_user_id)
+       .collection("groupMessages")
+       const addMessage = await ref.add(Message)
+       const addMessageToSender = await senderRef.add(Message)
+
+    }
+
+    const subscribeToMessages = async() =>
+    {
+        const current_user_id = Auth().currentUser?.uid 
+
+       const connectionRef = firestore()
+        .collection("messages")
+        .doc(current_user_id)
+        .collection("groups")
+        .doc(user_id)
+        .collection("groupMessages")
+
+
+        connectionRef.onSnapshot(async function(snap){
+            const docs = snap.docs
+            const senderUser = await firestore().collection("users").doc(user_id).get()
+            const id = senderUser.id
+            const userData = {id,...senderUser.data()} as UserResult
+            const Messages:Message[] = []
+            for(const doc of docs)
+            {
+                const id = doc.id
+                const data = doc.data() as UserMessageType
+                console.log(data.user_id == current_user_id)
+                const message:Message = {
+                    ...data,
+                    user_image: route.params.picture,
+                    id:id,
+                    user_name:route.params.name,
+                }
+
+                if(message.fileUrl)
+                {
+                    message.fileUrl = await storage().ref(message.fileUrl).getDownloadURL()
+                }
+               
+                Messages.push(message)
+            }
+            setChats(Messages)
+        })
+    }
+
     useEffect(()=>{
-      
+      subscribeToMessages()
     },[])
     return(
         <SafeAreaView style={{
@@ -172,7 +241,7 @@ const Chat  = () =>
                 marginLeft:20
             }}>
                 <Image
-                source={{uri:placeholder_image}}
+                source={{uri:route.params.picture}}
                 style={{
                     height:40,
                     width:40,
@@ -186,7 +255,7 @@ const Chat  = () =>
                     alignSelf:"center",
                     marginLeft:10
                 }}>
-                    Inosuke Hashibira !!
+                   {route.params.name}
                 </Text>
             </View>
 
@@ -194,12 +263,60 @@ const Chat  = () =>
         {/* navigation header ends */}
         {/* chat section starts */}
         <FlatList
+        onContentSizeChange={()=>flatListRef.current?.scrollToEnd()}
         ref={ref=>{flatListRef.current = ref}}
         data={chats}
         renderItem={({item,index})=>renderMessage({item,index})}
         keyExtractor={(item)=>item.id}
         />
         {/* chat section ends */}
+        <View style={{
+            flexDirection:"row",
+            padding:10,
+            justifyContent:"space-between"
+        }}>
+            <TextInput
+            value={text}
+            placeholder={"Message ..."}
+            placeholderTextColor={theme.placeholder_color}
+            onChangeText={(text:string)=>setText(text)}
+            style={{
+                width: width * 60/100,
+                backgroundColor:theme.seconarybackground_color,
+                padding:10,
+                fontSize:18,
+                color: theme.text_color,
+                borderRadius:10,
+                elevation:5,
+            }}
+            />
+             <TouchableOpacity 
+           onPress={()=>openImagePicker()}
+            style={{
+                backgroundColor: theme.seconarybackground_color,
+                padding:10,
+                borderRadius:20
+            }}>
+                 <FontAwesome5
+                    name='camera'
+                    size={30}
+                    color={white}
+                />
+            </TouchableOpacity>
+            <TouchableOpacity 
+            onPress={()=>createMessaage(user_id)}
+            style={{
+                backgroundColor: theme.primary_color,
+                padding:10,
+                borderRadius:20
+            }}>
+                 <FontAwesome5
+                    name='location-arrow'
+                    size={30}
+                    color={white}
+                />
+            </TouchableOpacity>
+        </View>
         </SafeAreaView>
     )
 }

@@ -5,91 +5,32 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import firestore from "@react-native-firebase/firestore";
 import storage from "@react-native-firebase/storage";
 import { User, UserResult } from '../../types/UserTypes';
+import { useSelector } from 'react-redux';
+import { RootState, useAppDispatch } from '../../redux/store';
+import { fetchUsers } from '../../redux/slices/SearchSlice';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { chatStackParams } from '../../navigation/ChatStackNavigation';
+import { launchImageLibrary } from 'react-native-image-picker';
 const {height,width} = Dimensions.get("window")
 const FindChat = () =>
 {
     const {theme} = UseTheme()
     const [search,setSearch] = useState<string>("")
-    const [results,setResults] = useState<UserResult[]>([])
-
-    const getImageUrl = async(imagePath:string) =>
-    {
-        try
-        {
-            const ref = storage().ref(imagePath)
-            const imageUrl = await ref.getDownloadURL()
-            return imageUrl
-        }
-        catch(err)
-        {
-            console.log(err)
-        }
-    }
-
+    const results = useSelector((state:RootState)=>state.search.users)
+    const loading = useSelector((state:RootState)=>state.search.loading)
+    const navigation = useNavigation<NavigationProp<chatStackParams,"FindChat">>()
+    const [selectedUrl,setSelectedUrl] = useState<{url:string,type:string} | null>(null)
+    const dispatch = useAppDispatch()
     const getUserByName = async(searchString: string)=>
     {
-        try
-        {
-            const usersCollection = firestore().collection("users")
-            const queryByUsername = usersCollection
-            .where('user_name', '>=', searchString)
-            .where('user_name', '<=', searchString + '\uf8ff')
-            .get();
-      
-          // Create a query to search for names matching the query
-          const queryByName = usersCollection
-            .where('name', '>=', searchString)
-            .where('name', '<=', searchString + '\uf8ff')
-            .get();
-      
-          // Execute both queries and retrieve the results
-          const [queryByUsernameSnapshot, queryByNameSnapshot] = await Promise.all([
-            queryByUsername,
-            queryByName,
-          ]);
-      
-          const users:UserResult[]= [];
-      
-          for (const doc of queryByUsernameSnapshot.docs) {
-            const userData = doc.data() as Omit<UserResult, "id">;
-            const imageUrl = await getImageUrl(userData.picture) || "";
-            users.push({
-              ...userData,
-              picture: imageUrl,
-              id: doc.id,
-            });
-          }
-          for (const doc of queryByNameSnapshot.docs) {
-            const userData = doc.data() as Omit<UserResult, "id">;
-            const imageUrl = await getImageUrl(userData.picture) || "";
-            users.push({
-              ...userData,
-              picture: imageUrl,
-              id: doc.id,
-            });
-          }
-
-        
-      
-          // Filter unique users (in case some users matched both queries)
-          let uniqueUsers:UserResult[] = []
-          const userlist = Array.from(new Set(users.map((user:UserResult) => user.id))).map((id) => {
-            return users.find((user:UserResult) => user.id === id);
-          }) 
-          console.log(userlist,"found this list of users")
-          uniqueUsers = userlist!=undefined ? userlist : []
-          setResults(uniqueUsers)
-        }
-        catch(err)
-        {
-            console.log(err)
-        }
-
+      dispatch(fetchUsers(searchString))
     } 
     const renderResults = (item:UserResult,index:number)=>
     {
         return(
-            <TouchableOpacity style={{
+            <TouchableOpacity 
+            onPress={()=>navigation.navigate("Chat",item)}
+            style={{
                 margin:20,
                 backgroundColor: theme.seconarybackground_color,
                 padding:10,

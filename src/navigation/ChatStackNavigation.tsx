@@ -5,10 +5,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import ChatHome from '../screens/chat/ChatHome';
 import Chat from '../screens/chat/Chat';
 import FindChat from '../screens/chat/FindChat';
+import { UserResult } from '../types/UserTypes';
 
 export type chatStackParams=
 {
-    Chat: undefined,
+    Chat:UserResult,
     ChatHome: undefined,
     FindChat: undefined
 }

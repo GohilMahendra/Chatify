@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import UserReducer from "./slices/UserSlice";
 import { useDispatch } from "react-redux";
 import StoryReducer from './slices/StorySlice';
+import SearchReducer from './slices/SearchSlice';
 const store = configureStore({
     reducer:
     {
         user:UserReducer,
-        stories: StoryReducer
+        stories: StoryReducer,
+        search: SearchReducer
     }
 })
 export type RootState = ReturnType<typeof store.getState>

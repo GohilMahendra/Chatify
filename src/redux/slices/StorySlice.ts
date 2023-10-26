@@ -135,7 +135,7 @@ const getImageUrl = async(imageRef:string) =>
   });
   
 export const StorySlice = createSlice({
-    name:"user",
+    name:"story",
     initialState:initialState,
     reducers:{
     },
