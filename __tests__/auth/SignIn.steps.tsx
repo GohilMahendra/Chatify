@@ -12,7 +12,6 @@ jest.mock('@react-navigation/native', () => ({
     }),
   }));
 
-
 describe("Sign Up flow test",()=>{
   let SignInComponent:any;
 
