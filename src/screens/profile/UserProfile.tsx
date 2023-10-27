@@ -13,6 +13,8 @@ import { User } from '../../types/UserTypes';
 import Loader from '../../components/global/Loader';
 import { red } from '../../globals/Colors';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 export type CompositeProfileProps = CompositeScreenProps<
 NativeStackScreenProps<ProfileStackParams,"UserProfile">,
@@ -24,71 +26,38 @@ const UserProfile = () =>
    
     const navigation = useNavigation<NavigationProp<ProfileStackParams,"UserProfile">>()
     const rootNavigation = useNavigation<NavigationProp<RootStackParams>>()
-    const [user,setUser] = useState<User>(
-        {
-            bio:"",
-            email:"",
-            name:"",
-            picture:"",
-            user_name:""
-        }
-    )
-    const [Loading,setLoading] = useState(false)
-
+    const user = useSelector((state:RootState)=>state.user.user)
+    const loading = useSelector((state:RootState)=>state.user.loading)
     const getImageUrl = async(imageRef:string) =>
     {
         const storageRef = storage().ref(imageRef)
         const imageUrl = await storageRef.getDownloadURL()
         return imageUrl
     }
-    const getProfileDetails = async() =>
-    {
-        try
-        {
-        setLoading(true)
-        const user = Auth().currentUser
-        const userId = user?.uid
-        const userData  = await firestore().collection("users").doc(userId).get()
-        const current_user = userData.data() as User
-        console.log(current_user)
-        const profileImage = current_user.picture != "" ? await getImageUrl(current_user.picture) : ""
-        current_user.picture = profileImage
-        setUser(current_user)
-        setLoading(false)
-        }
-        catch(err)
-        {
-            setLoading(false)
-            console.log(err)
-        }
-    }
+  
     const signOut = async() =>
     {
         try
         {
-            setLoading(true)
+            
             await Auth().signOut()
             rootNavigation.reset({
                 index: 0, // The index of the screen to reset to (0 for the first screen)
                 routes: [{ name: "SignIn"}], // The screen you want to navigate to
               });
-            setLoading(false)
         }
         catch(err)
         {
             console.log(err)
         }
     }
-    useEffect(()=>{
-        getProfileDetails()
-    },[])
     return(
         <View style={{
             flex:1,
             backgroundColor: theme.background_color
         }}>
             {
-                Loading && 
+                loading && 
                 <Loader/>
             }
             {/* header section starts */}

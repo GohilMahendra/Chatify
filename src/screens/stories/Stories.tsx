@@ -18,6 +18,7 @@ const Stories = () =>
     const dispatch = useAppDispatch()
     const loading = useSelector((state:RootState)=>state.stories.loading)
     const data = useSelector((state:RootState)=>state.stories.stories)
+    const user = useSelector((state:RootState)=>state.user.user)
     const error = useSelector((state:RootState)=>state.stories.error)
     const openImagePicker=async()=>
     {
@@ -45,7 +46,7 @@ const Stories = () =>
       console.log(status) 
     }
     useEffect(()=>{
-       getStories()
+      // getStories()
     },[])
 
     return(
@@ -54,41 +55,52 @@ const Stories = () =>
             backgroundColor: theme.background_color
         }}>
             {/* header starts */}
-           
+            <View style={{
+                marginTop:20
+            }}>
+                <Text style={{
+                    fontSize:30,
+                    paddingHorizontal:20,
+                    fontWeight:"bold",
+                    color: theme.text_color
+                }}>Stories</Text>
+            </View>
             {/* header ends */}
             {/* story section starts */}
-            <View style={{
-                
-            }}>
+            <View>
+             <View style={{
+                flexDirection:"row"
+             }}>
+                <TouchableOpacity style={{
+                    marginTop:30,
+                    padding:20,
+                    borderRadius:20,
+                    width: "100%",
+                    backgroundColor: theme.seconarybackground_color
+                }}>
+                    <Image
+                    source={{uri:user.picture}}
+                    style={{
+                        height:70,
+                        width:70,
+                        borderRadius:70
+                    }}
+                    />
+                </TouchableOpacity>    
+            </View> 
+            <Text style={{
+                margin:20,
+                fontSize:18,
+                color: theme.text_color,
+                fontWeight:"bold"
+            }}>Recent Updates</Text>
              <FlatList
              horizontal
              data={data}
              showsHorizontalScrollIndicator={false}
-             ListHeaderComponent={()=>{
-                 return(
-                     <TouchableOpacity 
-                     onPress={()=>openImagePicker()}
-                     style={{
-                         height:70,
-                         width:70,
-                         justifyContent:"center",
-                         alignItems:"center",
-                         borderRadius:70,
-                         borderColor:theme.placeholder_color,
-                         borderWidth:1,
-                         margin:10
-                     }}>
-                         <Text style={{
-                             color: theme.placeholder_color,
-                             fontWeight:"bold",
-                             fontSize:18
-                         }}>+</Text>
-                     </TouchableOpacity>
-                 )
-
-             }}
              renderItem={({item,index})=>{
                  return(
+                   
                      <TouchableOpacity
                      onPress={()=>navigation.navigate("StoryViewer",{user_id:item.id})}
                      style={{
@@ -96,6 +108,7 @@ const Stories = () =>
                         borderRadius:70,
                         borderColor: theme.primary_color,
                         borderWidth:2,
+                        flexDirection:"row",
                         margin:10
                      }}
                      >

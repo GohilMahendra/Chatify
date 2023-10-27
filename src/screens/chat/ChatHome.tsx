@@ -1,4 +1,4 @@
-import  React, { useState } from 'react';
+import  React, { useState ,useEffect} from 'react';
 import { Text,View,SafeAreaView, Image , FlatList, TouchableOpacity} from "react-native";
 import UseTheme from '../../globals/UseTheme';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -6,49 +6,58 @@ import { placeholder_image } from '../../globals/Data';
 import { white } from '../../globals/Colors';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { chatStackParams } from '../../navigation/ChatStackNavigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { Message, MessagePreview } from '../../types/MessageTypes';
+import Auth, { firebase } from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+import { UserResult } from '../../types/UserTypes';
 
-export type Message = 
-{
-    id: string,
-    user_image: string,
-    user_name: string,
-    last_message: string,
-    unread_messages: number,
-    date: string
-}
 
 const Home = () =>
 {
     const {theme} = UseTheme()
     const navigation = useNavigation<NavigationProp<chatStackParams,"ChatHome">>()
+    const user = useSelector((state:RootState)=>state.user.user)
+    const [messages,setMessages] = useState<MessagePreview[]>([])
 
-    const [messages,setMessages] = useState<Message[]>([
-        {
-            id:"random_id1",
-            date:"1 day",
-            last_message:"let's go",
-            unread_messages:4,
-            user_image:"https://i.pinimg.com/736x/bc/27/6f/bc276ff73e30a5f50c493aeb685edb90.jpg",
-            user_name:"Kakshi Hatake"
-        },
-        {
-            id:"random_id2",
-            date:"1 min",
-            last_message:"let's go",
-            unread_messages:1,
-            user_image:"https://i.pinimg.com/736x/bc/27/6f/bc276ff73e30a5f50c493aeb685edb90.jpg",
-            user_name:"Kakshi Hatake"
-        },
-        {
-            id:"random_id3",
-            date:"20 sec",
-            last_message:"let's go here nis  asdb usdbsab hbb",
-            unread_messages:2,
-            user_image:"https://i.pinimg.com/736x/bc/27/6f/bc276ff73e30a5f50c493aeb685edb90.jpg",
-            user_name:"Kakshi Hatake"
-        }
+    const getMessages = async() =>
+    {
+        const current_user_id = Auth().currentUser?.uid
+        console.log(current_user_id)
+        const messageRef =await firestore().collection("messages").get()
+        console.log(messageRef)
+           const snapshotdocs:any = []
+            console.log(snapshotdocs)
+            for(const doc of snapshotdocs)
+            {
+                const id = doc.id
+                const userResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").doc(id).get()
+                const user_id = userResponse.id
+                const user_data = userResponse.data() as Omit<UserResult,"id">
+                const user = {id:user_id,...user_data} as UserResult
+                console.log(user)
+                const lastMessageResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").doc(id).collection("groupMessages").limit(1).get()
+                const lastresponseid = lastMessageResponse.docs[0].id
+                const lastresponseData = lastMessageResponse.docs[0].data() 
+                const lastMessage = {id:lastresponseid,...lastresponseData} as Message
+                console.log(lastMessage)
+                const messagePreview:MessagePreview = 
+                {
+                    id: id,
+                    lastMessage: lastMessage,
+                    no_of_unread:0,
+                    User: user
+                }
+                console.log(messagePreview)
+            }
+        
+    }
 
-    ])
+    useEffect(()=>{
+        getMessages()
+    },[])
+
     return(
         <SafeAreaView
         style={{
@@ -76,18 +85,16 @@ const Home = () =>
                     <Text style={{
                         fontSize:20,
                         color: theme.text_color,
-                    }}>Inosuke !!</Text>
+                    }}>{user.name}</Text>
                 </View>
                 <Image
-                source={{uri:placeholder_image}}
+                source={{uri:user.picture || placeholder_image}}
                 style={{
                     height:50,
                     width:50,
                     borderRadius:50
                 }}
-                
                 />
-                
 
                </View> 
                {/* unread message section starts */}
@@ -119,7 +126,7 @@ const Home = () =>
                             }}>
                                 <View style={{flexDirection:"row"}}>
                                     <Image
-                                    source={{uri:item.user_image}}
+                                    source={{uri:item.User.picture}}
                                     style={{
                                         height:40,
                                         width:40,
@@ -132,12 +139,12 @@ const Home = () =>
                                         color: theme.text_color,
                                         marginLeft:20,
                                         fontWeight:"bold"
-                                    }}>{item.user_name}</Text>
+                                    }}>{item.User.name}</Text>
                                     <Text style={{
                                         fontSize:15,
                                         color: theme.text_color,
                                         marginLeft:20,
-                                    }}>{item.last_message.substring(0,30)}</Text>
+                                    }}>{item.lastMessage.text}</Text>
                                     </View>
                                 </View>
                                 <View style={{
@@ -146,7 +153,7 @@ const Home = () =>
                                 <Text style={{
                                     fontSize:15,
                                     color:theme.placeholder_color
-                                }}>{item.date}</Text>
+                                }}>{item.lastMessage.timestamp}</Text>
                                
                                     <Text style={{
                                         color:white,
@@ -158,7 +165,7 @@ const Home = () =>
                                         overflow:"hidden",
                                         textAlign:"center",
                                         textAlignVertical:"center"
-                                    }}>{item.unread_messages}</Text>
+                                    }}>{item.no_of_unread}</Text>
                                 
                                 </View>
                             </View>

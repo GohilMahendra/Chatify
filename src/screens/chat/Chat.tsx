@@ -1,5 +1,5 @@
 import  React,{useState,useRef,useEffect} from 'react';
-import { View,Text,Image,SafeAreaView,FlatList,Dimensions, TextInput} from 'react-native';
+import { View,Modal,Text,Image,Platform,SafeAreaView,FlatList,Dimensions, TextInput} from 'react-native';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../../globals/UseTheme';
 import { placeholder_image } from '../../globals/Data';
@@ -15,6 +15,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { launchImageLibrary } from 'react-native-image-picker';
 import storage from "@react-native-firebase/storage";
+import Feather from 'react-native-vector-icons/Feather'
+import Video from "react-native-video";
+import ThumbnailPicker from '../../components/chat/ThumbnailPicker';
 const {height,width} = Dimensions.get("window")
 export type fileType =
 {
@@ -28,6 +31,10 @@ const Chat  = () =>
     const route = useRoute<RouteProp<chatStackParams,"Chat">>()
     const user_id = route.params.id
     const [chats,setChats] = useState<Message[]>([])
+    const [mediaModal,setMediaModal] = useState<boolean>()
+    const [videoPreviev,setVideoPreview] = useState(false)
+    const [currentFile,setCurrentFile] = useState<fileType | null>(null)
+    const [thumbnailUri,setThumbnailUril] = useState<string | null>(null)
     const current_user = useSelector((state:RootState)=>state.user.user)
     const flatListRef = useRef<FlatList<Message> | null>(null)
     const [text,setText] = useState("")
@@ -50,6 +57,27 @@ const Chat  = () =>
             await createMessaage(user_id,file)
         }
     } 
+
+    const openVideoPicker = async() =>
+    {
+        const response = await launchImageLibrary({
+            mediaType:"video",
+            presentationStyle:"overCurrentContext",
+            selectionLimit:1
+            })
+    
+            if(!response.didCancel && response.assets)
+            {
+                    const file:fileType = {
+                        type: response.assets[0].type || "",
+                        uri: response.assets[0].uri || ""
+                    }
+                    console.log(file)
+                    setCurrentFile(file)
+                    setMediaModal(false)
+                    setVideoPreview(true)                
+            }
+    }
     const renderMessage = ({item,index}:{item:Message,index:number}) =>
     {
         return(
@@ -126,16 +154,33 @@ const Chat  = () =>
 
     }
 
+    const captureThumbnail=async(videoUri:string)=>
+    {
+        try
+        {
+           
+        }
+        catch(err)
+        {
+            console.log(err)
+        }
+    }
     const createMessaage = async(user_id:string,file:fileType|null = null)=>
     {
        const current_user_id = current_user.id
 
        let filePath:string | null = null
        let fileMime: string | null = null
+       let thumbnail:string | null = null
        if(file != null)
        {
         const url = file.uri
         const type = file.type
+        if(file.type.includes("video"))
+        {
+
+        }
+
         const fileName =  Date.now().toString() + "." + type.split("/")[1]
         const path = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
         const Fiileref = storage().ref(path)
@@ -151,7 +196,8 @@ const Chat  = () =>
         isRead: false,
         text: text,
         thumbnail: null,
-        user_id: current_user_id
+        user_id: current_user_id,
+        timestamp: firestore.Timestamp.now().toDate().toString(),
        }
 
        const ref =  firestore()
@@ -169,12 +215,12 @@ const Chat  = () =>
        .collection("groupMessages")
        const addMessage = await ref.add(Message)
        const addMessageToSender = await senderRef.add(Message)
-
+       setText("")
     }
 
     const subscribeToMessages = async() =>
     {
-        const current_user_id = Auth().currentUser?.uid 
+      const current_user_id = Auth().currentUser?.uid 
 
        const connectionRef = firestore()
         .collection("messages")
@@ -214,7 +260,7 @@ const Chat  = () =>
     }
 
     useEffect(()=>{
-      subscribeToMessages()
+      //subscribeToMessages()
     },[])
     return(
         <SafeAreaView style={{
@@ -291,7 +337,7 @@ const Chat  = () =>
             }}
             />
              <TouchableOpacity 
-           onPress={()=>openImagePicker()}
+           onPress={()=>setMediaModal(true)}
             style={{
                 backgroundColor: theme.seconarybackground_color,
                 padding:10,
@@ -317,6 +363,123 @@ const Chat  = () =>
                 />
             </TouchableOpacity>
         </View>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible = {mediaModal}
+            onRequestClose={()=>setMediaModal(false)}
+            >
+                <View style={{
+                    flex:1,
+                    justifyContent:'flex-end',
+                    alignItems:"flex-end",
+                    backgroundColor:"rgba(0,0,0,.7)"
+                }}>
+                    <View
+                    style={{
+                        backgroundColor:"Transparent",
+                        width:"100%",
+                        borderRadius:20,
+                        padding:20,
+                        
+                    }}
+                    >
+                        <View style={{
+                            backgroundColor:theme.seconarybackground_color,
+                            padding:20,
+                            borderRadius:20,
+                        }}>
+                       <View
+                       style={{
+                        width:50,
+                        backgroundColor:theme.text_color,
+                        height:5,
+                        alignSelf:"center",
+                        borderRadius:5
+                       }}
+                       />
+                        <TouchableOpacity 
+                        onPress={()=>openImagePicker()}
+                        style={{
+                            flexDirection:"row",
+                            padding:10,
+                            borderBottomColor:"grey",
+                            borderBottomWidth:1,
+                            borderRadius:10,
+                            marginVertical:5
+                        }}>
+                            <Feather
+                            name={"camera"}
+                            size={30}
+                            color={theme.text_color}
+                            style={{
+                                marginRight:20
+                            }}
+                            />
+                            <Text style={{
+                                fontSize:20,
+                                color:theme.text_color
+                            }}>Select photo</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                         onPress={()=>openVideoPicker()}
+                        style={{
+                            flexDirection:"row",
+                            padding:10,
+                            borderRadius:10
+                
+                        }}>
+                            <Feather
+                            name={"video"}
+                            size={30}
+                            color={theme.text_color}
+                            style={{
+                                marginRight:20
+                            }}
+                            />
+                            <Text style={{
+                                fontSize:20,
+                                color:theme.text_color
+                            }}>Select Video</Text>
+                        </TouchableOpacity>
+                        </View>
+                        <TouchableOpacity 
+                        onPress={()=>setMediaModal(false)}
+                        style={{
+                            marginVertical:10,
+                            backgroundColor:theme.primary_color,
+                            padding:20,
+                            borderRadius:10,
+                            justifyContent:"center",
+                            alignItems:"center"
+                        }}>
+                            <Text style={{
+                                fontSize:20,
+                                color:theme.text_color
+                            }}>Cancel</Text>
+                        </TouchableOpacity>
+                      
+                    </View>
+
+                </View>
+
+        </Modal>
+
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible = {videoPreviev}
+            onRequestClose={()=>setVideoPreview(false)}
+            >
+               {
+                currentFile && 
+                <ThumbnailPicker
+                videoUri={currentFile.uri}
+                onClose={()=>setVideoPreview(false)}
+                onSelect={()=>console.log("selected")}
+                />
+               }
+        </Modal>
         </SafeAreaView>
     )
 }
