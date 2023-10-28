@@ -98,7 +98,9 @@ const EditProfile = () =>
                 fontSize:18,
                 marginVertical:5,
                 color: theme.text_color
-            }}>Tanjiro Kamado
+            }}>{
+                full_name
+            }
             </Text>
             <Text 
             style={{
@@ -106,7 +108,7 @@ const EditProfile = () =>
                 fontSize:18,
                 marginVertical:5,
                 color: theme.text_color
-            }}>tanjiro_kamado
+            }}>{user_name}
             </Text>
             </View>
             {/* user info ends */}

@@ -12,6 +12,7 @@ import { RootState, useAppDispatch } from '../../redux/store';
 import { UploadStory } from '../../redux/slices/StorySlice';
 import { useSelector } from 'react-redux';
 import Loader from '../../components/global/Loader';
+import VideoPreview from '../../components/stories/VideoPreview';
 const {height,width} = Dimensions.get("window")
 export type MediaType = "image" | "video"
 export type Story = 
@@ -75,6 +76,8 @@ const CreateStory = () =>
                 }}>Add Story</Text>
                 <View/>
             </View>
+            { type.includes("image")
+            ?
             <Image
             resizeMode='cover'
             source={{uri:media}}
@@ -85,6 +88,11 @@ const CreateStory = () =>
                 marginVertical:20
             }}
             />
+            :
+            <VideoPreview
+            uri={media}
+            />
+        }
 
             <View style={{
                 flexDirection:"row",
@@ -96,6 +104,7 @@ const CreateStory = () =>
                 onChangeText={(text:string)=>setCaption(text)}
                 style={{
                     padding:10,
+                    color: theme.text_color,
                     fontSize:18,
                     backgroundColor: theme.seconarybackground_color,
                     borderRadius:10,

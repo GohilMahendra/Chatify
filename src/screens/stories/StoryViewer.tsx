@@ -1,4 +1,4 @@
-import  React,{useRef, useState} from 'react';
+import  React,{useRef,useEffect, useState} from 'react';
 import { Image,Text,View,Dimensions,TouchableOpacity,Animated } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -8,6 +8,7 @@ import { RootState, useAppDispatch } from '../../redux/store';
 import { Story } from '../../types/StoryTypes';
 import { black, grey, white } from '../../globals/Colors';
 import { useSelector, useStore } from 'react-redux';
+import Video from 'react-native-video';
 const {width,height} = Dimensions.get("window")
 const StoryViewer = () =>
 {
@@ -21,10 +22,9 @@ const StoryViewer = () =>
     const navigation = useNavigation<NavigationProp<storyStackParams,"Stories">>()
     const dispatch = useAppDispatch()
     
-
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const progress = useRef(new Animated.Value(0)).current
-   
+    const [duration,setDuration] = useState<number>(10)
 
     const widthBar = width/userStory.stories.length - userStory.stories.length*3
     
@@ -34,14 +34,20 @@ const StoryViewer = () =>
             progress,
             {
                 toValue: widthBar,
-                duration: 10 * 1000,
+                duration: duration * 1000,
                 useNativeDriver:false,
             }
         ).start(()=>{
-           // nextStory()
+            nextStory()
         })
     }
 
+    useEffect(()=>{
+        if(userStory.stories[currentIndex].mime == "image")
+        {
+            setDuration(10)
+        }
+    },[currentIndex])
     
     const nextStory = () =>
     {
@@ -88,6 +94,8 @@ const StoryViewer = () =>
             navigation.goBack()
          }
     }
+
+
 
     return(
         <View style={{
@@ -169,16 +177,32 @@ const StoryViewer = () =>
             <View style={{
                 flex:1
             }}>
+                {userStory.stories[currentIndex].mime.includes("video")
+                ?
+                        <Video
+                        onLoad={(item)=>{setDuration(item.duration),startStory()}}
 
-                <Animated.Image
-                onLoadEnd={()=>startStory()}
-                style={{
-                    height:height,
-                    width:width
-                }}
+                        resizeMode={"contain"}
+                        style={{
+                            height: height *90/100,
+                            width: width * 90/100,
+                            alignSelf:"center"
+                        }}
+                        source={{uri:userStory.stories[currentIndex].mediaUrl}}
 
-                source={{uri:userStory.stories[currentIndex].mediaUrl}}
-                />
+                        />
+                      :<Animated.Image
+                      onLoadEnd={()=>startStory()}
+                      style={{
+                          height:height,
+                          width:width
+                      }}
+      
+                      source={{uri:userStory.stories[currentIndex].mediaUrl}}
+                      />
+                }
+              
+                
                 <View style={{
                     position:"absolute",
                     height:height,

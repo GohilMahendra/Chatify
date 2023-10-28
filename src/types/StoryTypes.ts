@@ -14,7 +14,7 @@ export type Story =
     id:string
     mediaUrl: string,
     caption: string,
-    mediaType: MediaType,
+    mime: MediaType,
     timestamp: number,
 }
 export type StoryUpload = Omit<UserStory,"user_name" | "name" | "user_picture">

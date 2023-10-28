@@ -1,5 +1,5 @@
 import React from 'react'
-import { SafeAreaView,ActivityIndicator,Dimensions} from "react-native";
+import { SafeAreaView,ActivityIndicator,Dimensions, Modal} from "react-native";
 import UseTheme from '../../globals/UseTheme';
 import { white } from '../../globals/Colors';
 const {height,width} = Dimensions.get("window")
@@ -7,10 +7,13 @@ const Loader = () =>
 {
     const {theme} = UseTheme()
     return(
-        <SafeAreaView
+        <Modal
+        visible={true}
+        transparent
         style={{
             height:height,
-            width:width
+            width:width,
+            backgroundColor:"transparent"
         }}
         >
             <ActivityIndicator
@@ -25,7 +28,7 @@ const Loader = () =>
                 backgroundColor:theme.primary_color,
             }}
             />
-        </SafeAreaView>
+        </Modal>
     )
 
 }

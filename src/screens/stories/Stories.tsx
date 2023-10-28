@@ -25,7 +25,7 @@ const Stories = () =>
     {
     
         const response = await launchImageLibrary({
-        mediaType:"photo",
+        mediaType:"mixed",
         presentationStyle:"popover",
         selectionLimit:1
         })

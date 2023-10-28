@@ -4,19 +4,22 @@ import UseTheme from '../../globals/UseTheme';
 const {height,width} = Dimensions.get("window")
 import Video from 'react-native-video';
 import { Slider } from 'react-native-elements';
+import ViewShot,{ captureRef } from "react-native-view-shot";
 type ThumbnailProps =
 {
     videoUri: string,
     onClose:()=>void,
-    onSelect:()=>void
+    onSelect:()=>void,
+    onThubnail:(uri:string)=>void
 }
 
 const ThumbnailPicker = (props:ThumbnailProps) =>
 {
-    const {onClose,onSelect,videoUri} = props
+    const {onClose,onThubnail,onSelect,videoUri} = props
     const [duration,setDuration] = useState(0)
     const [currentTime,setCurrentTime] = useState(0)
     const videoRef = useRef<Video | null>(null)
+    const viewRef = useRef<View | null>(null)
     const {theme} = UseTheme()
     
 
@@ -29,8 +32,32 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
         videoRef.current?.seek(value)
         
     }
-    const onLoad = (time:number) => {
-        setDuration(time);
+
+    const captureShot = async() =>
+    {
+        if(viewRef.current)
+        {
+          try
+          {
+           const image = await captureRef(videoRef,{
+            format:"png",
+            quality:1
+           })
+
+           return image
+            console.log(image)
+            
+            }catch(err)
+            {
+                console.log(err)
+            }
+        }
+    }
+    const onLoad = async(time:number) => { 
+       const image =  await captureShot() 
+       onThubnail(image ?? "")
+       console.log(image,"caprture success") 
+       setDuration(time);
       };
     const onEnd= ()=>
     {
@@ -63,7 +90,9 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
                     color: theme.text_color
                 }}>X</Text>
             </View>
-            <View style={{
+            <View 
+            ref={viewRef}
+            style={{
                
 
             }}>
@@ -78,7 +107,7 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
                 style={{
                     width: width* 90/100,
                     alignSelf:"center",
-                    height: height *80/100
+                    height: height *70/100
                 }}
                 />
             </View>
@@ -95,6 +124,24 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
                 padding:20
             }}
             />
+            <TouchableOpacity 
+            onPress={()=>{onClose(),onSelect()}}
+            style={{
+                //height:50,
+                margin:10,
+                backgroundColor: theme.primary_color,
+                justifyContent:"center",
+                alignItems:"center",
+                padding:20,
+                borderRadius:20
+            }}>
+                <Text style={{
+                    color: theme.text_color,
+                    fontSize:20,
+                    fontWeight:"bold",
+                   
+                }}>Send</Text>
+            </TouchableOpacity>
         </View>
 
     )

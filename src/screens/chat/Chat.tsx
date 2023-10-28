@@ -8,7 +8,7 @@ import { white } from '../../globals/Colors';
 import { TouchableOpacity } from 'react-native';
 import firestore from "@react-native-firebase/firestore";
 import Auth from "@react-native-firebase/auth";
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { chatStackParams } from '../../navigation/ChatStackNavigation';
 import { UserResult } from '../../types/UserTypes';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,8 @@ import storage from "@react-native-firebase/storage";
 import Feather from 'react-native-vector-icons/Feather'
 import Video from "react-native-video";
 import ThumbnailPicker from '../../components/chat/ThumbnailPicker';
+import ImageChat from '../../components/chat/ImageChat';
+import ChatComponent from '../../components/chat/ChatComponent';
 const {height,width} = Dimensions.get("window")
 export type fileType =
 {
@@ -29,9 +31,10 @@ const Chat  = () =>
     const {theme} = UseTheme()
     const current_user_id = Auth().currentUser?.uid
     const route = useRoute<RouteProp<chatStackParams,"Chat">>()
+    const navigation = useNavigation<NavigationProp<chatStackParams,"Chat">>()
     const user_id = route.params.id
     const [chats,setChats] = useState<Message[]>([])
-    const [mediaModal,setMediaModal] = useState<boolean>()
+    const [mediaModal,setMediaModal] = useState<boolean>(false)
     const [videoPreviev,setVideoPreview] = useState(false)
     const [currentFile,setCurrentFile] = useState<fileType | null>(null)
     const [thumbnailUri,setThumbnailUril] = useState<string | null>(null)
@@ -80,111 +83,35 @@ const Chat  = () =>
     }
     const renderMessage = ({item,index}:{item:Message,index:number}) =>
     {
-        return(
-            item.user_id != current_user_id
-            ?
-            <View style={{
-                margin:20,
-                flexDirection:"row",
-                alignItems:"center",
-                maxWidth: width * .7
-            }}>
-                    <Image
-                    source={{uri:item.user_image}}
-                    style={{
-                        height:30,
-                        width:30,
-                        borderRadius:30
-                    }}
-                    />
-                    <View style={{
-                        padding:10,
-                        backgroundColor: theme.primary_color,
-                        maxWidth: width * 0.6,
-                        borderRadius:20
-                    }}>
-                        <Text style={{
-                            color: theme.text_color
-                        }}>{item.text}</Text>
-                        {item.fileType?.includes("image") && item.fileUrl && 
-                        <Image
-                        source={{uri:item.fileUrl}}
-                        style={{
-                           height:width * 0.6 - 10,
-                           width: width* 0.6 - 10,
-                           borderRadius:20,
-                           alignSelf:'center',
-                           marginVertical:10
-                        }}
-                        />
-                        }
-                    </View>
-            </View>
-            :
-            <View style={{
-                padding:10,
-                margin:10,
-                backgroundColor: theme.primary_color,
-                maxWidth: width * 0.6,
-                borderRadius:20,
-                alignSelf:"flex-end"
-            }}>
-               {item.text && <Text style={{
-                    color: theme.text_color
-                }}>{item.text}</Text> }
-                {item.fileUrl && 
-                <Image
-                //resizeMode='contain'
-                source={{uri:item.fileUrl}}
-                resizeMode='contain'
-                style={{
-                    height:width * 0.6 - 10,
-                    width: width* 0.6 - 10,
-                    borderRadius:20,
-                    alignSelf:'center',
-                    alignContent:"center",
-                    justifyContent:"center",
-                  //  marginVertical:10
-                }}
-                />
-                }
-            </View>
-
-        )
-
+       return(
+        <ChatComponent
+        message={item}
+        />
+       )
     }
 
-    const captureThumbnail=async(videoUri:string)=>
-    {
-        try
-        {
-           
-        }
-        catch(err)
-        {
-            console.log(err)
-        }
-    }
     const createMessaage = async(user_id:string,file:fileType|null = null)=>
     {
        const current_user_id = current_user.id
 
        let filePath:string | null = null
        let fileMime: string | null = null
-       let thumbnail:string | null = null
+       let thumbnailPath:string | null = null
        if(file != null)
        {
         const url = file.uri
         const type = file.type
-        if(file.type.includes("video"))
-        {
-
-        }
 
         const fileName =  Date.now().toString() + "." + type.split("/")[1]
         const path = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
         const Fiileref = storage().ref(path)
         await Fiileref.putFile(url)
+        if(type.includes("video") && thumbnailUri)
+        {
+            const fileName =  Date.now().toString() + ".png"
+            thumbnailPath = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
+            await storage().ref(thumbnailPath).putFile(thumbnailUri)
+        }
         filePath = path
         fileMime = type
        }
@@ -195,7 +122,7 @@ const Chat  = () =>
         fileUrl: (filePath)?filePath:null,
         isRead: false,
         text: text,
-        thumbnail: null,
+        thumbnail: thumbnailPath,
         user_id: current_user_id,
         timestamp: firestore.Timestamp.now().toDate().toString(),
        }
@@ -241,7 +168,7 @@ const Chat  = () =>
         .collection("groups")
         .doc(user_id)
         .collection("groupMessages")
-
+        .orderBy("timestamp","asc")
 
         connectionRef.onSnapshot(async function(snap){
             const docs = snap.docs
@@ -264,6 +191,10 @@ const Chat  = () =>
                 if(message.fileUrl)
                 {
                     message.fileUrl = await storage().ref(message.fileUrl).getDownloadURL()
+                }
+                if(message.thumbnail)
+                {
+                    message.thumbnail = await storage().ref(message.thumbnail).getDownloadURL()
                 }
                
                 Messages.push(message)
@@ -291,6 +222,7 @@ const Chat  = () =>
             borderBottomWidth:1
         }}>
             <FontAwesome5
+            onPress={()=>navigation.goBack()}
             name='chevron-left'
             size={25}
             color={theme.text_color}
@@ -489,7 +421,8 @@ const Chat  = () =>
                 <ThumbnailPicker
                 videoUri={currentFile.uri}
                 onClose={()=>setVideoPreview(false)}
-                onSelect={()=>console.log("selected")}
+                onSelect={()=>createMessaage(user_id,currentFile)}
+                onThubnail={(uri:string)=>setThumbnailUril(uri)}
                 />
                }
         </Modal>
