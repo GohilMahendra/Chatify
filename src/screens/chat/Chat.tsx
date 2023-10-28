@@ -215,6 +215,19 @@ const Chat  = () =>
        .collection("groupMessages")
        const addMessage = await ref.add(Message)
        const addMessageToSender = await senderRef.add(Message)
+
+       await firestore().collection("messages").doc(user_id).set({})
+       await firestore().collection("messages").doc(current_user_id).set({})
+       await firestore()
+       .collection("messages")
+       .doc(user_id)
+       .collection("groups")
+       .doc(current_user_id).set({})
+       await firestore()
+       .collection("messages")
+       .doc(current_user_id)
+       .collection("groups")
+       .doc(user_id).set({})
        setText("")
     }
 
@@ -260,7 +273,7 @@ const Chat  = () =>
     }
 
     useEffect(()=>{
-      //subscribeToMessages()
+      subscribeToMessages()
     },[])
     return(
         <SafeAreaView style={{

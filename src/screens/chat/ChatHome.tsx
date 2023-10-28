@@ -12,6 +12,8 @@ import { Message, MessagePreview } from '../../types/MessageTypes';
 import Auth, { firebase } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { UserResult } from '../../types/UserTypes';
+import { formatTimestamp, getImageUrl } from '../../globals/utilities';
+import format from '@testing-library/react-native/build/helpers/format';
 
 
 const Home = () =>
@@ -24,19 +26,21 @@ const Home = () =>
     const getMessages = async() =>
     {
         const current_user_id = Auth().currentUser?.uid
-        console.log(current_user_id)
-        const messageRef =await firestore().collection("messages").get()
-        console.log(messageRef)
-           const snapshotdocs:any = []
-            console.log(snapshotdocs)
+           const snapshotdocs:any =  (await firestore().collection("messages").doc(current_user_id).collection("groups").get()).docs
+            let MessgaesArr:MessagePreview[] = []
             for(const doc of snapshotdocs)
             {
+
                 const id = doc.id
-                const userResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").doc(id).get()
+
+                console.log(id)
+                const userResponse = await firestore().collection("users").doc(id).get()
+                
                 const user_id = userResponse.id
                 const user_data = userResponse.data() as Omit<UserResult,"id">
+             user_data.picture =await getImageUrl(user_data.picture)?? ""
                 const user = {id:user_id,...user_data} as UserResult
-                console.log(user)
+    
                 const lastMessageResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").doc(id).collection("groupMessages").limit(1).get()
                 const lastresponseid = lastMessageResponse.docs[0].id
                 const lastresponseData = lastMessageResponse.docs[0].data() 
@@ -50,8 +54,10 @@ const Home = () =>
                     User: user
                 }
                 console.log(messagePreview)
+                MessgaesArr.push(messagePreview)
             }
         
+            setMessages(MessgaesArr)
     }
 
     useEffect(()=>{
@@ -105,7 +111,9 @@ const Home = () =>
                 data={messages}
                 renderItem={({item,index})=>{
                     return(
-                        <TouchableOpacity style={{
+                        <TouchableOpacity 
+                        onPress={()=>navigation.navigate("Chat",item.User)}
+                        style={{
                             marginTop:10,
                             padding:10,
                             justifyContent:"center",
@@ -153,20 +161,7 @@ const Home = () =>
                                 <Text style={{
                                     fontSize:15,
                                     color:theme.placeholder_color
-                                }}>{item.lastMessage.timestamp}</Text>
-                               
-                                    <Text style={{
-                                        color:white,
-                                        backgroundColor:theme.primary_color,
-                                       // padding:2,
-                                        borderRadius:20,
-                                        height:20,
-                                        width:20,
-                                        overflow:"hidden",
-                                        textAlign:"center",
-                                        textAlignVertical:"center"
-                                    }}>{item.no_of_unread}</Text>
-                                
+                                }}>{formatTimestamp(new Date(item.lastMessage.timestamp).getTime())}</Text>
                                 </View>
                             </View>
 

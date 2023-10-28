@@ -99,6 +99,7 @@ export const UpdateUser = createAsyncThunk('user/UpdateUser',async({
   {
     const state = getState() as RootState
     const current_user = state.user.user
+    let updated_user = {...current_user}
     const userId = Auth().currentUser?.uid
     const imageChanged:boolean = profilePicture != current_user.picture
     let imagePath = ""
@@ -109,7 +110,7 @@ export const UpdateUser = createAsyncThunk('user/UpdateUser',async({
         const fileName = userId + "." + mimeType
         imagePath =  "ProfileImages/"+userId+"/"+fileName
         await uploadImage(profilePicture,imagePath)
-        current_user.picture =await getImageUrl(imagePath)
+        updated_user.picture =await getImageUrl(imagePath)
     }
 
     const userData: Partial<User> = 
@@ -126,9 +127,11 @@ export const UpdateUser = createAsyncThunk('user/UpdateUser',async({
     })
     const docRef =  firestore().collection("users").doc(userId)
    const updateResponse = await docRef.update(userData)
-   current_user.bio = bio
-   current_user.name = fullName
-   return current_user
+   updated_user.bio = bio
+   updated_user.name = fullName
+
+   console.log(current_user,"current use which is changed")
+   return updated_user
 
   }
   catch(err)
@@ -168,6 +171,7 @@ export const UserSlice = createSlice({
         })
 
         builder.addCase(UpdateUser.fulfilled,(state,action:PayloadAction<UserResult>)=>{
+          console.log(action.payload,"got this")
           state.loading = false,
           state.user = action.payload
         })

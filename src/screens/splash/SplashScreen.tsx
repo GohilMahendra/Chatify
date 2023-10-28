@@ -8,6 +8,7 @@ import Auth from "@react-native-firebase/auth";
 import { RootState, useAppDispatch } from '../../redux/store';
 import { fetchUserData } from '../../redux/slices/UserSlice';
 import { useSelector } from 'react-redux';
+import { white } from '../../globals/Colors';
 const SplashScreen = () =>
 {
     const {theme} = UseTheme()
@@ -37,12 +38,12 @@ const SplashScreen = () =>
             flex:1,
             justifyContent:"center",
             alignItems:"center",
-            backgroundColor: theme.background_color
+            backgroundColor: theme.primary_color
         }}>
             <Text style={{
-                fontSize:25,
+                fontSize:50,
                 fontWeight:"bold",
-                color: theme.text_color
+                color: white
             }}> Chatify ! </Text>
         </View>
     )

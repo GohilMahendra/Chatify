@@ -7,6 +7,7 @@ import UseTheme from '../globals/UseTheme';
 import ProfileStackNavigator, { ProfileStackParams } from './ProfileStackNavigation';
 import { NavigatorScreenParams } from '@react-navigation/native';
 import StoryStackNavigator from './StoryStackNavigation';
+import { View } from "react-native";
 export type userTabParams=
 {
     ChatStack:undefined,
@@ -21,7 +22,8 @@ export const UserTabNavigator=()=>
     return(
             <userTab.Navigator
             screenOptions={{
-                headerShown:false
+                headerShown:false,
+                tabBarStyle:{backgroundColor:theme.background_color}
             }}
             initialRouteName='ChatStack'
             >

@@ -11,6 +11,8 @@ import Auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { User } from '../../types/UserTypes';
 import { RootStackParams } from '../../navigation/RootNavigation';
+import { useAppDispatch } from '../../redux/store';
+import { UpdateUser } from '../../redux/slices/UserSlice';
 const {height,width} = Dimensions.get("window")
 
 const EditProfile = () =>
@@ -25,7 +27,7 @@ const EditProfile = () =>
     const [profilePicture,setProfilePicture] = useState(profile_image)
     const [fullName,setFullName] = useState(full_name)
     const [bio,setBio] = useState(full_bio)
-
+    const dispatch = useAppDispatch()
     const openImagePicker=async()=>
     {
        
@@ -43,56 +45,9 @@ const EditProfile = () =>
         }
     }
 
-    const uploadImage = async(uri:string , path:string)=>
-    {
-        try
-        {
-        const ref = storage().ref(path)
-        await ref.putFile(uri)
-        }
-        catch(err)
-        {
-            console.log(err)
-        }
-    }
-   
     const saveChanges = async() =>
     {
-        try
-        {
-            const userId = Auth().currentUser?.uid
-
-            const imageChanged:boolean = profilePicture != profile_image
-            let imagePath = ""
-            if(imageChanged)
-            {
-                const mimes = profilePicture.split(".")
-                const mimeType = mimes[mimes.length - 1]
-                const fileName = userId + "." + mimeType
-                imagePath =  "ProfileImages/"+userId+"/"+fileName
-                await uploadImage(profilePicture,imagePath)
-            }
-
-            const userData: Partial<User> = 
-            {
-                bio:bio,
-                name: fullName,
-                ...(imageChanged ? { picture: imagePath } : {})
-            }
-
-        const user =  Auth().currentUser
-        await user?.updateProfile({
-            displayName: fullName,
-            ...(imageChanged ? { photoURL: imagePath } : {})
-        })
-        const docRef =  firestore().collection("users").doc(userId)
-        const updateResponse = await docRef.update(userData)
-        console.log(updateResponse)
-        }
-        catch(err)
-        {
-            console.log(err)
-        }
+        dispatch(UpdateUser({fullName:fullName,bio:bio,profilePicture:profilePicture}))
     }   
   
     return(

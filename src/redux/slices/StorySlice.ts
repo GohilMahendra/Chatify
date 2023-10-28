@@ -100,8 +100,8 @@ const getImageUrl = async(imageRef:string) =>
            const id = doc.id
            const data = doc.data() as Omit<StoryUser,"id">
         
-           const picture = await getImageUrl(data.picture)
-           data.picture = picture
+          //  const picture = await getImageUrl(data.picture)
+          //  data.picture = picture
            const storyUser = {id,...data} as StoryUser
            console.log(storyUser)
            const userStory:UserStory = {...storyUser,stories:[]}
@@ -130,7 +130,7 @@ const getImageUrl = async(imageRef:string) =>
     catch(err)
     {
       console.log(err)
-      return rejectWithValue(err as string)
+      return rejectWithValue(JSON.stringify(err))
     }
   });
   

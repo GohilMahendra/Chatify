@@ -18,6 +18,7 @@ const Stories = () =>
     const dispatch = useAppDispatch()
     const loading = useSelector((state:RootState)=>state.stories.loading)
     const data = useSelector((state:RootState)=>state.stories.stories)
+    console.log(data)
     const user = useSelector((state:RootState)=>state.user.user)
     const error = useSelector((state:RootState)=>state.stories.error)
     const openImagePicker=async()=>
@@ -43,10 +44,10 @@ const Stories = () =>
     const getStories = async() =>
     {
       const status =  await dispatch(fetchStories(""))  
-      console.log(status) 
+     
     }
     useEffect(()=>{
-      // getStories()
+      getStories()
     },[])
 
     return(
@@ -71,7 +72,9 @@ const Stories = () =>
              <View style={{
                 flexDirection:"row"
              }}>
-                <TouchableOpacity style={{
+                <TouchableOpacity 
+                onPress={()=>openImagePicker()}
+                style={{
                     marginTop:30,
                     padding:20,
                     borderRadius:20,

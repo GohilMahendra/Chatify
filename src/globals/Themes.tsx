@@ -1,4 +1,4 @@
-import { black, purple, silver, slate_grey, white } from "./Colors"
+import { black, grey, purple, silver, slate_grey, white } from "./Colors"
 
 export type ThemeType =
 {
@@ -29,7 +29,7 @@ export const dark:ThemeType=
 {
     primary_color:purple,
     secondary_color:purple,
-    seconarybackground_color: slate_grey,
+    seconarybackground_color: grey,
     background_color:black,
     button_color:purple,
     text_color:white,
