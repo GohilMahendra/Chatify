@@ -1,5 +1,5 @@
 import  React,{useState,useRef,useEffect} from 'react';
-import { View,Modal,Text,Image,Platform,SafeAreaView,FlatList,Dimensions, TextInput} from 'react-native';
+import { View,Modal,Text,Image,StyleSheet,SafeAreaView,FlatList,Dimensions, TextInput} from 'react-native';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../../globals/UseTheme';
 import { placeholder_image } from '../../globals/Data';
@@ -41,6 +41,11 @@ const Chat  = () =>
     const current_user = useSelector((state:RootState)=>state.user.user)
     const flatListRef = useRef<FlatList<Message> | null>(null)
     const [text,setText] = useState("")
+
+
+    //lazy loadin studff
+
+    let stored_id: string | null = null
 
     const openImagePicker=async()=>
     {
@@ -124,7 +129,7 @@ const Chat  = () =>
         text: text,
         thumbnail: thumbnailPath,
         user_id: current_user_id,
-        timestamp: firestore.Timestamp.now().toDate().toString(),
+        timestamp: firestore.Timestamp.now().toDate().toISOString(),
        }
 
        const ref =  firestore()
@@ -143,6 +148,16 @@ const Chat  = () =>
        const addMessage = await ref.add(Message)
        const addMessageToSender = await senderRef.add(Message)
 
+       const currentConnection =  await firestore()
+       .collection("messages")
+       .doc(user_id)
+       .collection("groups")
+       .doc(current_user_id).get()
+
+       const connectionExist:boolean = currentConnection.exists
+
+       if(!connectionExist)
+       {
        await firestore().collection("messages").doc(user_id).set({})
        await firestore().collection("messages").doc(current_user_id).set({})
        await firestore()
@@ -155,7 +170,55 @@ const Chat  = () =>
        .doc(current_user_id)
        .collection("groups")
        .doc(user_id).set({})
+       }
        setText("")
+    }
+
+    const loadInitialMessages = async() =>
+    {
+        const current_user_id = Auth().currentUser?.uid 
+
+       const connectionRef = firestore()
+        .collection("messages")
+        .doc(current_user_id)
+        .collection("groups")
+        .doc(user_id)
+        .collection("groupMessages")
+        .orderBy("timestamp","asc")
+
+
+        const messageResponse =await connectionRef.get()
+        const docs = messageResponse.docs
+            // const senderUser = await firestore().collection("users").doc(user_id).get()
+            // const id = senderUser.id
+            // const userData = {id,...senderUser.data()} as UserResult
+        const Messages:Message[] = []
+        for(const doc of docs)
+        {
+            const id = doc.id
+            const data = doc.data() as UserMessageType
+            console.log(data.user_id == current_user_id)
+            const message:Message = {
+                ...data,
+                user_image: route.params.picture,
+                id:id,
+                user_name:route.params.name,
+            }
+
+            if(message.fileUrl)
+            {
+                message.fileUrl = await storage().ref(message.fileUrl).getDownloadURL()
+            }
+            if(message.thumbnail)
+            {
+                message.thumbnail = await storage().ref(message.thumbnail).getDownloadURL()
+            }
+            
+            Messages.push(message)
+        }
+        setChats(Messages)
+        
+
     }
 
     const subscribeToMessages = async() =>
@@ -168,13 +231,14 @@ const Chat  = () =>
         .collection("groups")
         .doc(user_id)
         .collection("groupMessages")
-        .orderBy("timestamp","asc")
+        .orderBy("timestamp","desc")
+        .limit(2)
 
         connectionRef.onSnapshot(async function(snap){
             const docs = snap.docs
-            const senderUser = await firestore().collection("users").doc(user_id).get()
-            const id = senderUser.id
-            const userData = {id,...senderUser.data()} as UserResult
+            // const senderUser = await firestore().collection("users").doc(user_id).get()
+            // const id = senderUser.id
+            // const userData = {id,...senderUser.data()} as UserResult
             const Messages:Message[] = []
             for(const doc of docs)
             {
@@ -204,6 +268,7 @@ const Chat  = () =>
     }
 
     useEffect(()=>{
+     // loadInitialMessages()
       subscribeToMessages()
     },[])
     return(

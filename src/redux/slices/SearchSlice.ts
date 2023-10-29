@@ -1,9 +1,8 @@
 import {  } from "react-redux";
 import {createSlice,PayloadAction,createAsyncThunk,createAction } from "@reduxjs/toolkit";
-import { create } from "react-test-renderer";
+import Auth from "@react-native-firebase/auth"
 import { UserResult } from "../../types/UserTypes";
 import firestore from "@react-native-firebase/firestore";
-import Auth,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { getImageUrl } from "../../globals/utilities";
 export type SearchType = 
 {
@@ -24,16 +23,19 @@ export const fetchUsers = createAsyncThunk('search/fetchUsers', async (searchStr
     {
       
         // quary search over user name
+        const current_user_id = Auth().currentUser?.uid
         const usersCollection = firestore().collection("users")
         const queryByUsername = usersCollection
         .where('user_name', '>=', searchString)
         .where('user_name', '<=', searchString + '\uf8ff')
+        .where(firestore.FieldPath.documentId(), '!=', current_user_id)
         .get();
   
       //  quary search over full names string
       const queryByName = usersCollection
         .where('name', '>=', searchString)
         .where('name', '<=', searchString + '\uf8ff')
+        .where(firestore.FieldPath.documentId(), '!=', current_user_id)
         .get();
   
       // using both parallary as no dependency
@@ -71,13 +73,12 @@ export const fetchUsers = createAsyncThunk('search/fetchUsers', async (searchStr
         return users.find((user:UserResult) => user.id === id);
       }) 
       console.log(userlist,"found this list of users")
-      uniqueUsers = userlist!=undefined ? userlist : []
       return uniqueUsers
     } 
     catch(err)
     {
       console.log(err)
-      return rejectWithValue(err)
+      return rejectWithValue(JSON.stringify(err))
     }
   });
   
@@ -97,7 +98,7 @@ export const SearchSlice = createSlice({
             state.users = action.payload
         })
      
-        builder.addCase(fetchUsers.rejected,(state,action:PayloadAction<string>)=>{
+        builder.addCase(fetchUsers.rejected,(state,action)=>{
             state.loading = true
             state.error = action.payload as string
         })

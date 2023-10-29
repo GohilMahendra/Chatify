@@ -1,11 +1,10 @@
 import  React,{useRef,useEffect, useState} from 'react';
-import { Image,Text,View,Dimensions,TouchableOpacity,Animated } from 'react-native';
+import { Image,Text,Easing,SafeAreaView,View,Dimensions,TouchableOpacity,Animated } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import {  storyStackParams } from '../../navigation/StoryStackNavigation';
-import {  StoryUser, UserStory } from '../../types/StoryTypes';
+import {  UserStory } from '../../types/StoryTypes';
 import { RootState, useAppDispatch } from '../../redux/store';
-import { Story } from '../../types/StoryTypes';
 import { black, grey, white } from '../../globals/Colors';
 import { useSelector, useStore } from 'react-redux';
 import Video from 'react-native-video';
@@ -36,6 +35,7 @@ const StoryViewer = () =>
                 toValue: widthBar,
                 duration: duration * 1000,
                 useNativeDriver:false,
+                easing: Easing.bezier(0.42, 0, 1, 1), 
             }
         ).start(()=>{
             nextStory()
@@ -43,20 +43,16 @@ const StoryViewer = () =>
     }
 
     useEffect(()=>{
-        if(userStory.stories[currentIndex].mime == "image")
-        {
-            setDuration(10)
-        }
+    if(userStory.stories[currentIndex].mime == "image")
+    {
+        setDuration(10)
+    }
     },[currentIndex])
     
     const nextStory = () =>
     {
         if(currentIndex < userStory.stories.length -1)
             {
-                // const temp = userStory.stories
-                // const current = temp[currentIndex]
-                // temp[currentIndex] = current
-                // setUserStory(temp)
                 progress.setValue(0)
                 setCurrentIndex(currentIndex + 1)
             }
@@ -70,11 +66,6 @@ const StoryViewer = () =>
     {
         if(currentIndex != 0)
         {
-            // const temp = storyArr
-            // const current = temp[currentIndex]
-            // current.viewed = true
-            // temp[currentIndex] = current
-            // setStoryArr(temp)
             progress.setValue(0)
             setCurrentIndex(currentIndex - 1)
         }
@@ -95,10 +86,8 @@ const StoryViewer = () =>
          }
     }
 
-
-
     return(
-        <View style={{
+        <SafeAreaView style={{
             backgroundColor:"black",
             flex:1
         }}>
@@ -181,7 +170,6 @@ const StoryViewer = () =>
                 ?
                         <Video
                         onLoad={(item)=>{setDuration(item.duration),startStory()}}
-
                         resizeMode={"contain"}
                         style={{
                             height: height *90/100,
@@ -226,10 +214,8 @@ const StoryViewer = () =>
                     />
             
                 </View>
-            </View>
-           
-            
-        </View>
+            </View>      
+        </SafeAreaView>
     )
 
 }

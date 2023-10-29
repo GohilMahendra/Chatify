@@ -1,4 +1,4 @@
-import { View,Text,Image,Dimensions } from 'react-native';
+import { View,Text,Image,Dimensions,StyleSheet} from 'react-native';
 import { Message } from '../../types/MessageTypes';
 import UseTheme from '../../globals/UseTheme';
 const {height,width} = Dimensions.get("window")
@@ -18,26 +18,14 @@ const ChatComponent = (props:ChatProps) =>
         return(
             item.user_id != current_user_id
             ?
-            <View style={{
-                margin:20,
-                flexDirection:"row",
-                alignItems:"center",
-                maxWidth: width * .7
-            }}>
+            <View style={styles.senderContainer}>
                     <Image
                     source={{uri:item.user_image}}
-                    style={{
-                        height:30,
-                        width:30,
-                        borderRadius:30
-                    }}
+                    style={styles.imgSenderImage}
                     />
-                    <View style={{
-                        padding:10,
-                        backgroundColor: theme.primary_color,
-                        maxWidth: width * 0.6,
-                        borderRadius:20
-                    }}>
+                    <View style={[styles.chatContainer,{
+                         backgroundColor: theme.primary_color,
+                    }]}>
                         <Text style={{
                             color: theme.text_color
                         }}>{item.text}</Text>
@@ -54,14 +42,9 @@ const ChatComponent = (props:ChatProps) =>
                     </View>
             </View>
             :
-            <View style={{
-                padding:10,
-                margin:10,
-                backgroundColor: theme.primary_color,
-                maxWidth: width * 0.6,
-                borderRadius:20,
-                alignSelf:"flex-end"
-            }}>
+            <View style={[styles.userContainer,{    
+               backgroundColor: theme.primary_color,
+            }]}>
                {item.text && <Text style={{
                     color: theme.text_color
                 }}>{item.text}</Text> }
@@ -102,3 +85,35 @@ const ChatComponent = (props:ChatProps) =>
         )
 }
 export default ChatComponent
+const styles = StyleSheet.create({
+    senderContainer:
+    {
+        margin:20,
+        flexDirection:"row",
+        alignItems:"center",
+        maxWidth: width * .7
+    },
+    imgSenderImage:
+    {
+        height:30,
+        width:30,
+        borderRadius:30
+    },
+    chatContainer:
+    {
+        padding:10,
+        maxWidth: width * 0.6,
+        borderRadius:20
+    },
+    userContainer:
+    {
+        padding:10,
+        margin:10,
+        maxWidth: width * 0.6,
+        borderRadius:20,
+        alignSelf:"flex-end"
+    },
+
+
+
+})

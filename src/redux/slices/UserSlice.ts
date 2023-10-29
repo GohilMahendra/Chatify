@@ -140,7 +140,7 @@ export const UpdateUser = createAsyncThunk('user/UpdateUser',async({
     console.log(err)
   }
 })
-  
+
 export const UserSlice = createSlice({
     name:"user",
     initialState:initialState,
@@ -170,10 +170,9 @@ export const UserSlice = createSlice({
           state.error = null
         })
 
-        builder.addCase(UpdateUser.fulfilled,(state,action:PayloadAction<UserResult>)=>{
-          console.log(action.payload,"got this")
+        builder.addCase(UpdateUser.fulfilled,(state,action:PayloadAction<UserResult | undefined>)=>{
           state.loading = false,
-          state.user = action.payload
+          state.user = action.payload  || state.user
         })
        
     }
