@@ -3,6 +3,10 @@ import { render , screen,waitFor, fireEvent } from "@testing-library/react-nativ
 import React, { ReactNode, ReactPortal } from 'react'
 import { ThemeProvider } from "../../src/globals/ThemeProvider";
 import SignIn from "../../src/screens/auth/SignIn";
+import { configureStore } from "@reduxjs/toolkit";
+import { RootState } from "../../src/redux/store";
+import { UserType } from "../../src/redux/slices/UserSlice";
+import { Provider } from "react-redux";
 jest.mock('@react-navigation/native', () => ({
     ...jest.requireActual('@react-navigation/native'), // Use the actual module for non-mocked functions
     useNavigation: () => ({
@@ -12,6 +16,24 @@ jest.mock('@react-navigation/native', () => ({
     }),
   }));
 
+  const initialState: UserType= 
+  {
+      loading: false,
+      error: null,
+      user:
+      {
+          bio:"",
+          email:"",
+          id:"",
+          name:"",
+          picture:"",
+          user_name:""
+      }
+  }
+  const store = configureStore({
+    reducer: (state) => state,
+    preloadedState: initialState,
+  });
 describe("Sign Up flow test",()=>{
   let SignInComponent:any;
 
@@ -19,18 +41,16 @@ describe("Sign Up flow test",()=>{
   beforeEach(() => {
     // Render the SignUp component before each test
     SignInComponent = render(
-      <ThemeProvider>
+      <Provider store={store}>
+         <ThemeProvider>
         <SignIn/>
       </ThemeProvider>
+      </Provider>
     );
   });
 
-  afterEach(() => {
-    // Clean up the component after each test
-    SignInComponent.unmount();
-  });
   it('I can add userName into this', async () =>{
-    const userName = SignInComponent.getByTestId("input_userName")
+    const userName = SignInComponent.getByTestId("input_email")
     fireEvent.changeText(userName,"mahendra_gohil")
     expect(userName.props.value).toBe("mahendra_gohil")
   })

@@ -1,6 +1,6 @@
 
 import  React,{useState,useEffect} from 'react';
-import { Image, Text,TouchableOpacity,View } from 'react-native';
+import { Image, Text,TouchableOpacity,View,StyleSheet } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { CompositeScreenProps, NavigationProp, useNavigation } from '@react-navigation/native';
@@ -61,16 +61,10 @@ const UserProfile = () =>
                 <Loader/>
             }
             {/* header section starts */}
-            <View style={{
-                justifyContent:"center",
-                alignItems:"center",
-                padding:10,
-            }}>
-                <Text style={{
-                   fontSize:18,
-                   fontWeight:"bold",
-                   color: theme.text_color
-                }}>My Profile</Text>
+            <View style={styles.header}>
+                <Text style={[styles.headerTitle,{            
+                    color: theme.text_color
+                }]}>My Profile</Text>
             </View>
             {/* header section ends */}
             {/* user info starts */}
@@ -80,29 +74,18 @@ const UserProfile = () =>
             <TouchableOpacity>
                 <Image
                 source={{uri:user.picture?user.picture: "https://picfiles.alphacoders.com/631/631729.png"}}
-                style={{
-                    height:100,
-                    width:100,
-                    borderRadius:100
-                }}
+                style={styles.imgUserImage}
                 />
             </TouchableOpacity>
-           
             <Text 
-            style={{
-                fontWeight:"bold",
-                fontSize:18,
-                marginVertical:5,
+            style={[styles.textUserName,{
                 color: theme.text_color
-            }}>{user.name}
+            }]}>{user.name}
             </Text>
             <Text 
-            style={{
-                fontWeight:"400",
-                fontSize:18,
-                marginVertical:5,
+            style={[styles.textUserUserName,{
                 color: theme.text_color
-            }}>{user.user_name}
+            }]}>{user.user_name}
             </Text>
             </View>
             {/* user info ends */}
@@ -171,3 +154,36 @@ const UserProfile = () =>
 
 }
 export default UserProfile
+const styles = StyleSheet.create({
+    header:
+    {
+        justifyContent:"center",
+        alignItems:"center",
+        padding:10,
+    },
+    headerTitle:
+    {
+        fontSize:18,
+        fontWeight:"bold"
+    },
+    imgUserImage:
+    {
+        height:100,
+        width:100,
+        borderRadius:100
+    },
+    textUserName:
+    {
+        fontWeight:"bold",
+        fontSize:18,
+        marginVertical:5,
+    },
+    textUserUserName:
+    {
+        fontWeight:"400",
+        fontSize:18,
+        marginVertical:5,
+    }
+
+
+})

@@ -49,6 +49,7 @@ const SignIn = () =>
                     Chatify !
                 </Text>
                 <TextInput
+                testID={"input_email"}
                 value={userEmail}
                 onChangeText={(text:string)=>setUserEmail(text)}
                 placeholder='email ....'
@@ -60,6 +61,7 @@ const SignIn = () =>
                 }]}
                 />
                 <TextInput
+                testID={"input_password"}
                 value={password}
                 onChangeText={(text:string)=>setPassword(text)}
                 placeholder='password ....'
@@ -84,6 +86,7 @@ const SignIn = () =>
                 </Text>
 
                 <TouchableOpacity
+                testID={"btn_signIn"}
                 onPress={()=>SignInCall()}
                 style={{
                     padding:20,
