@@ -87,11 +87,12 @@ const getImageUrl = async(imageRef:string) =>
   });
 
   export const fetchStories = createAsyncThunk('story/fetchStories', async (args:string,{rejectWithValue}) => {
-    console.log("called ftech ")
     try
     {
         // console.log("ftech method called")
-        const storiesRef = firestore().collection("stories")
+        const current_user_id = Auth().currentUser?.uid
+        const storiesRef = firestore()
+        .collection("stories")
         const storiesSnapshot = await storiesRef.get()
         const userStories:UserStory[] = []
         for(const doc of storiesSnapshot.docs)

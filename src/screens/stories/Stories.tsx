@@ -103,16 +103,17 @@ const Stories = () =>
              showsHorizontalScrollIndicator={false}
              renderItem={({item,index})=>{
                  return(
-                   
-                     <TouchableOpacity
+                    
+                        
+                    <TouchableOpacity
                      onPress={()=>navigation.navigate("StoryViewer",{user_id:item.id})}
                      style={{
                         padding:3,
                         borderRadius:70,
                         borderColor: theme.primary_color,
                         borderWidth:2,
-                        flexDirection:"row",
-                        margin:10
+                       // flexDirection:"row",
+                        marginHorizontal:10
                      }}
                      >
                          <Image

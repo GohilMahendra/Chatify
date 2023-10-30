@@ -1,5 +1,5 @@
 import  React,{useState,useRef,useEffect} from 'react';
-import { View,Modal,Text,Image,StyleSheet,SafeAreaView,FlatList,Dimensions, TextInput} from 'react-native';
+import { View,Modal,Text,Image,Keyboard,SafeAreaView,FlatList,Dimensions, TextInput} from 'react-native';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../../globals/UseTheme';
 import { placeholder_image } from '../../globals/Data';
@@ -12,7 +12,7 @@ import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navig
 import { chatStackParams } from '../../navigation/ChatStackNavigation';
 import { UserResult } from '../../types/UserTypes';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { RootState, useAppDispatch } from '../../redux/store';
 import { launchImageLibrary } from 'react-native-image-picker';
 import storage from "@react-native-firebase/storage";
 import Feather from 'react-native-vector-icons/Feather'
@@ -20,6 +20,8 @@ import Video from "react-native-video";
 import ThumbnailPicker from '../../components/chat/ThumbnailPicker';
 import ImageChat from '../../components/chat/ImageChat';
 import ChatComponent from '../../components/chat/ChatComponent';
+import { sendUserChat } from '../../redux/slices/MessagesSlice';
+import ChatLoader from '../../components/chat/ChatLoader';
 const {height,width} = Dimensions.get("window")
 export type fileType =
 {
@@ -41,11 +43,13 @@ const Chat  = () =>
     const current_user = useSelector((state:RootState)=>state.user.user)
     const flatListRef = useRef<FlatList<Message> | null>(null)
     const [text,setText] = useState("")
-
+    const sendChatLoading=useSelector((state:RootState)=>state.messages.sendUserChatLoading)
+    const dispatch = useAppDispatch()
 
     //lazy loadin studff
 
     let stored_id: string | null = null
+    const pageSize = 3
 
     const openImagePicker=async()=>
     {
@@ -62,6 +66,7 @@ const Chat  = () =>
                     type: response.assets[0].type || "",
                     uri: response.assets[0].uri || ""
                 }
+            setMediaModal(false)
             await createMessaage(user_id,file)
         }
     } 
@@ -80,7 +85,6 @@ const Chat  = () =>
                         type: response.assets[0].type || "",
                         uri: response.assets[0].uri || ""
                     }
-                    console.log(file)
                     setCurrentFile(file)
                     setMediaModal(false)
                     setVideoPreview(true)                
@@ -97,132 +101,182 @@ const Chat  = () =>
 
     const createMessaage = async(user_id:string,file:fileType|null = null)=>
     {
-       const current_user_id = current_user.id
+       Keyboard.dismiss()
+       const fullfilled = await dispatch(sendUserChat({
+        file,
+        user_id,
+        thumbnailUri,
+        text
+       }))
 
-       let filePath:string | null = null
-       let fileMime: string | null = null
-       let thumbnailPath:string | null = null
-       if(file != null)
-       {
-        const url = file.uri
-        const type = file.type
-
-        const fileName =  Date.now().toString() + "." + type.split("/")[1]
-        const path = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
-        const Fiileref = storage().ref(path)
-        await Fiileref.putFile(url)
-        if(type.includes("video") && thumbnailUri)
-        {
-            const fileName =  Date.now().toString() + ".png"
-            thumbnailPath = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
-            await storage().ref(thumbnailPath).putFile(thumbnailUri)
-        }
-        filePath = path
-        fileMime = type
-       }
-
-       const Message:UserMessageType = 
-       {
-        fileType:(fileMime)?fileMime:null,
-        fileUrl: (filePath)?filePath:null,
-        isRead: false,
-        text: text,
-        thumbnail: thumbnailPath,
-        user_id: current_user_id,
-        timestamp: firestore.Timestamp.now().toDate().toISOString(),
-       }
-
-       const ref =  firestore()
-       .collection("messages")
-       .doc(current_user_id)
-       .collection("groups")
-       .doc(user_id)
-       .collection("groupMessages")
-
-       const senderRef = firestore()
-       .collection("messages")
-       .doc(user_id)
-       .collection("groups")
-       .doc(current_user_id)
-       .collection("groupMessages")
-       const addMessage = await ref.add(Message)
-       const addMessageToSender = await senderRef.add(Message)
-
-       const currentConnection =  await firestore()
-       .collection("messages")
-       .doc(user_id)
-       .collection("groups")
-       .doc(current_user_id).get()
-
-       const connectionExist:boolean = currentConnection.exists
-
-       if(!connectionExist)
-       {
-       await firestore().collection("messages").doc(user_id).set({})
-       await firestore().collection("messages").doc(current_user_id).set({})
-       await firestore()
-       .collection("messages")
-       .doc(user_id)
-       .collection("groups")
-       .doc(current_user_id).set({})
-       await firestore()
-       .collection("messages")
-       .doc(current_user_id)
-       .collection("groups")
-       .doc(user_id).set({})
-       }
+       if(fullfilled.type.match(sendUserChat.fulfilled.type))
        setText("")
     }
-
     const subscribeToMessages = async() =>
     {
-      const current_user_id = Auth().currentUser?.uid 
-
-       const connectionRef = firestore()
-        .collection("messages")
-        .doc(current_user_id)
-        .collection("groups")
-        .doc(user_id)
-        .collection("groupMessages")
-        .orderBy("timestamp","desc")
-        .limit(2)
-
-        connectionRef.onSnapshot(async function(snap){
-            const docs = snap.docs
-            // const senderUser = await firestore().collection("users").doc(user_id).get()
-            // const id = senderUser.id
-            // const userData = {id,...senderUser.data()} as UserResult
-            const Messages:Message[] = []
-            for(const doc of docs)
-            {
-                const id = doc.id
-                const data = doc.data() as UserMessageType
-                console.log(data.user_id == current_user_id)
-                const message:Message = {
-                    ...data,
-                    user_image: route.params.picture,
-                    id:id,
-                    user_name:route.params.name,
-                }
-
-                if(message.fileUrl)
+        try
+        {
+        const current_user_id = Auth().currentUser?.uid 
+        const connectionRef = firestore()
+         .collection("messages")
+         .doc(current_user_id)
+         .collection("groups")
+         .doc(user_id)
+         .collection("groupMessages")
+         .orderBy("timestamp","desc")
+ 
+ 
+         const snpaShotRef = connectionRef.limit(2)
+     
+         const UserChatSubscription =snpaShotRef.onSnapshot(async function(snap){
+             const docs = snap.docChanges()
+             const Messages:Message[] = []
+             for(const doc of docs)
+             {
+                if(doc.type == "added")
                 {
-                    message.fileUrl = await storage().ref(message.fileUrl).getDownloadURL()
+                 const id = doc.doc.id
+                 const data = doc.doc.data() as UserMessageType
+                 const message:Message = {
+                     ...data,
+                     user_image:route.params.picture,
+                     id:id,
+                     user_name:route.params.name,
+                 }
+ 
+                 if(message.fileUrl)
+                 {
+                  message.fileUrl = await storage().ref(message.fileUrl).getDownloadURL()
+                 }
+                 if(message.thumbnail)
+                 {
+                     message.thumbnail = await storage().ref(message.thumbnail).getDownloadURL()
+                 }
+                
+                 Messages.push(message)
                 }
-                if(message.thumbnail)
-                {
-                    message.thumbnail = await storage().ref(message.thumbnail).getDownloadURL()
-                }
-               
-                Messages.push(message)
-            }
-            setChats(Messages)
-        })
+                
+             }
+             setChats((prevChats)=>[...prevChats,...Messages])
+         })
+
+         return{
+            UserChatSubscription
+         }
+        }
+        catch(err)
+        {
+            console.log(err)
+        }
+    }
+
+
+    const loadMessages = async() =>
+    {
+        const current_user_id = Auth().currentUser?.uid 
+        const connectionRef = firestore()
+         .collection("messages")
+         .doc(current_user_id)
+         .collection("groups")
+         .doc(user_id)
+         .collection("groupMessages")
+         .orderBy("timestamp","desc")
+         .limit(pageSize)
+
+         const messageResponse = await connectionRef.get()
+         const Messages:Message[] = []
+         for(const doc of messageResponse.docs)
+         {
+           
+             const id = doc.id
+             const data = doc.data() as UserMessageType
+             const message:Message = {
+                 ...data,
+                 user_image:route.params.picture,
+                 id:id,
+                 user_name:route.params.name,
+             }
+
+             if(message.fileUrl)
+             {
+              message.fileUrl = await storage().ref(message.fileUrl).getDownloadURL()
+             }
+             if(message.thumbnail)
+             {
+                 message.thumbnail = await storage().ref(message.thumbnail).getDownloadURL()
+             }
+            
+             Messages.push(message)
+        }
+
+        const length = Messages.length
+        if(length >= pageSize)
+        {
+            stored_id = Messages[Messages.length -1].id
+        }
+        setChats(Messages)
+    }
+    const loadMoreMessages = async() =>
+    {
+        console.log("load more messages")
+        if(stored_id == null)
+        {
+            console.log(stored_id,"id stored are null")
+            return
+        }
+        
+
+        const current_user_id = Auth().currentUser?.uid 
+        const connectionRef = firestore()
+         .collection("messages")
+         .doc(current_user_id)
+         .collection("groups")
+         .doc(user_id)
+         .collection("groupMessages")
+         .orderBy("timestamp","desc")
+         .startAfter(stored_id)
+         .limit(pageSize)
+
+         const messageResponse = await connectionRef.get()
+         const Messages:Message[] = []
+         for(const doc of messageResponse.docs)
+         {
+           
+             const id = doc.id
+             const data = doc.data() as UserMessageType
+             const message:Message = {
+                 ...data,
+                 user_image:route.params.picture,
+                 id:id,
+                 user_name:route.params.name,
+             }
+
+             if(message.fileUrl)
+             {
+              message.fileUrl = await storage().ref(message.fileUrl).getDownloadURL()
+             }
+             if(message.thumbnail)
+             {
+                 message.thumbnail = await storage().ref(message.thumbnail).getDownloadURL()
+             }
+            
+             Messages.push(message)
+        }
+
+        const length = Messages.length
+        if(length >= pageSize)
+        {
+            stored_id = Messages[Messages.length -1].id
+        }
+        console.log(Messages,"message us don sdhb")
+        setChats((prevchats)=>[...prevchats,...Messages])
+
     }
 
     useEffect(()=>{
      // loadInitialMessages()
-      subscribeToMessages()
+     //subscribeToMessages()
+     loadMessages()
     },[])
     return(
         <SafeAreaView style={{
@@ -277,8 +331,10 @@ const Chat  = () =>
         data={chats}
         renderItem={({item,index})=>renderMessage({item,index})}
         keyExtractor={(item)=>item.id}
+        onEndReached={()=>loadMoreMessages()}
         />
         {/* chat section ends */}
+        {sendChatLoading && <ChatLoader/> }
         <View style={{
             flexDirection:"row",
             padding:10,
@@ -286,14 +342,15 @@ const Chat  = () =>
         }}>
             <TextInput
             value={text}
-            placeholder={"Message ..."}
+            placeholder={"Type Something ..."}
             placeholderTextColor={theme.placeholder_color}
             onChangeText={(text:string)=>setText(text)}
+            maxLength={200}
             style={{
                 width: width * 60/100,
                 backgroundColor:theme.seconarybackground_color,
                 padding:10,
-                fontSize:18,
+                fontSize:15,
                 color: theme.text_color,
                 borderRadius:10,
                 elevation:5,

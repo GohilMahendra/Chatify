@@ -4,7 +4,8 @@ import UseTheme from '../../globals/UseTheme';
 const {height,width} = Dimensions.get("window")
 import Auth from "@react-native-firebase/auth";
 import ImageChat from './ImageChat';
-
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { white } from '../../globals/Colors';
 type ChatProps =
 {
     message: Message
@@ -38,6 +39,7 @@ const ChatComponent = (props:ChatProps) =>
                         <ImageChat
                         uri={item.thumbnail}
                         />
+                        
                         }
                     </View>
             </View>
@@ -49,20 +51,32 @@ const ChatComponent = (props:ChatProps) =>
                     color: theme.text_color
                 }}>{item.text}</Text> }
                 {(item.fileUrl && item.thumbnail)?
-                <Image
-                //resizeMode='contain'
-                source={{uri:item.thumbnail}}
-                resizeMode='contain'
-                style={{
-                    height:width * 0.6 - 10,
-                    width: width* 0.6 - 10,
-                    borderRadius:20,
-                    alignSelf:'center',
-                    alignContent:"center",
-                    justifyContent:"center",
-                  //  marginVertical:10
-                }}
-                />
+                <View>
+                    <Image
+                    //resizeMode='contain'
+                    source={{uri:item.thumbnail}}
+                    resizeMode='contain'
+                    style={{
+                        height:width * 0.6 - 10,
+                        width: width* 0.6 - 10,
+                        borderRadius:20,
+                        alignSelf:'center',
+                        alignContent:"center",
+                        justifyContent:"center",
+                    //  marginVertical:10
+                    }}
+                    />
+                    <FontAwesome5
+                    style={{
+                        position:"absolute",
+                        top:"45%",
+                        alignSelf:"center"
+                    }}
+                    name={"play"}
+                    size={25}
+                    color={white}
+                    />
+                </View>
                 :
                 item.fileUrl && 
                 <Image

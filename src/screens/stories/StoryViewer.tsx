@@ -35,7 +35,7 @@ const StoryViewer = () =>
                 toValue: widthBar,
                 duration: duration * 1000,
                 useNativeDriver:false,
-                easing: Easing.bezier(0.42, 0, 1, 1), 
+                easing: Easing.linear
             }
         ).start(()=>{
             nextStory()
@@ -45,7 +45,7 @@ const StoryViewer = () =>
     useEffect(()=>{
     if(userStory.stories[currentIndex].mime == "image")
     {
-        setDuration(10)
+        setDuration(5)
     }
     },[currentIndex])
     
@@ -94,7 +94,8 @@ const StoryViewer = () =>
             
             <View style={{
                 flexDirection:"row",
-                justifyContent:"space-between"
+                justifyContent:"space-between",
+                marginHorizontal:10
 
             }}>
                 {userStory.stories.map((item:any,index:number)=>(
@@ -102,7 +103,7 @@ const StoryViewer = () =>
                     key={item.id.toString()}
                     style={{
                         width:widthBar,
-                        height:2,
+                        height:3,
                         borderRadius:5,
                         backgroundColor:"silver"
                     }}>

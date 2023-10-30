@@ -22,7 +22,7 @@ const Home = () =>
     const dispatch = useAppDispatch()
     const getMessages = async() =>
     {
-       dispatch(fetchChatUsers())
+       dispatch(fetchChatUsers(""))
     }
 
     useEffect(()=>{

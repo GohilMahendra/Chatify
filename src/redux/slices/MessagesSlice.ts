@@ -1,11 +1,15 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { Message, MessagePreview } from "../../types/MessageTypes"
+import { Message, MessagePreview, UserMessageType } from "../../types/MessageTypes"
 import Auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { getImageUrl } from "../../globals/utilities";
 import { UserResult } from "../../types/UserTypes";
+import { fileType } from "../../screens/chat/Chat";
+import storage from "@react-native-firebase/storage";
+import { RootState } from "../store";
 export type MessageStateType=
 {
+
     chatUsersLoading:boolean,
     chatUsersErr:null|string,
     chatUsers:MessagePreview[],
@@ -14,10 +18,13 @@ export type MessageStateType=
     chatError: null | string,
     chats:Message[]
 
-    searchResults:[],
-    searchLoading: boolean,
-    searchError: null | string
+    sendUserChatLoading: boolean,
+    snedUserChatSuccess: boolean,
+    sendUserChatError: string  | null
+
+    UserChatSubscription: (()=>void)| null
 }
+
 const initialState:MessageStateType= 
 {
     chatUsersLoading: false,
@@ -28,13 +35,14 @@ const initialState:MessageStateType=
     chatError:null,
     chats:[],
 
-    searchLoading:false,
-    searchResults:[],
-    searchError:null
+    sendUserChatError: null,
+    sendUserChatLoading: false,
+    snedUserChatSuccess: false,
+    UserChatSubscription: null
 }
 
 
-export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async({},{rejectWithValue,getState})=>{
+export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async(fakeArg:string,{rejectWithValue,getState})=>{
    try
    {
     const current_user_id = Auth().currentUser?.uid
@@ -77,6 +85,103 @@ export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async({
    }
 })
 
+export const sendUserChat = createAsyncThunk("messages/sendUserChat",async({
+    user_id,
+    file,
+    thumbnailUri,
+    text
+}:{
+    user_id:string,
+    file: fileType|null,
+    thumbnailUri:string | null,
+    text:string
+},{rejectWithValue,getState})=>{
+    try
+    {
+        const current_user_id = Auth().currentUser?.uid || ""
+        let filePath:string | null = null
+        let fileMime: string | null = null
+        let thumbnailPath:string | null = null
+        if(file != null)
+        {
+        const url = file.uri
+        const type = file.type
+
+        const fileName =  Date.now().toString() + "." + type.split("/")[1]
+        const path = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
+        const Fiileref = storage().ref(path)
+        await Fiileref.putFile(url)
+        if(type.includes("video") && thumbnailUri)
+        {
+            const fileName =  Date.now().toString() + ".png"
+            thumbnailPath = "messages/" + current_user_id + "/" + user_id + "/" + fileName 
+            await storage().ref(thumbnailPath).putFile(thumbnailUri)
+        }
+        filePath = path
+        fileMime = type
+        }
+
+        const Message:UserMessageType = 
+        {
+        fileType:(fileMime)?fileMime:null,
+        fileUrl: (filePath)?filePath:null,
+        isRead: false,
+        text: text,
+        thumbnail: thumbnailPath,
+        user_id: current_user_id,
+        timestamp: firestore.Timestamp.now().toDate().toISOString(),
+        }
+
+        const ref =  firestore()
+        .collection("messages")
+        .doc(current_user_id)
+        .collection("groups")
+        .doc(user_id)
+        .collection("groupMessages")
+
+        const senderRef = firestore()
+        .collection("messages")
+        .doc(user_id)
+        .collection("groups")
+        .doc(current_user_id)
+        .collection("groupMessages")
+        const addMessage = await ref.add(Message)
+        const addMessageToSender = await senderRef.add(Message)
+
+        const currentConnection =  await firestore()
+        .collection("messages")
+        .doc(user_id)
+        .collection("groups")
+        .doc(current_user_id).get()
+
+        const connectionExist:boolean = currentConnection.exists
+
+        if(!connectionExist)
+        {
+        await firestore().collection("messages").doc(user_id).set({})
+        await firestore().collection("messages").doc(current_user_id).set({})
+        await firestore()
+        .collection("messages")
+        .doc(user_id)
+        .collection("groups")
+        .doc(current_user_id).set({})
+        await firestore()
+        .collection("messages")
+        .doc(current_user_id)
+        .collection("groups")
+        .doc(user_id).set({})
+        }
+
+        return true
+
+    }
+    catch(err)
+    {
+       return rejectWithValue(JSON.stringify(err) as string)
+    }
+})
+
+
 export const MessagesSlice = createSlice({
     name:"Messages",
     initialState,
@@ -94,7 +199,21 @@ export const MessagesSlice = createSlice({
             state.chatUsersLoading = false
             state.chatUsersErr = action.payload as string
         })
+        builder.addCase(sendUserChat.pending,(state)=>{
+            state.sendUserChatLoading = true
+            state.sendUserChatError = null
+            state.snedUserChatSuccess = false
+        })
+        builder.addCase(sendUserChat.fulfilled,(state,action:PayloadAction<boolean>)=>{
+            state.sendUserChatLoading = false
+            state.snedUserChatSuccess = action.payload
+        })
+        builder.addCase(sendUserChat.rejected,(state,action)=>{
+            state.sendUserChatLoading = false
+            state.sendUserChatError = action.payload as string
+        })
     }
 })
+
 
 export default MessagesSlice.reducer

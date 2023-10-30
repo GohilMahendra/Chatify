@@ -150,7 +150,6 @@ export const UserSlice = createSlice({
         builder.addCase(fetchUserData.pending,(state)=>{
             state.loading = true
             state.error = null
-
         })
         builder.addCase(fetchUserData.fulfilled,(state,action:PayloadAction<UserResult>)=>{
             state.loading = false

@@ -21,11 +21,17 @@ const SplashScreen = () =>
         if(user)
         {
             await dispatch(fetchUserData(user.uid))
-            navigation.navigate("userTab")
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'userTab' }],
+              });
         }
         else
         {
-            navigation.navigate("SignIn")
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'SignIn' }],
+              });
         }
     }
     useEffect(()=>{
