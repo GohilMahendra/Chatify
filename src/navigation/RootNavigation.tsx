@@ -7,12 +7,14 @@ import SignUp from '../screens/auth/SignUp';
 import UserTabNavigator, { userTabParams } from './UserTabNavigation';
 import SplashScreen from '../screens/splash/SplashScreen';
 import CreateStory from '../screens/stories/CreateStory';
+import ForgotPassword from '../screens/auth/ForgotPassword';
 
 export type RootStackParams=
 {
     SplashScreen: undefined,
     SignIn:undefined,
     SignUp:undefined,
+    ForgotPassword: undefined,
     userTab: NavigatorScreenParams<userTabParams>
 }
 export const RootNavigation=()=>
@@ -37,6 +39,10 @@ export const RootNavigation=()=>
                 <rootstack.Screen
                 name='SignUp'
                 component={SignUp}
+                />
+                 <rootstack.Screen
+                name='ForgotPassword'
+                component={ForgotPassword}
                 />
                 <rootstack.Screen
                 name='userTab'

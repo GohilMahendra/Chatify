@@ -39,11 +39,12 @@ const Home = () =>
                 flex:1,
                 backgroundColor: theme.background_color
             }}>
-                {/* user greetings starts*/}
+               {/* user greetings starts*/}
                 <Greetings
                 user={user}
                 />
-                {/* user greetings end */}
+               {/* user greetings end */}
+
                {/* unread message section starts */}
                <View style={styles.listContainer}>
                 <FlatList
@@ -58,6 +59,7 @@ const Home = () =>
                 />
                </View>
                {/* unread messafe section ends */}
+
             </View>
             <TouchableOpacity 
             onPress={()=>navigation.navigate("FindChat")}
@@ -73,7 +75,6 @@ const Home = () =>
             </TouchableOpacity>
         </SafeAreaView>
     )
-
 }
 export default Home
 const styles = StyleSheet.create({

@@ -33,3 +33,13 @@ export const formatTimestamp=(timestamp: number): string =>{
       return `${dd}/${mm}/${yy}`;
     }
   }
+
+  export const checkEmail = ( email: string) =>
+  {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      return emailRegex.test(email);
+  }
+  export const checkEmptyField = (field:string) =>
+  {
+      return field.trim().length == 0
+  }

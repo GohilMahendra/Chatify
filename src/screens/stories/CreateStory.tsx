@@ -1,5 +1,5 @@
 import  React,{useState} from 'react';
-import { Text,View,TextInput,Dimensions,Image,TouchableOpacity } from 'react-native';
+import { Text,View,TextInput,Dimensions,Image,TouchableOpacity,StyleSheet} from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { storyStackParams } from '../../navigation/StoryStackNavigation';
@@ -57,23 +57,17 @@ const CreateStory = () =>
                 loading &&
                 <Loader/>
             }
-             <View style={{
-                flexDirection:"row",
-                padding:5,
-                justifyContent:"space-between",
-                alignItems:"center" 
-            }}>
+             <View style={styles.header}>
                 <FontAwesome5
                 onPress={()=>navigation.goBack()}
                 name='angle-left'
                 size={30}
                 color={theme.text_color}
                 />
-                <Text style={{
-                    fontSize:18,
-                    fontWeight:"bold",
-                    color: theme.text_color
-                }}>Add Story</Text>
+                <Text style={[styles.headerTitle,{
+                    color: theme.text_color}]}>
+                    Add Story
+                </Text>
                 <View/>
             </View>
             { type.includes("image")
@@ -81,49 +75,30 @@ const CreateStory = () =>
             <Image
             resizeMode='cover'
             source={{uri:media}}
-            style={{
-                width: width * 90/100,
-                height: height *70/100,
-                alignSelf:"center",
-                marginVertical:20
-            }}
+            style={styles.imagePreview}
             />
             :
             <VideoPreview
             uri={media}
             />
         }
-
-            <View style={{
-                flexDirection:"row",
-                width: width * 90/100,
-                alignSelf:"center"
-            }}>
+            <View style={styles.captionContainer}>
                 <TextInput
                 value={caption}
                 onChangeText={(text:string)=>setCaption(text)}
-                style={{
-                    padding:10,
-                    color: theme.text_color,
-                    fontSize:18,
+                style={[styles.inputCaption,{
                     backgroundColor: theme.seconarybackground_color,
-                    borderRadius:10,
-                    width: width * 70/100
-                }}
+                    color: theme.text_color
+                    }]
+                }
                 placeholder={"caption ..."}
                 placeholderTextColor={theme.placeholder_color}
                 />
                 <TouchableOpacity 
                 onPress={()=>addStory()}
-                style={{
-                    height:50,
-                    width:50,
-                    backgroundColor:theme.primary_color,
-                    borderRadius:20,
-                    marginLeft:20,
-                    justifyContent:"center",
-                    alignItems:"center"
-                }}>
+                style={[styles.btnSendStory,{
+                    backgroundColor:theme.primary_color
+                }]}>
                     <FontAwesome5
                     name='location-arrow'
                     size={20}
@@ -131,11 +106,52 @@ const CreateStory = () =>
                     />
                 </TouchableOpacity>
             </View>
-
-
-
         </View>
     )
-
 }
 export default CreateStory
+const styles = StyleSheet.create(
+    {
+        header:
+        {
+            flexDirection:"row",
+            padding:5,
+            justifyContent:"space-between",
+            alignItems:"center" 
+        },
+        headerTitle:
+        {
+            fontSize:18,
+            fontWeight:"bold",
+        },
+        captionContainer:
+        {
+            flexDirection:"row",
+            width: width * 90/100,
+            alignSelf:"center"
+        },
+        inputCaption:
+        {
+            padding:10,
+            fontSize:18,
+            borderRadius:10,
+            width: width * 70/100
+        },
+        btnSendStory:
+        {
+            height:50,
+            width:50,
+            borderRadius:20,
+            marginLeft:20,
+            justifyContent:"center",
+            alignItems:"center"
+        },
+        imagePreview:
+        {
+            width: width * 90/100,
+            height: height *70/100,
+            alignSelf:"center",
+            marginVertical:20
+        },
+    }
+)

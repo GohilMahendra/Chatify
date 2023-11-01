@@ -48,6 +48,7 @@ const ChatComponent = (props:ChatProps) =>
                             >
                             <ImageChat
                             uri={item.fileUrl}
+                            type={item.fileType}
                             />
                             </TouchableOpacity>
                             }
@@ -60,16 +61,7 @@ const ChatComponent = (props:ChatProps) =>
                             >
                             <ImageChat
                             uri={item.thumbnail}
-                            />
-                             <FontAwesome5
-                            style={{
-                                position:"absolute",
-                                top:"45%",
-                                alignSelf:"center"
-                            }}
-                            name={"play"}
-                            size={25}
-                            color={white}
+                            type={item.fileType}
                             />
                             </TouchableOpacity>
                             
@@ -83,59 +75,29 @@ const ChatComponent = (props:ChatProps) =>
                 {item.text && <Text style={{
                         color: theme.text_color
                     }}>{item.text}</Text> }
-                    {(item.fileUrl && item.thumbnail)?
+                    {(item.fileUrl && item.thumbnail && item.fileType)?
                     <TouchableOpacity
                     onPress={()=>onMediaPress({
                         type: item.fileType || "",
                         uri: item.fileUrl || ""
                     })}
                     >
-                        <Image
-                        //resizeMode='contain'
-                        source={{uri:item.thumbnail}}
-                        resizeMode='contain'
-                        style={{
-                            height:width * 0.6 - 10,
-                            width: width* 0.6 - 10,
-                            borderRadius:20,
-                            alignSelf:'center',
-                            alignContent:"center",
-                            justifyContent:"center",
-                        //  marginVertical:10
-                        }}
-                        />
-                        <FontAwesome5
-                        style={{
-                            position:"absolute",
-                            top:"45%",
-                            alignSelf:"center"
-                        }}
-                        name={"play"}
-                        size={25}
-                        color={white}
+                        <ImageChat
+                            uri={item.thumbnail}
+                            type={item.fileType}
                         />
                     </TouchableOpacity>
                     :
-                    item.fileUrl && 
+                    (item.fileUrl && item.fileType) && 
                     <TouchableOpacity
                     onPress={()=>onMediaPress({
                         type: item.fileType || "",
                         uri: item.fileUrl || ""
                     })}
                     >
-                    <Image
-                    //resizeMode='contain'
-                    source={{uri:item.fileUrl}}
-                    resizeMode='contain'
-                    style={{
-                        height:width * 0.6 - 10,
-                        width: width* 0.6 - 10,
-                        borderRadius:20,
-                        alignSelf:'center',
-                        alignContent:"center",
-                        justifyContent:"center",
-                    //  marginVertical:10
-                    }}
+                    <ImageChat
+                    uri={item.fileUrl}
+                    type={item.fileType}
                     />
                     </TouchableOpacity>
                     }
@@ -165,7 +127,8 @@ const styles = StyleSheet.create({
     {
         padding:10,
         maxWidth: width * 0.6,
-        borderRadius:20
+        borderRadius:20,
+        marginLeft:10
     },
     userContainer:
     {

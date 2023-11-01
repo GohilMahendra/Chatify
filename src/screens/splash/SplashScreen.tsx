@@ -1,13 +1,12 @@
 
 import  React ,{useEffect}from 'react';
-import { Text,View } from 'react-native';
+import { Text,View,StyleSheet } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/RootNavigation';
 import Auth from "@react-native-firebase/auth";
-import { RootState, useAppDispatch } from '../../redux/store';
+import { useAppDispatch } from '../../redux/store';
 import { fetchUserData } from '../../redux/slices/UserSlice';
-import { useSelector } from 'react-redux';
 import { white } from '../../globals/Colors';
 const SplashScreen = () =>
 {
@@ -40,19 +39,26 @@ const SplashScreen = () =>
         }, 2000);
     },[])
     return(
-        <View style={{
-            flex:1,
-            justifyContent:"center",
-            alignItems:"center",
+        <View style={[styles.container,{
             backgroundColor: theme.primary_color
-        }}>
-            <Text style={{
-                fontSize:50,
-                fontWeight:"bold",
-                color: white
-            }}> Chatify ! </Text>
+        }]}>
+            <Text style={styles.textAppName}> Chatify ! </Text>
         </View>
     )
-
 }
 export default SplashScreen
+const styles = StyleSheet.create({
+    container:
+    {
+        flex:1,
+        justifyContent:"center",
+        alignItems:"center",
+    },
+    textAppName:
+    {
+        fontSize:50,
+        fontWeight:"bold",
+        color: white
+    }
+
+})

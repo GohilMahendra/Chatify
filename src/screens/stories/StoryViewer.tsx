@@ -1,17 +1,17 @@
 import  React,{useRef,useEffect, useState} from 'react';
-import { Image,Text,Easing,SafeAreaView,View,Dimensions,TouchableOpacity,Animated } from 'react-native';
+import { Image,Text,Easing,SafeAreaView,
+View,Dimensions,TouchableOpacity,Animated,StyleSheet} from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import {  storyStackParams } from '../../navigation/StoryStackNavigation';
 import {  UserStory } from '../../types/StoryTypes';
 import { RootState, useAppDispatch } from '../../redux/store';
-import { black, grey, white } from '../../globals/Colors';
-import { useSelector, useStore } from 'react-redux';
+import { black, white } from '../../globals/Colors';
+import { useSelector } from 'react-redux';
 import Video from 'react-native-video';
 const {width,height} = Dimensions.get("window")
 const StoryViewer = () =>
 {
-    const {theme} = UseTheme()
     const storiesData = useSelector((state:RootState)=>state.stories.stories)
     const route = useRoute<RouteProp<storyStackParams,"StoryViewer">>()
     const user_id = route.params.user_id
@@ -20,13 +20,10 @@ const StoryViewer = () =>
     const [userStory,setUserStory] = useState<UserStory>(currentStory)
     const navigation = useNavigation<NavigationProp<storyStackParams,"Stories">>()
     const dispatch = useAppDispatch()
-    
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const progress = useRef(new Animated.Value(0)).current
     const [duration,setDuration] = useState<number>(10)
-
     const widthBar = width/userStory.stories.length - userStory.stories.length*3
-    
     const startStory = () =>
     {
         Animated.timing(
@@ -87,80 +84,37 @@ const StoryViewer = () =>
     }
 
     return(
-        <SafeAreaView style={{
-            backgroundColor:"black",
-            flex:1
-        }}>
-            
-            <View style={{
-                flexDirection:"row",
-                justifyContent:"space-between",
-                marginHorizontal:10
-
-            }}>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.storyBarContainer}>
                 {userStory.stories.map((item:any,index:number)=>(
                     <View 
                     key={item.id.toString()}
-                    style={{
-                        width:widthBar,
-                        height:3,
-                        borderRadius:5,
-                        backgroundColor:"silver"
-                    }}>
+                    style={[styles.storyBar,{width:widthBar}]}>
                         <Animated.View
-                        style={{
-                            position:"absolute",
-                            borderRadius:5,
-                            backgroundColor:"#fff",
-                            width:(currentIndex == index) ? progress : 0,
-                            height:2
-                        }}
+                        style={[styles.animatedBar,{
+                            width:(currentIndex == index) ? progress : 0
+                        }]}
                         />
                     </View>
                 ))}
             </View>
             {/* user profile section starts */}
-            <View style={{
-                flexDirection:"row",
-                padding:10,
-                position:"absolute",
-                 zIndex:10000,
-                width: width,
-                alignSelf:"center",
-                top:10
-            }}>
+            <View style={styles.profileContainer}>
                 <Image
                 source={{uri:userStory.picture}}
-                style={{
-                    height:50,
-                    width:50,
-                    borderRadius:50
-                }}
+                style={styles.imageProfile}
                 resizeMode='contain'
                 />
                 <View style={{
                     justifyContent:"center",
                     marginLeft:20
                 }}>
-                    <Text
-                    style={{
-                        fontSize:18,
-                        fontWeight:"bold",
-                        color: white,
-                        shadowColor:black,
-                        shadowOffset:{
-                            height:10,
-                            width:5
-                        },
-                        shadowOpacity:1
-                    }}
-                    >{userStory.name}</Text>
-                    <Text style={{
-                        fontSize:15,
-                        fontWeight:"300",
-                        color: white
-                    }}>{userStory.user_name}</Text>
-
+                    <Text style={styles.textUserName}>
+                        {userStory.name}
+                    </Text>
+                    <Text style={styles.textUserUserName}>
+                        {userStory.user_name}
+                    </Text>
                 </View>
             </View>
             {/* user profile section ends */}
@@ -172,48 +126,25 @@ const StoryViewer = () =>
                         <Video
                         onLoad={(item)=>{setDuration(item.duration),startStory()}}
                         resizeMode={"contain"}
-                        style={{
-                            height: height *90/100,
-                            width: width * 90/100,
-                            alignSelf:"center"
-                        }}
+                        style={styles.mediaVideo}
                         source={{uri:userStory.stories[currentIndex].mediaUrl}}
-
                         />
-                      :<Animated.Image
-                      onLoadEnd={()=>startStory()}
-                      style={{
-                          height:height,
-                          width:width
-                      }}
-      
-                      source={{uri:userStory.stories[currentIndex].mediaUrl}}
-                      />
+                        :
+                        <Animated.Image
+                        onLoadEnd={()=>startStory()}
+                        style={styles.mediaImage}
+                        source={{uri:userStory.stories[currentIndex].mediaUrl}}
+                        />
                 }
-              
-                
-                <View style={{
-                    position:"absolute",
-                    height:height,
-                    width:width,
-                    justifyContent:"space-between",
-                    flexDirection:"row"
-                }}>
+                <View style={styles.tapContainer}>
                     <TouchableOpacity
                     onPress={()=>previousStory()}
-                    style={{
-                        height:"100%",
-                        width:"40%",
-                    }}
+                    style={styles.btnBackTap}
                     />
                     <TouchableOpacity
                     onPress={()=>nextStory()}
-                    style={{
-                        height:"100%",
-                        width:"40%",
-                    }}
+                    style={styles.btnNextTap}
                     />
-            
                 </View>
             </View>      
         </SafeAreaView>
@@ -221,3 +152,92 @@ const StoryViewer = () =>
 
 }
 export default StoryViewer
+const styles = StyleSheet.create({
+    container:
+    {
+        backgroundColor:"black",
+        flex:1
+    },
+    storyBarContainer:
+    {
+        flexDirection:"row",
+        justifyContent:"space-between",
+        marginHorizontal:10
+    },
+    storyBar:
+    {
+        height:3,
+        borderRadius:5,
+        backgroundColor:"silver"
+    },
+    animatedBar:
+    {
+        position:"absolute",
+        borderRadius:5,
+        backgroundColor:"#fff",
+        height:2
+    },
+    profileContainer:
+    {
+        flexDirection:"row",
+        padding:10,
+        position:"absolute",
+        zIndex:10000,
+        width: width,
+        alignSelf:"center",
+        top:10
+    },
+    imageProfile:
+    {
+        height:50,
+        width:50,
+        borderRadius:50
+    },
+    textUserName:
+    {
+        fontSize:18,
+        fontWeight:"bold",
+        color: white,
+        shadowColor:black,
+        shadowOffset:{
+            height:10,
+            width:5
+        },
+        shadowOpacity:1
+    },
+    textUserUserName:
+    {
+        fontSize:15,
+        fontWeight:"300",
+        color: white
+    },
+    mediaVideo:
+    {
+        height: height *90/100,
+        width: width * 90/100,
+        alignSelf:"center"
+    },
+    mediaImage:
+    {
+        height:height,
+        width:width
+    },
+    tapContainer:
+    {
+        position:"absolute",
+        height:height,
+        width:width,
+        justifyContent:"space-between",
+        flexDirection:"row"
+    },
+    btnBackTap:
+    {
+        height:"100%",
+        width:"40%",
+    },
+    btnNextTap:
+    {
+        height:"100%",
+        width:"40%",
+    }
+})

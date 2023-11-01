@@ -11,7 +11,7 @@ import Auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { User } from '../../types/UserTypes';
 import Loader from '../../components/global/Loader';
-import { red } from '../../globals/Colors';
+import { red, white } from '../../globals/Colors';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
@@ -67,6 +67,7 @@ const UserProfile = () =>
                 }]}>My Profile</Text>
             </View>
             {/* header section ends */}
+
             {/* user info starts */}
             <View style={{
                 alignItems:"center"
@@ -88,6 +89,7 @@ const UserProfile = () =>
             }]}>{user.user_name}
             </Text>
             </View>
+            
             {/* user info ends */}
             <View style={{
                 marginHorizontal:20, 
@@ -100,52 +102,27 @@ const UserProfile = () =>
                     profile_image:user.picture,
                     user_name:user.user_name
                 })}
-                style={{
-                    padding:15,
-                    borderRadius:10,
-                    flexDirection:"row",
-                    elevation:5,
+                style={[styles.btnEditProfile,{
                     backgroundColor: theme.seconarybackground_color
-                }}>
-                    
+                }]}>    
                     <FontAwesome5
                     name='edit'
                     color={theme.text_color}
                     size={20}
                     />
-                   <Text style={{
-                    fontSize:18,
-                    fontWeight:"bold",
-                    color: theme.text_color,
-                    marginLeft:20
-                   }}>Edit Profile</Text>
-                   
-                    
+                   <Text style={[styles.textEditProfile,{
+                        color: theme.text_color
+                    }]}>Edit Profile</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                 onPress={()=>signOut()}
-                style={{
-                    padding:15,
-                    marginTop:20,
-                    borderRadius:10,
-                    flexDirection:"row",
-                    elevation:5,
-                    backgroundColor: red
-                }}>
-                    
+                style={styles.btnSignOut}>
                     <FontAwesome5
                     name='edit'
-                    color={theme.text_color}
+                    color={white}
                     size={20}
                     />
-                   <Text style={{
-                    fontSize:18,
-                    fontWeight:"bold",
-                    color: theme.text_color,
-                    marginLeft:20
-                   }}>Sign Out</Text>
-                   
-                    
+                   <Text style={styles.textSignOut}>Sign Out</Text>
                 </TouchableOpacity>
             </View>
             
@@ -183,7 +160,34 @@ const styles = StyleSheet.create({
         fontWeight:"400",
         fontSize:18,
         marginVertical:5,
+    },
+    btnEditProfile:
+    {
+        padding:15,
+        borderRadius:10,
+        flexDirection:"row",
+        elevation:5
+    },
+    textEditProfile:
+    {
+        fontSize:18,
+        fontWeight:"bold",
+        marginLeft:20
+    },
+    btnSignOut:
+    {
+        padding:15,
+        marginTop:20,
+        borderRadius:10,
+        flexDirection:"row",
+        elevation:5,
+        backgroundColor: red
+    },
+    textSignOut:
+    {
+        fontSize:18,
+        fontWeight:"bold",
+        color:white,
+        marginLeft:20
     }
-
-
 })

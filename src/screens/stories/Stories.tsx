@@ -1,19 +1,17 @@
-import  React,{useEffect, useState} from 'react';
-import { Text,View,FlatList,TouchableOpacity,Image } from 'react-native';
+import  React,{useEffect} from 'react';
+import { Text,View,FlatList,TouchableOpacity,Image,StyleSheet } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import {  storyStackParams } from '../../navigation/StoryStackNavigation';
-import {  StoryUser } from '../../types/StoryTypes';
 import { RootState, useAppDispatch } from '../../redux/store';
 import { useSelector } from 'react-redux';
-import firestore from "@react-native-firebase/firestore";
-import storage from "@react-native-firebase/storage";
 import { fetchStories } from '../../redux/slices/StorySlice';
+import StoryComponent from '../../components/stories/StoryComponent';
+import { white } from '../../globals/Colors';
 const Stories = () =>
 {
     const {theme} = UseTheme()
-    const [stories,setStories] = useState<StoryUser[]>([])
     const navigation = useNavigation<NavigationProp<storyStackParams,"Stories">>()
     const dispatch = useAppDispatch()
     const loading = useSelector((state:RootState)=>state.stories.loading)
@@ -23,7 +21,6 @@ const Stories = () =>
     const error = useSelector((state:RootState)=>state.stories.error)
     const openImagePicker=async()=>
     {
-    
         const response = await launchImageLibrary({
         mediaType:"mixed",
         presentationStyle:"popover",
@@ -43,11 +40,13 @@ const Stories = () =>
     } 
     const getStories = async() =>
     {
-      const status =  await dispatch(fetchStories(""))  
-     
+      dispatch(fetchStories("")) 
     }
     useEffect(()=>{
-      getStories()
+      navigation.addListener("focus",()=>{
+        getStories()
+      })
+      
     },[])
 
     return(
@@ -56,86 +55,137 @@ const Stories = () =>
             backgroundColor: theme.background_color
         }}>
             {/* header starts */}
-            <View style={{
-                marginTop:20
-            }}>
-                <Text style={{
-                    fontSize:30,
-                    paddingHorizontal:20,
-                    fontWeight:"bold",
-                    color: theme.text_color
-                }}>Stories</Text>
+            <View style={styles.header}>
+                <Text style={[styles.headerTitle,{    
+                color: theme.text_color
+                }]}>Stories</Text>
             </View>
             {/* header ends */}
+            
             {/* story section starts */}
             <View>
              <View style={{
-                flexDirection:"row"
+                flexDirection:"row",
              }}>
                 <TouchableOpacity 
                 onPress={()=>openImagePicker()}
-                style={{
-                    marginTop:30,
-                    padding:20,
-                    borderRadius:20,
-                    width: "100%",
+                style={[styles.btnCreateStory,{
                     backgroundColor: theme.seconarybackground_color
-                }}>
-                    <Image
-                    source={{uri:user.picture}}
-                    style={{
-                        height:70,
-                        width:70,
-                        borderRadius:70
-                    }}
-                    />
+                }]}>
+                    <View style={styles.storyCreateContainer}>
+                        <Image
+                        source={{uri:user.picture}}
+                        style={styles.imageUser}
+                        />
+                        
+                        <View style={[styles.plusIconContainer,{
+                            backgroundColor: theme.primary_color
+                        }]}>
+                            <Text style={styles.plusIcon}>+</Text>
+                        </View>
+                    </View>
+
+                    <View style={{
+                        marginLeft:20,
+                        padding:10,
+                    }}>
+                        <Text style={[styles.textAddStory,{
+                            color: theme.text_color
+                        }]}>
+                            Add a story
+                        </Text>
+                        <Text style={[styles.textCreateHeader,{
+                            color: theme.text_color
+                        }]}>
+                            create a daily updates for friends & family
+                        </Text>
+                    </View>
                 </TouchableOpacity>    
             </View> 
-            <Text style={{
-                margin:20,
-                fontSize:18,
-                color: theme.text_color,
-                fontWeight:"bold"
-            }}>Recent Updates</Text>
+            <Text style={[styles.textUpdates,{    
+            color: theme.text_color,
+            }]}>Recent Updates</Text>
              <FlatList
              horizontal
              data={data}
              showsHorizontalScrollIndicator={false}
              renderItem={({item,index})=>{
-                 return(
-                    
-                        
-                    <TouchableOpacity
-                     onPress={()=>navigation.navigate("StoryViewer",{user_id:item.id})}
-                     style={{
-                        padding:3,
-                        borderRadius:70,
-                        borderColor: theme.primary_color,
-                        borderWidth:2,
-                       // flexDirection:"row",
-                        marginHorizontal:10
-                     }}
-                     >
-                         <Image
-                         resizeMode='contain'
-                         source={{uri:item.picture}}
-                         style={{
-                             height:70,
-                             width:70,
-                             borderRadius:70,
-                         }}
-                         />
-                     </TouchableOpacity>
+                 return(      
+                    <StoryComponent
+                    story={item}
+                    />
                  )
              }}
              >
-
              </FlatList>
-
             </View>
             {/* story section ends */}
         </View>
     )
-
 }
 export default Stories
+const styles = StyleSheet.create({
+    header:
+    {
+        marginTop:20
+    },
+    headerTitle:
+    {
+        fontSize:30,
+        paddingHorizontal:20,
+        fontWeight:"bold",
+    },
+    textUpdates:
+    {
+        margin:20,
+        fontSize:18,
+        fontWeight:"bold"
+    },
+    storyCreateContainer:
+    {
+        height:70,
+        width:70,
+        borderRadius:70
+    },
+    btnCreateStory:
+    {
+        marginTop:30,
+        padding:20,
+        width: "100%",
+        flexDirection:"row",
+        elevation:5,
+    },
+    imageUser:
+    {
+        height:70,
+        width:70,
+        borderRadius:70
+    },
+    plusIconContainer:
+    {
+        position:'absolute',
+        height:20,
+        width:20,
+        justifyContent:"center",
+        alignItems:"center",
+        alignSelf:"flex-end",
+        bottom:3,
+        borderRadius:15,
+    },
+    plusIcon:
+    {
+        color: white,
+        fontSize:15
+    },
+    textAddStory:
+    {
+        fontSize:18,
+        fontWeight:"bold"
+    },
+    textCreateHeader:
+    {
+        fontSize:15,
+        width:"80%"
+    }
+
+})

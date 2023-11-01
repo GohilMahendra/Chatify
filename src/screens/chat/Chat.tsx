@@ -41,12 +41,11 @@ const Chat  = () =>
     const [text,setText] = useState("")
     const sendChatLoading=useSelector((state:RootState)=>state.messages.sendUserChatLoading)
     const dispatch = useAppDispatch()
-    const [lastId,setlastId] = useState<string | null>(null)
-    const pageSize = 3
-
-    const openImagePicker=async()=>
-    {
+    let lastId: string | null = null
+    const pageSize = 2
     
+    const openImagePicker=async()=>
+    {    
         const response = await launchImageLibrary({
         mediaType:"photo",
         presentationStyle:"popover",
@@ -183,7 +182,6 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
-         .orderBy("timestamp","desc")
          .limit(pageSize)
 
          const messageResponse = await connectionRef.get()
@@ -216,7 +214,7 @@ const Chat  = () =>
         if(length >= pageSize)
         {
             console.log("lazy loading last id",Messages[Messages.length -1].id)
-            setlastId(Messages[Messages.length -1].id)
+            lastId = Messages[Messages.length -1].id
         }
         setChats(Messages)
     }
@@ -235,7 +233,6 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
-         .orderBy("timestamp","desc")
          .startAfter(lastId)
          .limit(pageSize)
 
@@ -270,7 +267,11 @@ const Chat  = () =>
         const length = Messages.length
         if(length >= pageSize)
         {
-            setlastId(Messages[Messages.length -1].id)
+            lastId = Messages[Messages.length -1].id
+        }
+        else
+        {
+            lastId = null
         }
         console.log(Messages,"message us don sdhb")
         setChats((prevchats)=>[...prevchats,...Messages])
@@ -279,8 +280,8 @@ const Chat  = () =>
 
     useEffect(()=>{
      // loadInitialMessages()
-     subscribeToMessages()
-     //loadMessages()
+     //subscribeToMessages()
+     loadMessages()
     },[])
     return(
         <SafeAreaView style={{
@@ -317,7 +318,7 @@ const Chat  = () =>
         data={chats}
         renderItem={({item,index})=>renderMessage({item,index})}
         keyExtractor={(item)=>item.id}
-      //  onEndReached={()=>loadMoreMessages()}
+        onEndReached={()=>loadMoreMessages()}
         />
         {/* chat section ends */}
         {sendChatLoading && <ChatLoader/> }

@@ -14,7 +14,10 @@ export type UserType =
     user: UserResult,
     signUpLoading:boolean,
     signUpSuccess: boolean,
-    signUpError: string | null
+    signUpError: string | null,
+    forgotLinkLoading:boolean,
+    forgotLinkError: string | null,
+    forgotLinkSuccess: boolean
 }
 
 const initialState: UserType= 
@@ -32,7 +35,10 @@ const initialState: UserType=
     },
     signUpError: null,
     signUpLoading: false,
-    signUpSuccess: false
+    signUpSuccess: false,
+    forgotLinkError: null,
+    forgotLinkLoading: false,
+    forgotLinkSuccess: false
 }
 
 const SignInAction = createAction("user/signInUser")
@@ -179,7 +185,21 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
           return rejectWithValue(JSON.stringify(err))
       }
 })
-
+export const SendResetLink = createAsyncThunk("user/SendResetLink",async({
+  email
+}:{email:string},{
+  rejectWithValue
+})=>{
+    try
+    {
+      const resetPasswordLink = await Auth().sendPasswordResetEmail(email)
+      return true
+    }
+    catch(err)
+    {
+      return rejectWithValue(JSON.stringify(err))
+    }
+})
 export const UserSlice = createSlice({
     name:"user",
     initialState:initialState,
@@ -225,7 +245,19 @@ export const UserSlice = createSlice({
           state.signUpLoading = false 
           state.signUpError = action.payload as string
         })
-       
+        builder.addCase(SendResetLink.pending,(state)=>{
+          state.forgotLinkError = null 
+          state.forgotLinkSuccess = false
+          state.forgotLinkLoading = true
+        })
+        builder.addCase(SendResetLink.fulfilled,(state,action:PayloadAction<boolean>)=>{
+          state.forgotLinkSuccess = action.payload
+          state.forgotLinkLoading = false
+        })
+        builder.addCase(SendResetLink.rejected,(state,action)=>{
+          state.forgotLinkError = action.payload as string
+          state.forgotLinkLoading = true
+        })
     }
 })
 

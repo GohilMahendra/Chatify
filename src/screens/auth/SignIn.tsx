@@ -25,7 +25,9 @@ const SignIn = () =>
         const fullFilled = await dispatch(signInUser({email:userEmail,password:password}))
         if(signInUser.fulfilled.match(fullFilled))
         {
-            navigation.navigate("userTab")
+            navigation.navigate("userTab",{
+                screen:"ChatStack"
+            })
         }
     }
     return(
@@ -40,12 +42,9 @@ const SignIn = () =>
                 backgroundColor: theme.background_color,
                 justifyContent:"center"
             }]}>
-                <Text style={{
-                    fontSize:35,
-                    fontWeight:"bold",
-                    color: theme.primary_color,
-                    marginVertical:40
-                }}>
+                <Text style={[styles.textAppName,{
+                color: theme.primary_color
+                }]}>
                     Chatify !
                 </Text>
                 <TextInput
@@ -74,36 +73,21 @@ const SignIn = () =>
                 }]}
                 />
                 <Text
-                style={{
-                    alignSelf:"flex-end",
-                    color:theme.primary_color,
-                    marginBottom:20,
-                    marginRight:20,
-                    fontSize:18,
-                    fontWeight:"300"
-                }}
-                >
+                onPress={()=>navigation.navigate("ForgotPassword")}
+                style={[styles.btnForgotPassword,{
+                    color:theme.primary_color
+                }]}>
                     forgot password ?
                 </Text>
 
                 <TouchableOpacity
                 testID={"btn_signIn"}
                 onPress={()=>SignInCall()}
-                style={{
-                    padding:20,
-                    borderRadius:10,
-                    margin:20,
-                    width: width * 0.9,
-                    justifyContent:"center",
-                    alignItems:'center',
+                style={[styles.btnSignIn,{
                     backgroundColor: theme.button_color
-                }}
+                }]}
                 >
-                    <Text style={{
-                        color:white,
-                        fontSize:18,
-                        fontWeight:"bold"
-                    }}>Sign In</Text>
+                    <Text style={styles.textSignIn}>Sign In</Text>
                 </TouchableOpacity>
 
                 <Text 
@@ -111,14 +95,10 @@ const SignIn = () =>
                 style={{
                     color: theme.primary_color,
                     fontSize:18,
-
                 }}>Sign Up</Text>
-
             </View>
-
         </SafeAreaView>
-    )
-    
+    ) 
 }
 export default SignIn
 const styles  = StyleSheet.create({
@@ -134,13 +114,42 @@ const styles  = StyleSheet.create({
     input:
     {
         width: width * 0.9,
-        elevation:2,
+        elevation:5,
         padding:15,
         borderRadius:10,
         marginVertical:20,
         fontSize:14,
-        borderWidth:1
+        borderWidth:1,
+        
+    },
+    btnSignIn:
+    {
+        padding:20,
+        borderRadius:10,
+        margin:20,
+        width: width * 0.9,
+        justifyContent:"center",
+        alignItems:'center'
+    },
+    textSignIn:
+    {
+        color:white,
+        fontSize:18,
+        fontWeight:"bold"
+    },
+    btnForgotPassword:
+    {
+        alignSelf:"flex-end",
+        marginBottom:20,
+        marginRight:20,
+        fontSize:18,
+        fontWeight:"300"
+    },
+    textAppName:
+    {
+        fontSize:35,
+        fontWeight:"bold",
+        marginVertical:40
     }
-
 }
 )

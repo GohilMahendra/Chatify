@@ -1,18 +1,15 @@
 
 import  React, { useState } from 'react';
-import { Image, Text,TouchableOpacity,View,TextInput,Dimensions} from 'react-native';
+import { Image, Text,TouchableOpacity,
+View,TextInput,Dimensions,StyleSheet} from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { launchImageLibrary } from 'react-native-image-picker';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { ProfileStackParams } from '../../navigation/ProfileStackNavigation';
-import firestore from "@react-native-firebase/firestore";
-import Auth from "@react-native-firebase/auth";
-import storage from "@react-native-firebase/storage";
-import { User } from '../../types/UserTypes';
-import { RootStackParams } from '../../navigation/RootNavigation';
 import { useAppDispatch } from '../../redux/store';
 import { UpdateUser } from '../../redux/slices/UserSlice';
+import { Switch } from "react-native-elements";
 const {height,width} = Dimensions.get("window")
 
 const EditProfile = () =>
@@ -56,22 +53,17 @@ const EditProfile = () =>
             backgroundColor: theme.background_color
         }}>
             {/* header section starts */}
-            <View style={{
-                flexDirection:"row",
-                justifyContent:"space-between",
-                padding:10,
-            }}>
+            <View style={styles.header}>
                 <FontAwesome5
                 onPress={()=>navigation.goBack()}
                 name='angle-left'
                 size={25}
                 color={theme.text_color}
                 />
-                <Text style={{
-                   fontSize:18,
-                   fontWeight:"bold",
-                   color: theme.text_color
-                }}>Edit Profile</Text>
+                <Text style={[styles.headerTitle,{
+                    color: theme.text_color}]}>
+                Edit Profile
+                </Text>
                 <View/>
             </View>
             {/* header section ends */}
@@ -84,31 +76,20 @@ const EditProfile = () =>
             >
                 <Image
                 source={{uri:profilePicture ? profilePicture : "https://picfiles.alphacoders.com/631/631729.png"}}
-                style={{
-                    height:100,
-                    width:100,
-                    borderRadius:100
-                }}
+                style={styles.imageProfile}
                 />
             </TouchableOpacity>
-           
             <Text 
-            style={{
-                fontWeight:"bold",
-                fontSize:18,
-                marginVertical:5,
+            style={[styles.textFullName,{
                 color: theme.text_color
-            }}>{
-                full_name
-            }
+            }]}>
+                {full_name}
             </Text>
             <Text 
-            style={{
-                fontWeight:"400",
-                fontSize:18,
-                marginVertical:5,
-                color: theme.text_color
-            }}>{user_name}
+            style={[styles.textUserName,{
+            color: theme.text_color
+            }]}>
+                {user_name}
             </Text>
             </View>
             {/* user info ends */}
@@ -120,13 +101,10 @@ const EditProfile = () =>
                 <TextInput
                 value={fullName}
                 onChangeText={(text:string)=>setFullName(text)}
-                style={{
-                    paddingHorizontal:10,
+                style={[styles.inputFullName,{
                     backgroundColor:theme.seconarybackground_color,
-                    borderRadius:10,
-                    marginBottom:20,
                     color:theme.text_color
-                }}
+                }]}
                 placeholder='Full Name ...'
                 placeholderTextColor={theme.placeholder_color}
                 
@@ -136,13 +114,10 @@ const EditProfile = () =>
                 onChangeText={(text:string)=>setBio(text)}
                 multiline={true}
                 numberOfLines={5}
-                style={{
-                    paddingHorizontal:10,
+                style={[styles.inputBio,{
                     backgroundColor:theme.seconarybackground_color,
-                    borderRadius:10,
-                    color: theme.text_color,
-                    textAlignVertical:"top"
-                }}
+                    color: theme.text_color
+                }]}
                 placeholder=' bio ...'
                 placeholderTextColor={theme.placeholder_color}
                 
@@ -150,15 +125,9 @@ const EditProfile = () =>
             </View>
             <TouchableOpacity
             onPress={()=>saveChanges()}
-            style={{
+            style={[styles.btnSave,{
                 backgroundColor:theme.primary_color,
-                padding:20,
-                alignItems:'center',
-                justifyContent:"center",
-                borderRadius:10,
-                marginHorizontal:20,
-                marginTop: width * 25/100
-            }}
+            }]}
             >
                 <Text style={{
                     fontWeight:"bold",
@@ -172,3 +141,55 @@ const EditProfile = () =>
 
 }
 export default EditProfile
+const styles = StyleSheet.create({
+    header:
+    {
+        flexDirection:"row",
+        justifyContent:"space-between",
+        padding:10,
+    },
+    headerTitle:
+    {
+        fontSize:18,
+        fontWeight:"bold",
+    },
+    imageProfile:
+    {
+        height:100,
+        width:100,
+        borderRadius:100
+    },
+    textFullName:
+    {
+        fontWeight:"bold",
+        fontSize:18,
+        marginVertical:5,
+    },
+    textUserName:
+    {
+        fontWeight:"400",
+        fontSize:18,
+        marginVertical:5,
+    },
+    inputFullName:
+    {
+        paddingHorizontal:10,
+        borderRadius:10,
+        marginBottom:20,
+    },
+    inputBio:
+    {
+        paddingHorizontal:10,
+        borderRadius:10,
+        textAlignVertical:"top"
+    },
+    btnSave:
+    {
+        padding:20,
+        alignItems:'center',
+        justifyContent:"center",
+        borderRadius:10,
+        marginHorizontal:20,
+        marginTop: width * 25/100
+    }
+})
