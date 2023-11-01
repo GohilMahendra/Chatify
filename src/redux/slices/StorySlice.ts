@@ -81,7 +81,7 @@ const getImageUrl = async(imageRef:string) =>
     }
     catch(err)
     {
-     return rejectWithValue(err as string)
+     return rejectWithValue(JSON.stringify(err) as string)
     }
    
   });

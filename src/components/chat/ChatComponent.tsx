@@ -1,60 +1,131 @@
-import { View,Text,Image,Dimensions,StyleSheet} from 'react-native';
-import { Message } from '../../types/MessageTypes';
+import React,{ useState } from "react";
+import { View,Text,Image,Dimensions,
+    StyleSheet,TouchableOpacity,Modal} from 'react-native';
+import { Message} from '../../types/MessageTypes';
 import UseTheme from '../../globals/UseTheme';
 const {height,width} = Dimensions.get("window")
 import Auth from "@react-native-firebase/auth";
 import ImageChat from './ImageChat';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { white } from '../../globals/Colors';
+import { fileType } from "../../screens/chat/Chat";
 type ChatProps =
 {
-    message: Message
+    message: Message,
+    onMediaPress:(file:fileType)=>void
 }
 
 const ChatComponent = (props:ChatProps) =>
 {
         const item = props.message
+        const {onMediaPress} = props
         const current_user_id = Auth().currentUser?.uid
         const {theme} = UseTheme()
         return(
-            item.user_id != current_user_id
-            ?
-            <View style={styles.senderContainer}>
-                    <Image
-                    source={{uri:item.user_image}}
-                    style={styles.imgSenderImage}
-                    />
-                    <View style={[styles.chatContainer,{
-                         backgroundColor: theme.primary_color,
-                    }]}>
-                        <Text style={{
-                            color: theme.text_color
-                        }}>{item.text}</Text>
-                        {item.fileType?.includes("image") && item.fileUrl && 
-                        <ImageChat
-                        uri={item.fileUrl}
+            <View>
+            <View>
+            {
+                item.user_id != current_user_id
+                ?
+                <View style={styles.senderContainer}>
+                        <Image
+                        source={{uri:item.user_image}}
+                        style={styles.imgSenderImage}
                         />
-                        }
-                        {item.fileType?.includes("video") && item.thumbnail && 
-                        <ImageChat
-                        uri={item.thumbnail}
+                        <View style={[styles.chatContainer,{
+                            backgroundColor: theme.primary_color,
+                        }]}>
+                            { item.text && <Text style={{
+                                color: theme.text_color
+                            }}>{item.text}</Text>
+                            }
+                            {item.fileType?.includes("image") && item.fileUrl && 
+                            <TouchableOpacity
+                            onPress={()=>onMediaPress({
+                                type: item.fileType || "",
+                                uri: item.fileUrl || ""
+                            })}
+                            >
+                            <ImageChat
+                            uri={item.fileUrl}
+                            />
+                            </TouchableOpacity>
+                            }
+                            {item.fileType?.includes("video") && item.thumbnail && 
+                            <TouchableOpacity
+                            onPress={()=>onMediaPress({
+                                type: item.fileType || "",
+                                uri: item.fileUrl || ""
+                            })}
+                            >
+                            <ImageChat
+                            uri={item.thumbnail}
+                            />
+                             <FontAwesome5
+                            style={{
+                                position:"absolute",
+                                top:"45%",
+                                alignSelf:"center"
+                            }}
+                            name={"play"}
+                            size={25}
+                            color={white}
+                            />
+                            </TouchableOpacity>
+                            
+                            }
+                        </View>
+                </View>
+                :
+                <View style={[styles.userContainer,{    
+                backgroundColor: theme.primary_color,
+                }]}>
+                {item.text && <Text style={{
+                        color: theme.text_color
+                    }}>{item.text}</Text> }
+                    {(item.fileUrl && item.thumbnail)?
+                    <TouchableOpacity
+                    onPress={()=>onMediaPress({
+                        type: item.fileType || "",
+                        uri: item.fileUrl || ""
+                    })}
+                    >
+                        <Image
+                        //resizeMode='contain'
+                        source={{uri:item.thumbnail}}
+                        resizeMode='contain'
+                        style={{
+                            height:width * 0.6 - 10,
+                            width: width* 0.6 - 10,
+                            borderRadius:20,
+                            alignSelf:'center',
+                            alignContent:"center",
+                            justifyContent:"center",
+                        //  marginVertical:10
+                        }}
                         />
-                        
-                        }
-                    </View>
-            </View>
-            :
-            <View style={[styles.userContainer,{    
-               backgroundColor: theme.primary_color,
-            }]}>
-               {item.text && <Text style={{
-                    color: theme.text_color
-                }}>{item.text}</Text> }
-                {(item.fileUrl && item.thumbnail)?
-                <View>
+                        <FontAwesome5
+                        style={{
+                            position:"absolute",
+                            top:"45%",
+                            alignSelf:"center"
+                        }}
+                        name={"play"}
+                        size={25}
+                        color={white}
+                        />
+                    </TouchableOpacity>
+                    :
+                    item.fileUrl && 
+                    <TouchableOpacity
+                    onPress={()=>onMediaPress({
+                        type: item.fileType || "",
+                        uri: item.fileUrl || ""
+                    })}
+                    >
                     <Image
                     //resizeMode='contain'
-                    source={{uri:item.thumbnail}}
+                    source={{uri:item.fileUrl}}
                     resizeMode='contain'
                     style={{
                         height:width * 0.6 - 10,
@@ -66,34 +137,11 @@ const ChatComponent = (props:ChatProps) =>
                     //  marginVertical:10
                     }}
                     />
-                    <FontAwesome5
-                    style={{
-                        position:"absolute",
-                        top:"45%",
-                        alignSelf:"center"
-                    }}
-                    name={"play"}
-                    size={25}
-                    color={white}
-                    />
+                    </TouchableOpacity>
+                    }
                 </View>
-                :
-                item.fileUrl && 
-                <Image
-                //resizeMode='contain'
-                source={{uri:item.fileUrl}}
-                resizeMode='contain'
-                style={{
-                    height:width * 0.6 - 10,
-                    width: width* 0.6 - 10,
-                    borderRadius:20,
-                    alignSelf:'center',
-                    alignContent:"center",
-                    justifyContent:"center",
-                  //  marginVertical:10
-                }}
-                />
-                }
+            }
+            </View>
             </View>
 
         )

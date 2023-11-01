@@ -22,10 +22,10 @@ export default ImageChat
 const styles = StyleSheet.create({
     imgChatImage:
     {
-        height:width * 0.6 - 10,
+        height:width * 0.6 ,
         width: width* 0.6 - 10,
         borderRadius:20,
         alignSelf:'center',
-        marginVertical:10
+        //marginVertical:10
      }
 })

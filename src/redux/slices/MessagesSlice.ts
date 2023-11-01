@@ -7,6 +7,7 @@ import { UserResult } from "../../types/UserTypes";
 import { fileType } from "../../screens/chat/Chat";
 import storage from "@react-native-firebase/storage";
 import { RootState } from "../store";
+import { Alert } from "react-native";
 export type MessageStateType=
 {
 
@@ -46,14 +47,15 @@ export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async(f
    try
    {
     const current_user_id = Auth().currentUser?.uid
-    const snapshotdocs:any =  (await firestore().collection("messages").doc(current_user_id).collection("groups").get()).docs
+    const snapshotResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").get()
+    const snapshotdocs:any = snapshotResponse.docs
+    console.log(snapshotdocs,"docs response")
      let MessgaesArr:MessagePreview[] = []
+     try
+     {
      for(const doc of snapshotdocs)
      {
-
          const id = doc.id
-
-         console.log(id)
          const userResponse = await firestore().collection("users").doc(id).get()
          
          const user_id = userResponse.id
@@ -76,11 +78,18 @@ export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async(f
          console.log(messagePreview)
          MessgaesArr.push(messagePreview)
      }
- 
+    }
+    catch(err)
+    {
+        console.log("error in for loop",JSON.stringify(err))
+    }
+
     return MessgaesArr
    }
    catch(err)
    {
+    console.log(JSON.stringify(err))
+     //   Alert.alert("err",JSON.stringify(err))
         return rejectWithValue(JSON.stringify(err))
    }
 })
@@ -158,18 +167,28 @@ export const sendUserChat = createAsyncThunk("messages/sendUserChat",async({
 
         if(!connectionExist)
         {
-        await firestore().collection("messages").doc(user_id).set({})
-        await firestore().collection("messages").doc(current_user_id).set({})
+
+        console.log("connection establissed")
+        await firestore().collection("messages").doc(user_id).set({
+            connected: true
+        })
+        await firestore().collection("messages").doc(current_user_id).set({
+            conneected: true
+        })
         await firestore()
         .collection("messages")
         .doc(user_id)
         .collection("groups")
-        .doc(current_user_id).set({})
+        .doc(current_user_id).set({
+            connected: true
+        })
         await firestore()
         .collection("messages")
         .doc(current_user_id)
         .collection("groups")
-        .doc(user_id).set({})
+        .doc(user_id).set({
+            connected: true
+        })
         }
 
         return true

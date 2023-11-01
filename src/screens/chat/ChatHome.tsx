@@ -26,7 +26,9 @@ const Home = () =>
     }
 
     useEffect(()=>{
-        getMessages()
+       const subscription =  navigation.addListener("focus",async()=>{
+            getMessages()
+        })
     },[])
 
     return(

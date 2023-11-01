@@ -11,7 +11,10 @@ export type UserType =
 {
     loading: boolean,
     error: string | null,
-    user: UserResult
+    user: UserResult,
+    signUpLoading:boolean,
+    signUpSuccess: boolean,
+    signUpError: string | null
 }
 
 const initialState: UserType= 
@@ -26,7 +29,10 @@ const initialState: UserType=
         name:"",
         picture:"",
         user_name:""
-    }
+    },
+    signUpError: null,
+    signUpLoading: false,
+    signUpSuccess: false
 }
 
 const SignInAction = createAction("user/signInUser")
@@ -140,6 +146,39 @@ export const UpdateUser = createAsyncThunk('user/UpdateUser',async({
     console.log(err)
   }
 })
+export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
+  userEmail,
+  userName,
+  fullName,
+  password
+}:{
+  userEmail:string,
+  userName:string,
+  fullName:string,
+  password:string
+},{rejectWithValue})=>{
+      try
+      {
+      
+      const signUp:FirebaseAuthTypes.UserCredential= await Auth().createUserWithEmailAndPassword(userEmail,password)
+      const userId = signUp.user.uid
+
+      const newUser = await firestore().collection("users").doc(userId).set
+      ({
+          name: fullName,
+          email: userEmail,
+          picture: "",
+          user_name: userName,
+          bio:""
+      })
+      return true
+      }
+      catch(err)
+      {
+          console.log(JSON.stringify(err))
+          return rejectWithValue(JSON.stringify(err))
+      }
+})
 
 export const UserSlice = createSlice({
     name:"user",
@@ -172,6 +211,19 @@ export const UserSlice = createSlice({
         builder.addCase(UpdateUser.fulfilled,(state,action:PayloadAction<UserResult | undefined>)=>{
           state.loading = false,
           state.user = action.payload  || state.user
+        })
+        builder.addCase(SignUpUser.pending,(state)=>{
+          state.signUpError = null
+          state.signUpLoading = false
+          state.signUpSuccess = false
+        })
+        builder.addCase(SignUpUser.fulfilled,(state)=>{
+          state.signUpSuccess = true
+          state.signUpLoading = false
+        })
+        builder.addCase(SignUpUser.rejected,(state,action)=>{
+          state.signUpLoading = false 
+          state.signUpError = action.payload as string
         })
        
     }

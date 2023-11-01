@@ -25,13 +25,13 @@ const ChatCard=(props:ChatCardProps)=>
             borderBottomColor:theme.placeholder_color,
         }]}>
             <View style={styles.chatInnerContainer}>
-                   <View style={{flexDirection:"row"}}>
+                   <View style={{flexDirection:"row",alignItems:"center"}}>
                         <Image
                         source={{uri:chat.User.picture}}
                         style={styles.imgUser}
                         />
                     <View style={{
-                        maxWidth:"70%"
+                        maxWidth:"90%"
                     }}>
                     <Text style={[styles.textUserName,{            
                         color: theme.text_color,

@@ -5,6 +5,7 @@ const {height,width} = Dimensions.get("window")
 import Video from 'react-native-video';
 import { Slider } from 'react-native-elements';
 import ViewShot,{ captureRef } from "react-native-view-shot";
+import AntDesign from "react-native-vector-icons/AntDesign";
 type ThumbnailProps =
 {
     videoUri: string,
@@ -16,8 +17,8 @@ type ThumbnailProps =
 const ThumbnailPicker = (props:ThumbnailProps) =>
 {
     const {onClose,onThubnail,onSelect,videoUri} = props
-    const [duration,setDuration] = useState(0)
-    const [currentTime,setCurrentTime] = useState(0)
+    const [duration,setDuration] = useState<number>(0)
+    const [currentTime,setCurrentTime] = useState<number>(0)
     const videoRef = useRef<Video | null>(null)
     const viewRef = useRef<View | null>(null)
     const {theme} = UseTheme()
@@ -51,11 +52,12 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
     const onLoad = async(time:number) => { 
        const image =  await captureShot() 
        onThubnail(image ?? "")
-       setDuration(time);
+      setDuration(time)
       };
     const onEnd= ()=>
     {
         videoRef.current?.seek(0)
+        setCurrentTime(0)
     }
     return(
         <View style={{
@@ -67,34 +69,41 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
                 <Text style={[styles.textHeaderTitle,{    
                     color: theme.text_color
                 }]}>Preview</Text>
-                <Text 
+                <AntDesign
                 onPress={()=>onClose()}
-                style={{
-                    fontSize:20,
-                    color: theme.text_color
-                }}>X</Text>
+                name={"closecircleo"}
+                size={30}
+                color={theme.text_color}
+                />
             </View>
             <View ref={viewRef}>
                 <Video
+                repeat
                 paused={false}
                 onLoad={state=>onLoad(state.duration)}
                 onEnd={()=>onEnd()}
                 onProgress={state=>onProgress(state.currentTime)}
                 ref={ref=>videoRef.current = ref}
                 source={{uri:videoUri}}
+               // currentTime={currentTime.current}
                 resizeMode='contain'
                 style={styles.video}
                 />
             </View>
             <Slider
             value={currentTime}
+            minimumValue={0}
             maximumValue={duration}
+            step={3}
             onSlidingComplete={(value)=>onValueChange(value)}
+            maximumTrackTintColor={theme.seconarybackground_color}
+            allowTouchTrack
+            minimumTrackTintColor={theme.primary_color}
             thumbStyle={[styles.slider,{
              backgroundColor: theme.primary_color
             }]}
             style={{
-                padding:20
+                marginHorizontal:20
             }}
             />
             <TouchableOpacity 

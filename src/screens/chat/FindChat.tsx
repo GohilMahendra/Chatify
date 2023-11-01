@@ -17,6 +17,7 @@ const FindChat = () =>
     const {theme} = UseTheme()
     const [search,setSearch] = useState<string>("")
     const results = useSelector((state:RootState)=>state.search.users)
+    console.log(results,"change in results")
     const loading = useSelector((state:RootState)=>state.search.loading)
     const navigation = useNavigation<NavigationProp<chatStackParams,"FindChat">>()
     const [selectedUrl,setSelectedUrl] = useState<{url:string,type:string} | null>(null)

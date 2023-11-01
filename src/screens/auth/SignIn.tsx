@@ -61,6 +61,7 @@ const SignIn = () =>
                 }]}
                 />
                 <TextInput
+                secureTextEntry
                 testID={"input_password"}
                 value={password}
                 onChangeText={(text:string)=>setPassword(text)}

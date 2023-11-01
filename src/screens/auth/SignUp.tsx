@@ -6,6 +6,10 @@ import { useNavigation , NavigationProp} from "@react-navigation/native";
 import { RootStackParams } from '../../navigation/RootNavigation';
 import Auth ,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
+import { RootState, useAppDispatch } from '../../redux/store';
+import { SignUpUser } from '../../redux/slices/UserSlice';
+import { useSelector } from 'react-redux';
+import Loader from '../../components/global/Loader';
 const {height,width} = Dimensions.get("window")
 
 export type SignUpFieldError=
@@ -27,9 +31,12 @@ const SignUp = () =>
         password:null,
         user_name:null
     })
+    const signUpLoding = useSelector((state:RootState)=>state.user.signUpLoading)
+    const signUpError = useSelector((state:RootState)=>state.user.signUpError)
+    const signUpSuccess = useSelector((state:RootState)=>state.user.signUpSuccess)
     const {theme} = UseTheme()
     const navigation = useNavigation<NavigationProp<RootStackParams,"SignUp">>()
-
+    const dispatch = useAppDispatch()
     const checkPassword = ( password: string) =>
     {
         if(password == "")
@@ -96,31 +103,24 @@ const SignUp = () =>
     const registerUser = async() =>
     {
      //  checkFields()
-        try
-        {
-        const signUp:FirebaseAuthTypes.UserCredential= await Auth().createUserWithEmailAndPassword(userEmail,password)
-        const userId = signUp.user.uid
+        dispatch(SignUpUser({
+            userEmail,
+            userName,
+            fullName,
+            password
+        }))
 
-        const newUser = await firestore().collection("users").doc(userId).set
-        ({
-            name: fullName,
-            email: userEmail,
-            picture: "",
-            user_name: userName,
-            bio:""
-        })
-        }
-        catch(err)
+        if(signUpSuccess)
         {
-            console.log(err)
+            navigation.goBack()
         }
-        
     }
 
     return(
         <SafeAreaView
         style={styles.container}
         >
+            {signUpLoding && <Loader/>}
             <View style={[styles.innerContainer,{         
                 backgroundColor: theme.background_color,
                 justifyContent:"center"
@@ -195,6 +195,8 @@ const SignUp = () =>
                 }
                 <TextInput
                 value={password}
+                textContentType='password'
+                secureTextEntry={true}
                 onChangeText={(text:string)=>setPassword(text)}
                 placeholder='password ....'
                 placeholderTextColor={silver}

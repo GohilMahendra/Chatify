@@ -28,14 +28,12 @@ export const fetchUsers = createAsyncThunk('search/fetchUsers', async (searchStr
         const queryByUsername = usersCollection
         .where('user_name', '>=', searchString)
         .where('user_name', '<=', searchString + '\uf8ff')
-        .where(firestore.FieldPath.documentId(), '!=', current_user_id)
         .get();
   
       //  quary search over full names string
       const queryByName = usersCollection
         .where('name', '>=', searchString)
         .where('name', '<=', searchString + '\uf8ff')
-        .where(firestore.FieldPath.documentId(), '!=', current_user_id)
         .get();
   
       // using both parallary as no dependency
@@ -72,12 +70,12 @@ export const fetchUsers = createAsyncThunk('search/fetchUsers', async (searchStr
       const userlist = Array.from(new Set(users.map((user:UserResult) => user.id))).map((id) => {
         return users.find((user:UserResult) => user.id === id);
       }) 
-      console.log(userlist,"found this list of users")
+      uniqueUsers = userlist ?? []
       return uniqueUsers
     } 
     catch(err)
     {
-      console.log(err)
+      console.log(JSON.stringify(err))
       return rejectWithValue(JSON.stringify(err))
     }
   });
@@ -95,6 +93,7 @@ export const SearchSlice = createSlice({
         })
         builder.addCase(fetchUsers.fulfilled,(state,action:PayloadAction<UserResult[]>)=>{
             state.loading = false
+            console.log(action.payload,"payload from redux")
             state.users = action.payload
         })
      
