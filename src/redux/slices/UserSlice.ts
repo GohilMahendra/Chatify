@@ -2,7 +2,7 @@ import {createSlice,PayloadAction,createAsyncThunk,createAction } from "@reduxjs
 import { User, UserResult } from "../../types/UserTypes";
 import firestore from "@react-native-firebase/firestore";
 import Auth,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { getImageUrl } from "../../globals/utilities";
+import { getImageUrl, uploadImage } from "../../globals/utilities";
 import { RootState } from "../store";
 import { Alert} from "react-native";
 import storage from "@react-native-firebase/storage";
@@ -42,18 +42,6 @@ const initialState: UserType=
 
 const SignInAction = createAction("user/signInUser")
 
-const uploadImage = async(uri:string , path:string)=>
-{
-    try
-    {
-    const ref = storage().ref(path)
-    await ref.putFile(uri)
-    }
-    catch(err)
-    {
-        console.log(err)
-    }
-}
 export const signInUser = createAsyncThunk(
     'user/signInUser',
     async ({email,password}:{email:string,password:string}, { rejectWithValue }) => {

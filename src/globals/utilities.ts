@@ -7,6 +7,19 @@ export const getImageUrl = async(imageRef:string) =>
     return imageUrl
 }
 
+export const uploadImage = async(uri:string , path:string)=>
+{
+    try
+    {
+    const ref = storage().ref(path)
+    await ref.putFile(uri)
+    }
+    catch(err)
+    {
+        console.log(err)
+    }
+}
+
 export const formatTimestamp=(timestamp: number): string =>{
     const now = new Date();
     const messageDate = new Date(timestamp);

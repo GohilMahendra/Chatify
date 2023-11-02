@@ -67,10 +67,15 @@ export const fetchUsers = createAsyncThunk('search/fetchUsers', async (searchStr
   
       // Filter unique users (in case some users matched both queries)
       let uniqueUsers:UserResult[] = []
-      const userlist = Array.from(new Set(users.map((user:UserResult) => user.id))).map((id) => {
-        return users.find((user:UserResult) => user.id === id);
-      }) 
-      uniqueUsers = userlist ?? []
+      const uniqueIds = new Set();
+      const uniqueArray = users.filter((item) => {
+        if (!uniqueIds.has(item.id)) {
+          uniqueIds.add(item.id);
+          return true;
+        }
+        return false;
+      });
+      
       return uniqueUsers
     } 
     catch(err)
