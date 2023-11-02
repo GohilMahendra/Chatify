@@ -3,6 +3,7 @@ import  React,{useState,useEffect} from 'react';
 import { Image, Text,TouchableOpacity,View,StyleSheet } from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Feather from "react-native-vector-icons/Feather";
 import { CompositeScreenProps, NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/RootNavigation';
 import { ProfileStackParams } from '../../navigation/ProfileStackNavigation';
@@ -11,7 +12,7 @@ import Auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { User } from '../../types/UserTypes';
 import Loader from '../../components/global/Loader';
-import { red, white } from '../../globals/Colors';
+import { light_pink, ocean_blue, purple_black, red, white } from '../../globals/Colors';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
@@ -22,7 +23,7 @@ NativeStackScreenProps<RootStackParams>
 >
 const UserProfile = () =>
 {
-    const {theme} = UseTheme()
+    const {theme,setTheme} = UseTheme()
    
     const navigation = useNavigation<NavigationProp<ProfileStackParams,"UserProfile">>()
     const rootNavigation = useNavigation<NavigationProp<RootStackParams>>()
@@ -103,22 +104,49 @@ const UserProfile = () =>
                     user_name:user.user_name
                 })}
                 style={[styles.btnEditProfile,{
-                    backgroundColor: theme.seconarybackground_color
+                    backgroundColor: theme.primary_color
                 }]}>    
                     <FontAwesome5
                     name='edit'
-                    color={theme.text_color}
+                    color={white}
                     size={20}
                     />
-                   <Text style={[styles.textEditProfile,{
-                        color: theme.text_color
-                    }]}>Edit Profile</Text>
+                   <Text style={[styles.textEditProfile]}>Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                onPress={()=>setTheme()}
+                style={[styles.btnEditProfile,{
+                    backgroundColor: light_pink
+                }]}>    
+                    <FontAwesome5
+                    name={theme.mode == "dark" ?'sun':"moon"}
+                    color={white}
+                    size={20}
+                    />
+                   <Text style={styles.textSignOut}>
+                    {
+                        theme.mode == "dark"?"Light Mode":"Dark Mode"
+                    }
+                   </Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                style={[styles.btnEditProfile,{
+                    backgroundColor: ocean_blue
+                }]}>    
+                    <FontAwesome5
+                    name={"gem"}
+                    color={white}
+                    size={20}
+                    />
+                   <Text style={styles.textSignOut}>
+                    About
+                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                 onPress={()=>signOut()}
                 style={styles.btnSignOut}>
-                    <FontAwesome5
-                    name='edit'
+                    <Feather
+                    name='log-out'
                     color={white}
                     size={20}
                     />
@@ -166,13 +194,15 @@ const styles = StyleSheet.create({
         padding:15,
         borderRadius:10,
         flexDirection:"row",
-        elevation:5
+        elevation:5,
+        marginTop:20
     },
     textEditProfile:
     {
         fontSize:18,
         fontWeight:"bold",
-        marginLeft:20
+        marginLeft:20,
+        color: white
     },
     btnSignOut:
     {

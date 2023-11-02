@@ -23,7 +23,7 @@ const StoryComponent = (props:StoryUserProps) =>
            padding:3,
            borderRadius:70,
            borderColor: theme.primary_color,
-           borderWidth:2,
+           borderWidth:story.isViewed ?0:2,
           // flexDirection:"row",
            marginHorizontal:10
         }}

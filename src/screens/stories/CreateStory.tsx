@@ -61,7 +61,7 @@ const CreateStory = () =>
                 <FontAwesome5
                 onPress={()=>navigation.goBack()}
                 name='angle-left'
-                size={30}
+                size={25}
                 color={theme.text_color}
                 />
                 <Text style={[styles.headerTitle,{
@@ -128,6 +128,8 @@ const styles = StyleSheet.create(
         {
             flexDirection:"row",
             width: width * 90/100,
+            position:"absolute",
+            bottom:10,
             alignSelf:"center"
         },
         inputCaption:

@@ -10,6 +10,7 @@ import { RootState, useAppDispatch } from '../../redux/store';
 import { SignUpUser } from '../../redux/slices/UserSlice';
 import { useSelector } from 'react-redux';
 import Loader from '../../components/global/Loader';
+import { checkEmail, checkEmptyField, checkPassword } from '../../globals/utilities';
 const {height,width} = Dimensions.get("window")
 
 export type SignUpFieldError=
@@ -37,22 +38,7 @@ const SignUp = () =>
     const {theme} = UseTheme()
     const navigation = useNavigation<NavigationProp<RootStackParams,"SignUp">>()
     const dispatch = useAppDispatch()
-    const checkPassword = ( password: string) =>
-    {
-        if(password == "")
-        return false
-        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=]).{8,}$/;
-        return passwordRegex.test(password);
-    }
-    const checkEmail = ( email: string) =>
-    {
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-        return emailRegex.test(email);
-    }
-    const checkEmptyField = (field:string) =>
-    {
-        return field.trim().length == 0
-    }
+
     const restoreErrors=()=>
     {
         setEmptyErrors({
@@ -95,8 +81,6 @@ const SignUp = () =>
             setEmptyErrors({...emptyErrors,password:"* Password should have length 8 , special charcter and atelase one Uppercase"})
             return false   
         }
-        
-
         return true
     }
       
@@ -133,6 +117,11 @@ const SignUp = () =>
                 }}>
                     Chatify !
                 </Text>
+                {signUpError &&<Text style={{
+                    color:"red",
+                    fontSize:18
+                }}>{signUpError}</Text>
+                }
                 <TextInput
                 value={userName}
                 onChangeText={(text:string)=>setUserName(text)}

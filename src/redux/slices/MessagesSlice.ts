@@ -6,15 +6,23 @@ import { getImageUrl } from "../../globals/utilities";
 import { UserResult } from "../../types/UserTypes";
 import { fileType } from "../../screens/chat/Chat";
 import storage from "@react-native-firebase/storage";
+import { MAX_USERCHAT_FETCH_LMIT } from "../../globals/Globals";
 import { RootState } from "../store";
-import { Alert } from "react-native";
+
+export type ChatUserPayloadType=
+{
+    messages: MessagePreview[],
+    lastKey: string | null
+}
 export type MessageStateType=
 {
 
     chatUsersLoading:boolean,
     chatUsersErr:null|string,
     chatUsers:MessagePreview[],
-
+    chatMoreUsersLoading:boolean,
+    chatMoreUsersErr:string | null,
+    lastChatUserId: string | null,
     chatLoading: boolean,
     chatError: null | string,
     chats:Message[]
@@ -30,7 +38,10 @@ const initialState:MessageStateType=
 {
     chatUsersLoading: false,
     chatUsersErr:null,
+    chatMoreUsersLoading:false,
+    chatMoreUsersErr:null,
     chatUsers:[],
+    lastChatUserId: null,
 
     chatLoading:false,
     chatError:null,
@@ -47,12 +58,14 @@ export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async(f
    try
    {
     const current_user_id = Auth().currentUser?.uid
-    const snapshotResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").get()
+    const snapshotResponse = await firestore()
+    .collection("messages")
+    .doc(current_user_id)
+    .collection("groups")
+    .limit(MAX_USERCHAT_FETCH_LMIT)
+    .get()
     const snapshotdocs:any = snapshotResponse.docs
-    console.log(snapshotdocs,"docs response")
      let MessgaesArr:MessagePreview[] = []
-     try
-     {
      for(const doc of snapshotdocs)
      {
          const id = doc.id
@@ -63,7 +76,15 @@ export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async(f
          user_data.picture =await getImageUrl(user_data.picture)?? ""
          const user = {id:user_id,...user_data} as UserResult
 
-         const lastMessageResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").doc(id).collection("groupMessages").limit(1).get()
+         const lastMessageResponse = await firestore()
+         .collection("messages")
+         .doc(current_user_id)
+         .collection("groups")
+         .doc(id)
+         .collection("groupMessages")
+         .orderBy("timestamp","desc")
+         .limit(1)
+         .get()
          const lastresponseid = lastMessageResponse.docs[0].id
          const lastresponseData = lastMessageResponse.docs[0].data() 
          const lastMessage = {id:lastresponseid,...lastresponseData} as Message
@@ -75,24 +96,89 @@ export const fetchChatUsers = createAsyncThunk("messages/fetchChatUsers",async(f
              no_of_unread:0,
              User: user
          }
-         console.log(messagePreview)
          MessgaesArr.push(messagePreview)
      }
-    }
-    catch(err)
+    let lastKey: string |  null = null
+    if(MessgaesArr.length >= MAX_USERCHAT_FETCH_LMIT)
     {
-        console.log("error in for loop",JSON.stringify(err))
+        lastKey = MessgaesArr[MessgaesArr.length -1].id
     }
-
-    return MessgaesArr
+    const payload:ChatUserPayloadType = 
+    {
+        lastKey: lastKey,
+        messages: MessgaesArr
+    }
+    return payload
    }
    catch(err)
    {
     console.log(JSON.stringify(err))
-     //   Alert.alert("err",JSON.stringify(err))
         return rejectWithValue(JSON.stringify(err))
    }
 })
+
+export const fetchMoreChatUsers = createAsyncThunk("messages/fetchMoreChatUsers",async(fakeArg:string,{rejectWithValue,getState})=>{
+    try
+    {
+     const last_doc_id = (getState() as RootState).messages.lastChatUserId
+     if(!last_doc_id)
+     {
+        console.log("more data not here sorry")
+        return
+     }
+     const current_user_id = Auth().currentUser?.uid
+     const snapshotResponse = await firestore()
+     .collection("messages")
+     .doc(current_user_id)
+     .collection("groups")
+     .startAfter(last_doc_id)
+     .limit(MAX_USERCHAT_FETCH_LMIT)
+     .get()
+     const snapshotdocs:any = snapshotResponse.docs
+     console.log(snapshotdocs,"docs response")
+      let MessgaesArr:MessagePreview[] = []
+      for(const doc of snapshotdocs)
+      {
+          const id = doc.id
+          const userResponse = await firestore().collection("users").doc(id).get()
+          
+          const user_id = userResponse.id
+          const user_data = userResponse.data() as Omit<UserResult,"id">
+          user_data.picture =await getImageUrl(user_data.picture)?? ""
+          const user = {id:user_id,...user_data} as UserResult
+ 
+          const lastMessageResponse = await firestore().collection("messages").doc(current_user_id).collection("groups").doc(id).collection("groupMessages").limit(1).get()
+          const lastresponseid = lastMessageResponse.docs[0].id
+          const lastresponseData = lastMessageResponse.docs[0].data() 
+          const lastMessage = {id:lastresponseid,...lastresponseData} as Message
+          console.log(lastMessage)
+          const messagePreview:MessagePreview = 
+          {
+              id: id,
+              lastMessage: lastMessage,
+              no_of_unread:0,
+              User: user
+          }
+          MessgaesArr.push(messagePreview)
+      }
+      let lastKey: string |  null = null
+      if(MessgaesArr.length >= MAX_USERCHAT_FETCH_LMIT)
+      {
+          lastKey = MessgaesArr[MessgaesArr.length -1].id
+      }
+      const payload:ChatUserPayloadType = 
+      {
+          lastKey: lastKey,
+          messages: MessgaesArr
+      }
+      return payload
+    }
+    catch(err)
+    {
+     console.log(JSON.stringify(err))
+         return rejectWithValue(JSON.stringify(err))
+    }
+ })
 
 export const sendUserChat = createAsyncThunk("messages/sendUserChat",async({
     user_id,
@@ -167,7 +253,6 @@ export const sendUserChat = createAsyncThunk("messages/sendUserChat",async({
 
         if(!connectionExist)
         {
-
         console.log("connection establissed")
         await firestore().collection("messages").doc(user_id).set({
             connected: true
@@ -190,16 +275,13 @@ export const sendUserChat = createAsyncThunk("messages/sendUserChat",async({
             connected: true
         })
         }
-
         return true
-
     }
     catch(err)
     {
        return rejectWithValue(JSON.stringify(err) as string)
     }
 })
-
 
 export const MessagesSlice = createSlice({
     name:"Messages",
@@ -210,13 +292,27 @@ export const MessagesSlice = createSlice({
             state.chatUsersLoading = true
             state.chatUsers = []
         })
-        builder.addCase(fetchChatUsers.fulfilled,(state,action:PayloadAction<MessagePreview[] | undefined>)=>{
+        builder.addCase(fetchChatUsers.fulfilled,(state,action:PayloadAction<ChatUserPayloadType>)=>{
             state.chatUsersLoading = false
-            state.chatUsers = action.payload || []
+            state.lastChatUserId = action.payload?.lastKey || null
+            state.chatUsers = action.payload?.messages || []
         })
         builder.addCase(fetchChatUsers.rejected,(state,action)=>{
             state.chatUsersLoading = false
             state.chatUsersErr = action.payload as string
+        })
+        builder.addCase(fetchMoreChatUsers.pending,(state)=>{
+            state.chatMoreUsersLoading = true
+            state.chatMoreUsersErr = null
+        })
+        builder.addCase(fetchMoreChatUsers.fulfilled,(state,action:PayloadAction<ChatUserPayloadType | undefined>)=>{
+            state.chatMoreUsersLoading = false
+            state.lastChatUserId = action.payload?.lastKey || null
+            state.chatUsers = [...state.chatUsers,...action.payload?.messages || []]
+        })
+        builder.addCase(fetchMoreChatUsers.rejected,(state,action)=>{
+            state.chatMoreUsersLoading = false
+            state.chatMoreUsersErr = action.payload as string
         })
         builder.addCase(sendUserChat.pending,(state)=>{
             state.sendUserChatLoading = true
@@ -233,6 +329,4 @@ export const MessagesSlice = createSlice({
         })
     }
 })
-
-
 export default MessagesSlice.reducer

@@ -1,5 +1,6 @@
 import React,{useState,useRef} from "react";
-import { View,SafeAreaView,Dimensions,Image,StyleSheet} from "react-native";
+import { View,SafeAreaView,Dimensions,
+    Text,Image,StyleSheet} from "react-native";
 import UseTheme from "../../globals/UseTheme";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Video from "react-native-video";
@@ -18,23 +19,29 @@ const MediaViewer = (props: MediaViewerProps) =>
     const {theme} = UseTheme()
     const {uri,type,onClose} = props
     const [currentTime,setCurrentTime] = useState(0)
+    const [remainTime,setRemainTime] = useState<string>("00:00")
     const [duration,setDuration] = useState(0)
     const videoRef = useRef<Video | null>(null)
 
-    const onLoad=(time:number)=>
-    {
+    const onLoad = async(time:number) => { 
         setDuration(time)
-    }
-    const onProgress=(time:number)=>
+    };
+    const onProgress =(value:number)=>
     {
-        setCurrentTime(time)
+        const remainingTime = duration - value 
+        const mins = remainingTime/60
+        const secs = remainingTime/60
+        const time = mins.toFixed(2).toString()+":"+secs.toFixed(2).toString()
+        setRemainTime(time)
+        setCurrentTime(value)
     }
-    const onEnd=()=>
+    const onValueChange = (value:number) =>
+    {
+        videoRef.current?.seek(value)
+    }
+    const onEnd= ()=>
     {
         setCurrentTime(0)
-    }
-    const onSlidingComplete = () =>
-    {
         videoRef.current?.seek(0)
     }
     return(
@@ -65,6 +72,7 @@ const MediaViewer = (props: MediaViewerProps) =>
                     :
                     <View>
                         <Video
+                        repeat
                         onLoad={(time)=>onLoad(time.duration)}
                         onProgress={(time)=>onProgress(time.currentTime)}
                         onEnd={()=>onEnd()}
@@ -73,11 +81,11 @@ const MediaViewer = (props: MediaViewerProps) =>
                         style={styles.video}
                         />
                         <Slider
+                        animationType="timing"
                         value={currentTime}
                         minimumValue={0}
                         maximumValue={duration}
-                        step={3}
-                        onSlidingComplete={()=>onSlidingComplete()}
+                        onSlidingComplete={(data)=>onValueChange(data)}
                         maximumTrackTintColor={theme.seconarybackground_color}
                         allowTouchTrack
                         minimumTrackTintColor={theme.primary_color}

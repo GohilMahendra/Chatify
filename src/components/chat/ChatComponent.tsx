@@ -73,7 +73,7 @@ const ChatComponent = (props:ChatProps) =>
                 backgroundColor: theme.primary_color,
                 }]}>
                 {item.text && <Text style={{
-                        color: theme.text_color
+                        color: white
                     }}>{item.text}</Text> }
                     {(item.fileUrl && item.thumbnail && item.fileType)?
                     <TouchableOpacity

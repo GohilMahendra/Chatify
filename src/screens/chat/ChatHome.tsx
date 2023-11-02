@@ -1,5 +1,6 @@
 import  React, { useState ,useEffect} from 'react';
-import { StyleSheet,View,SafeAreaView, Image , FlatList, TouchableOpacity} from "react-native";
+import { StyleSheet,View,SafeAreaView, Text ,
+     FlatList, TouchableOpacity} from "react-native";
 import UseTheme from '../../globals/UseTheme';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { white } from '../../globals/Colors';
@@ -9,7 +10,8 @@ import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../redux/store';
 import ChatCard from '../../components/chat/ChatCard';
 import Greetings from '../../components/chat/Greetings';
-import { fetchChatUsers } from '../../redux/slices/MessagesSlice';
+import { fetchChatUsers, fetchMoreChatUsers } from '../../redux/slices/MessagesSlice';
+import Loader from '../../components/global/Loader';
 
 const Home = () =>
 {
@@ -23,6 +25,10 @@ const Home = () =>
     const getMessages = async() =>
     {
        dispatch(fetchChatUsers(""))
+    }
+    const getMoreMessages = async() =>
+    {
+        dispatch(fetchMoreChatUsers(""))
     }
 
     useEffect(()=>{
@@ -39,6 +45,10 @@ const Home = () =>
                 flex:1,
                 backgroundColor: theme.background_color
             }}>
+               {
+                loading &&
+                <Loader/>
+               }
                {/* user greetings starts*/}
                 <Greetings
                 user={user}
@@ -46,9 +56,27 @@ const Home = () =>
                {/* user greetings end */}
 
                {/* unread message section starts */}
+               {
+                (!loading && messages.length == 0)
+                ?
+                <View style={{
+                flex:1,
+                justifyContent:"center",
+                alignItems:"center",
+                padding:20
+               }}>
+                <Text style={{
+                    color: theme.text_color,
+                    fontSize:18,
+                    fontWeight:"400"
+                }}>No Messages Yet !!</Text>
+               </View>
+                :
                <View style={styles.listContainer}>
                 <FlatList
                 data={messages}
+                onEndReached={()=>getMoreMessages()}
+                keyExtractor={(item)=>item.id}
                 renderItem={({item,index})=>{
                     return(
                       <ChatCard
@@ -58,6 +86,7 @@ const Home = () =>
                 }}
                 />
                </View>
+                }   
                {/* unread messafe section ends */}
 
             </View>

@@ -5,7 +5,8 @@ export type UserStory =
     name: string,
     picture: string,
     stories:Story[],
-    count: number
+    count: number,
+    isViewed: boolean
 }
 
 export type StoryUser = Omit<UserStory,"stories">

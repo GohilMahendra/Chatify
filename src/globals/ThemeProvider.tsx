@@ -3,7 +3,7 @@ import { dark,light,ThemeType  } from "../globals/Themes";
 
 type ThemeContextType = {
   theme: ThemeType;
-  setTheme: (theme: ThemeType) => void;
+  setTheme: () => void;
 };
 
 type ThemeProps = 
@@ -17,10 +17,10 @@ export const ThemeContext = createContext<ThemeContextType>({
 });
 
 export const ThemeProvider: React.FC <ThemeProps> = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeType>(dark);
+  const [theme, changeTheme] = useState<ThemeType>(dark);
 
   const toggleTheme = () => {
-    setTheme(theme.mode === 'light' ? dark : light);
+    changeTheme(theme.mode === 'light' ? dark : light);
   };
 
   return (

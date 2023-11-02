@@ -3,7 +3,7 @@ import { View,Modal,Text,Image,Keyboard,StyleSheet,TouchableOpacity,SafeAreaView
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../../globals/UseTheme';
 import { Message, UserMessageType } from '../../types/MessageTypes';
-import { white } from '../../globals/Colors';
+import { grey, white } from '../../globals/Colors';
 import firestore from "@react-native-firebase/firestore";
 import Auth from "@react-native-firebase/auth";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -41,9 +41,9 @@ const Chat  = () =>
     const [text,setText] = useState("")
     const sendChatLoading=useSelector((state:RootState)=>state.messages.sendUserChatLoading)
     const dispatch = useAppDispatch()
-    let lastId: string | null = null
+    const  [lastId,setLastId] = useState<string | null>(null)
     const pageSize = 2
-    
+
     const openImagePicker=async()=>
     {    
         const response = await launchImageLibrary({
@@ -126,7 +126,7 @@ const Chat  = () =>
          .doc(user_id)
          .collection("groupMessages")
          .orderBy("timestamp","desc")
- 
+
  
          const snpaShotRef = connectionRef.limit(2)
      
@@ -159,7 +159,7 @@ const Chat  = () =>
                 }
                 
              }
-             setChats(Messages)
+             setChats((prevChats)=>[...prevChats,...Messages])
          })
 
          return{
@@ -172,9 +172,10 @@ const Chat  = () =>
         }
     }
 
-
     const loadMessages = async() =>
     {
+        try
+        {
         const current_user_id = Auth().currentUser?.uid 
         const connectionRef = firestore()
          .collection("messages")
@@ -182,10 +183,17 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
+         .orderBy("timestamp","desc")
          .limit(pageSize)
 
          const messageResponse = await connectionRef.get()
+
+         if(messageResponse.empty)
+         return
+
          const Messages:Message[] = []
+         try
+         {
          for(const doc of messageResponse.docs)
          {
            
@@ -209,17 +217,30 @@ const Chat  = () =>
             
              Messages.push(message)
         }
+        }
+        catch(err)
+        {
+            console.log(JSON.stringify(err))
+        }
 
         const length = Messages.length
+        let currentLastId: string | null = null
         if(length >= pageSize)
         {
-            console.log("lazy loading last id",Messages[Messages.length -1].id)
-            lastId = Messages[Messages.length -1].id
+            currentLastId = Messages[Messages.length -1].id
         }
+        setLastId(currentLastId)
         setChats(Messages)
+        }
+        catch(err)
+        {
+            console.log(JSON.stringify(err))
+        }
     }
     const loadMoreMessages = async() =>
     {
+        try
+        {
         console.log("load more messages")
         if(lastId == null)
         {
@@ -233,6 +254,7 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
+         .orderBy("timestamp","desc")
          .startAfter(lastId)
          .limit(pageSize)
 
@@ -240,6 +262,8 @@ const Chat  = () =>
 
          console.log(messageResponse)
          const Messages:Message[] = []
+         try
+         {
          for(const doc of messageResponse.docs)
          {
            
@@ -263,25 +287,31 @@ const Chat  = () =>
             
              Messages.push(message)
         }
+        }
+        catch(err)
+        {
+            console.log(JSON.stringify(err))
+        }
 
         const length = Messages.length
+        let currentLastId: string | null = null
         if(length >= pageSize)
         {
-            lastId = Messages[Messages.length -1].id
+            currentLastId = Messages[Messages.length -1].id
         }
-        else
-        {
-            lastId = null
-        }
-        console.log(Messages,"message us don sdhb")
+        setLastId(currentLastId)
         setChats((prevchats)=>[...prevchats,...Messages])
-
+        }
+        catch(err)
+        {
+            console.log(JSON.stringify(err))
+        }
     }
 
     useEffect(()=>{
      // loadInitialMessages()
-     //subscribeToMessages()
      loadMessages()
+     subscribeToMessages()
     },[])
     return(
         <SafeAreaView style={{
@@ -318,7 +348,7 @@ const Chat  = () =>
         data={chats}
         renderItem={({item,index})=>renderMessage({item,index})}
         keyExtractor={(item)=>item.id}
-        onEndReached={()=>loadMoreMessages()}
+        //onEndReached={()=>loadMoreMessages()}
         />
         {/* chat section ends */}
         {sendChatLoading && <ChatLoader/> }
@@ -337,7 +367,7 @@ const Chat  = () =>
              <TouchableOpacity 
              onPress={()=>setMediaModal(true)}
              style={[styles.btnMedia,{
-                backgroundColor: theme.seconarybackground_color,
+                backgroundColor: grey,
              }]}>
                  <FontAwesome5
                     name='camera'
@@ -439,7 +469,7 @@ const Chat  = () =>
                }
         </Modal>
         <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible = {mediaViewer!=null}
         onRequestClose={()=>setMediaViewer(null)}

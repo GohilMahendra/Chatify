@@ -52,8 +52,8 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
     const onLoad = async(time:number) => { 
        const image =  await captureShot() 
        onThubnail(image ?? "")
-      setDuration(time)
-      };
+       setDuration(time)
+    };
     const onEnd= ()=>
     {
         videoRef.current?.seek(0)

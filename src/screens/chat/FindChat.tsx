@@ -51,7 +51,7 @@ const FindChat = () =>
         <View style={styles.header}>
             <FontAwesome5
             name='angle-left'
-            size={30}
+            size={25}
             color={theme.text_color}
             />
             <TextInput
@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
     header:
     {
         flexDirection:"row",
-        padding:5
+        padding:5,
+        alignItems:"center"
     },
     inputSearch:
     {

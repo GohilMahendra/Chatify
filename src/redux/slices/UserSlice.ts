@@ -1,11 +1,10 @@
-import {  } from "react-redux";
 import {createSlice,PayloadAction,createAsyncThunk,createAction } from "@reduxjs/toolkit";
-import { create } from "react-test-renderer";
 import { User, UserResult } from "../../types/UserTypes";
 import firestore from "@react-native-firebase/firestore";
 import Auth,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { getImageUrl } from "../../globals/utilities";
 import { RootState } from "../store";
+import { Alert} from "react-native";
 import storage from "@react-native-firebase/storage";
 export type UserType = 
 {
@@ -165,7 +164,15 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
 },{rejectWithValue})=>{
       try
       {
-      
+      const userNameExist = await firestore()
+      .collection("usernames")
+      .where(firestore.FieldPath.documentId(),"==",userName)
+      .get()
+
+      if(!userNameExist.empty)
+      {
+        return rejectWithValue("username is already exist !!")
+      }
       const signUp:FirebaseAuthTypes.UserCredential= await Auth().createUserWithEmailAndPassword(userEmail,password)
       const userId = signUp.user.uid
 
@@ -177,6 +184,11 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
           user_name: userName,
           bio:""
       })
+      const addIntoUserNames = await firestore()
+      .collection("usernames")
+      .doc(userName)
+      .set({})
+
       return true
       }
       catch(err)

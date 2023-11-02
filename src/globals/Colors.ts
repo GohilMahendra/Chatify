@@ -5,3 +5,6 @@ export const grey = "#36454F";
 export const black = "#000000";
 export const slate_grey = "#404040"
 export const red = "#8b0000" 
+export const purple_black = "#380036"
+export const ocean_blue = "#0CBABA"
+export const light_pink = "#E899DC"

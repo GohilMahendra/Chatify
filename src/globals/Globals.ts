@@ -1,0 +1,1 @@
+export const MAX_USERCHAT_FETCH_LMIT:number = 5 

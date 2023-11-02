@@ -1,4 +1,3 @@
-import firestore from "@react-native-firebase/firestore";
 import storage from "@react-native-firebase/storage";
 
 export const getImageUrl = async(imageRef:string) =>
@@ -32,14 +31,23 @@ export const formatTimestamp=(timestamp: number): string =>{
       const yy = messageDate.getFullYear().toString().substr(-2);
       return `${dd}/${mm}/${yy}`;
     }
-  }
+}
 
-  export const checkEmail = ( email: string) =>
-  {
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      return emailRegex.test(email);
-  }
-  export const checkEmptyField = (field:string) =>
-  {
-      return field.trim().length == 0
-  }
+export const checkEmail = ( email: string) =>
+{
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailRegex.test(email);
+}
+
+export const checkEmptyField = (field:string) =>
+{
+    return field.trim().length == 0
+}
+
+export const checkPassword = ( password: string) =>
+{
+    if(password == "")
+    return false
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()-_+=]).{8,}$/;
+    return passwordRegex.test(password);
+}

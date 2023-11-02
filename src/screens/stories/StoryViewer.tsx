@@ -9,6 +9,7 @@ import { RootState, useAppDispatch } from '../../redux/store';
 import { black, white } from '../../globals/Colors';
 import { useSelector } from 'react-redux';
 import Video from 'react-native-video';
+import { ViewStory } from '../../redux/slices/StorySlice';
 const {width,height} = Dimensions.get("window")
 const StoryViewer = () =>
 {
@@ -45,6 +46,11 @@ const StoryViewer = () =>
         setDuration(5)
     }
     },[currentIndex])
+
+    useEffect(()=>{
+        if(userStory.isViewed == false)
+        dispatch(ViewStory({story_id:userStory.id}))
+    },[userStory.id])
     
     const nextStory = () =>
     {
@@ -162,7 +168,11 @@ const styles = StyleSheet.create({
     {
         flexDirection:"row",
         justifyContent:"space-between",
-        marginHorizontal:10
+        marginHorizontal:10,
+        position:"absolute",
+        top:2,
+        zIndex:20000,
+        width: width
     },
     storyBar:
     {
@@ -199,17 +209,26 @@ const styles = StyleSheet.create({
         fontWeight:"bold",
         color: white,
         shadowColor:black,
-        shadowOffset:{
-            height:10,
-            width:5
+        textShadowColor:black,
+        textShadowOffset:{
+            height:2,
+            width:2
         },
-        shadowOpacity:1
+        textShadowRadius:10,
+       
     },
     textUserUserName:
     {
         fontSize:15,
         fontWeight:"300",
-        color: white
+        color: white,
+        shadowColor:black,
+        textShadowColor:black,
+        textShadowOffset:{
+            height:2,
+            width:2
+        },
+        textShadowRadius:10,
     },
     mediaVideo:
     {

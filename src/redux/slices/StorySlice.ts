@@ -11,6 +11,9 @@ import { getMessage } from "@reduxjs/toolkit/dist/actionCreatorInvariantMiddlewa
 export type StoryType = 
 {
     loading: boolean,
+    readStoryLoading: boolean,
+    readStoryError: string | null,
+    readStorySuccess: boolean,
     error: string | null,
     stories: UserStory[]
 }
@@ -19,16 +22,19 @@ const initialState: StoryType=
 {
     loading: false,
     error: null,
-    stories:[]
+    stories:[],
+    readStoryError:null,
+    readStoryLoading: false,
+    readStorySuccess: false
 
 }
 
-const getImageUrl = async(imageRef:string) =>
-{
-    const storageRef = storage().ref(imageRef)
-    const imageUrl = await storageRef.getDownloadURL()
-    return imageUrl
-}
+  const getImageUrl = async(imageRef:string) =>
+  {
+      const storageRef = storage().ref(imageRef)
+      const imageUrl = await storageRef.getDownloadURL()
+      return imageUrl
+  }
   const UploadStoryMedia = async(path:string,name:string) =>
   {
         const storageRef = storage().ref(name)
@@ -105,8 +111,14 @@ const getImageUrl = async(imageRef:string) =>
           //  data.picture = picture
            const storyUser = {id,...data} as StoryUser
            console.log(storyUser)
-           const userStory:UserStory = {...storyUser,stories:[]}
-           console.log(userStory)
+           const isStoryViewed =await firestore()
+           .collection("stories")
+           .doc(id)
+           .collection("viewers")
+           .doc(current_user_id)
+           .get()
+
+           const userStory:UserStory = {...storyUser,isViewed:isStoryViewed.exists,stories:[]}
            const userStoriesRef = firestore()
            .collection("stories")
            .doc(id)
@@ -120,7 +132,6 @@ const getImageUrl = async(imageRef:string) =>
               const picture = await getImageUrl(data.mediaUrl)
               data.mediaUrl = picture
               const story =  {id,...data} as Story
-              console.log(story)
               userStory.stories.push(story)
            }
            userStories.push(userStory)
@@ -134,6 +145,24 @@ const getImageUrl = async(imageRef:string) =>
       return rejectWithValue(JSON.stringify(err))
     }
   });
+  
+  export const ViewStory = createAsyncThunk("story/ViewStory",async({story_id}:{story_id:string},{rejectWithValue})=>{
+    try
+    {
+      const current_user_id = Auth().currentUser?.uid
+      const ReadStory =await firestore()
+      .collection("stories")
+      .doc(story_id)
+      .collection("viewers")
+      .doc(current_user_id)
+      .set({}, { merge: true })
+      return story_id
+    }
+    catch(err)
+    {
+      return rejectWithValue(JSON.stringify(err))
+    }
+  })
   
 export const StorySlice = createSlice({
     name:"story",
@@ -152,7 +181,6 @@ export const StorySlice = createSlice({
         state.loading = false
         state.error = action.payload as string
        })
-
        builder.addCase(fetchStories.pending,(state)=>{
         state.loading = true
         state.error = null
@@ -164,6 +192,27 @@ export const StorySlice = createSlice({
        builder.addCase(fetchStories.rejected,(state,action)=>{
         state.loading = false
         state.error = action.payload as string
+      })
+      builder.addCase(ViewStory.pending,(state)=>{
+        state.readStoryLoading = false,
+        state.readStorySuccess = false,
+        state.readStoryError = null
+      })
+      builder.addCase(ViewStory.fulfilled,(state,action:PayloadAction<string>)=>{
+        state.readStoryLoading = false,
+        state.readStorySuccess = true
+        const stories =  state.stories.map(userStory => {
+          if (userStory.id === action.payload) {
+            return { ...userStory, isViewed: true };
+          } else {
+            return userStory;
+          }
+        });
+        state.stories = stories
+      })
+      builder.addCase(ViewStory.rejected,(state,action)=>{
+        state.readStoryLoading = false,
+        state.readStoryError = action.payload as string
       })
        
     }

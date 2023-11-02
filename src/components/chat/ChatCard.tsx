@@ -22,7 +22,7 @@ const ChatCard=(props:ChatCardProps)=>
         onPress={()=>navigation.navigate("Chat",chat.User)}
         style={[styles.container,{
             backgroundColor: theme.background_color,
-            borderBottomColor:theme.placeholder_color,
+            borderBottomColor:theme.placeholder_color
         }]}>
             <View style={styles.chatInnerContainer}>
                    <View style={{flexDirection:"row",alignItems:"center"}}>
@@ -41,14 +41,12 @@ const ChatCard=(props:ChatCardProps)=>
                     }]}>{chat.lastMessage.text}</Text>
                     </View>
                 </View>
-                <View style={{
-                    justifyContent:"space-between"
-                }}>
                 <Text style={{
                     fontSize:15,
-                    color:theme.placeholder_color
+                    color:theme.placeholder_color,
+                    flexWrap:"wrap"
                 }}>{formatTimestamp(new Date(chat.lastMessage.timestamp).getTime())}</Text>
-                </View>
+            
             </View>
         </TouchableOpacity>
     )
@@ -72,7 +70,8 @@ const styles = StyleSheet.create({
     chatInnerContainer:
     {
         flexDirection:"row",
-        justifyContent:"space-between"
+        justifyContent:"space-between",
+        maxWidth:"90%",
     },
     imgUser:
     {
