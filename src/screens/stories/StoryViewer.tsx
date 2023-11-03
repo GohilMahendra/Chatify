@@ -23,7 +23,7 @@ const StoryViewer = () =>
     const dispatch = useAppDispatch()
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const progress = useRef(new Animated.Value(0)).current
-    const [duration,setDuration] = useState<number>(10)
+    const [duration,setDuration] = useState<number>(5)
     const widthBar = width/userStory.stories.length - userStory.stories.length*3
     const startStory = () =>
     {

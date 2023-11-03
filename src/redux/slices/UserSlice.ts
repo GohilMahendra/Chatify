@@ -48,8 +48,9 @@ export const signInUser = createAsyncThunk(
       try {
         const signInResponse: FirebaseAuthTypes.UserCredential = await Auth().signInWithEmailAndPassword(email, password);
         const userId = signInResponse.user.uid;
-
+        console.log(userId,"user success login")
         const doc = await firestore().collection("users").doc(userId).get()
+        console.log(JSON.stringify(doc),"doc found")
         const id = doc.id
         const data = doc.data() as Omit<UserResult,"id">
         if(data.picture)
@@ -57,6 +58,7 @@ export const signInUser = createAsyncThunk(
           data.picture = await getImageUrl(data.picture)
         }
         const user = {id,...data} as UserResult
+        console.log(JSON.stringify(user),"user found")
         return user;
       } catch (error) {
         // Handle the error and reject the promise with a payload
@@ -152,18 +154,22 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
 },{rejectWithValue})=>{
       try
       {
-      const userNameExist = await firestore()
-      .collection("usernames")
-      .where(firestore.FieldPath.documentId(),"==",userName)
-      .get()
-
-      if(!userNameExist.empty)
-      {
-        return rejectWithValue("username is already exist !!")
-      }
+      console.log("try block exceuted")
+      console.log(userEmail,password)
+      // const userNameExist = await firestore()
+      // .collection("usernames")
+      // .where(firestore.FieldPath.documentId(),"==",userName)
+      // .get()
+      // console.log(JSON.stringify(userNameExist),"got usernames")
+      // if(!userNameExist.empty)
+      // {
+      //   return rejectWithValue("username is already exist !!")
+      // }
+     
       const signUp:FirebaseAuthTypes.UserCredential= await Auth().createUserWithEmailAndPassword(userEmail,password)
+      console.log(JSON.stringify(signUp),"Sign up success")
       const userId = signUp.user.uid
-
+     
       const newUser = await firestore().collection("users").doc(userId).set
       ({
           name: fullName,
@@ -172,6 +178,7 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
           user_name: userName,
           bio:""
       })
+      console.log(JSON.stringify(newUser),"added new User sucess")
       const addIntoUserNames = await firestore()
       .collection("usernames")
       .doc(userName)
@@ -214,6 +221,10 @@ export const UserSlice = createSlice({
             state.loading = false
             state.user = action.payload
         })
+        builder.addCase(fetchUserData.rejected,(state,action)=>{
+          state.loading = false
+          state.error = action.payload as string
+      })
       
         builder.addCase(signInUser.pending,(state)=>{
             state.loading = true
@@ -222,10 +233,14 @@ export const UserSlice = createSlice({
             state.loading = false
             state.user = action.payload
         })
-
+        builder.addCase(signInUser.rejected,(state,action)=>{
+          state.loading = false
+          state.error = action.payload as string
+      })
         builder.addCase(UpdateUser.pending,(state)=>{
           state.loading = true
           state.error = null
+          state.signUpSuccess = false
         })
 
         builder.addCase(UpdateUser.fulfilled,(state,action:PayloadAction<UserResult | undefined>)=>{
@@ -235,7 +250,6 @@ export const UserSlice = createSlice({
         builder.addCase(SignUpUser.pending,(state)=>{
           state.signUpError = null
           state.signUpLoading = false
-          state.signUpSuccess = false
         })
         builder.addCase(SignUpUser.fulfilled,(state)=>{
           state.signUpSuccess = true

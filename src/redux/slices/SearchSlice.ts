@@ -76,7 +76,7 @@ export const fetchUsers = createAsyncThunk('search/fetchUsers', async (searchStr
         return false;
       });
       
-      return uniqueUsers
+      return uniqueArray
     } 
     catch(err)
     {
@@ -98,7 +98,6 @@ export const SearchSlice = createSlice({
         })
         builder.addCase(fetchUsers.fulfilled,(state,action:PayloadAction<UserResult[]>)=>{
             state.loading = false
-            console.log(action.payload,"payload from redux")
             state.users = action.payload
         })
      

@@ -1,11 +1,11 @@
-import React,{useState,useRef} from "react";
+import React,{useState,useRef, useEffect} from "react";
 import { View,SafeAreaView,Dimensions,
-    Text,Image,StyleSheet} from "react-native";
+    Text,Image,StyleSheet, TouchableOpacity} from "react-native";
 import UseTheme from "../../globals/UseTheme";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Video from "react-native-video";
 import { Slider } from "react-native-elements";
-import { white } from "../../globals/Colors";
+import { black, white } from "../../globals/Colors";
 
 const {height,width} = Dimensions.get("window")
 export type MediaViewerProps=
@@ -18,9 +18,10 @@ const MediaViewer = (props: MediaViewerProps) =>
 {
     const {theme} = UseTheme()
     const {uri,type,onClose} = props
-    const [currentTime,setCurrentTime] = useState(0)
+    const [currentTime,setCurrentTime] = useState<number>(0)
     const [remainTime,setRemainTime] = useState<string>("00:00")
-    const [duration,setDuration] = useState(0)
+    const [duration,setDuration] = useState<number>(0)
+    const [paused,setPaused] = useState<boolean>(false)
     const videoRef = useRef<Video | null>(null)
 
     const onLoad = async(time:number) => { 
@@ -28,12 +29,12 @@ const MediaViewer = (props: MediaViewerProps) =>
     };
     const onProgress =(value:number)=>
     {
-        const remainingTime = duration - value 
-        const mins = remainingTime/60
-        const secs = remainingTime/60
-        const time = mins.toFixed(2).toString()+":"+secs.toFixed(2).toString()
-        setRemainTime(time)
-        setCurrentTime(value)
+        const remainingTime = duration - value;
+    const mins = Math.floor(remainingTime / 60);
+    const secs = Math.floor(remainingTime % 60);
+    const time = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    setRemainTime(time);
+    setCurrentTime(value);
     }
     const onValueChange = (value:number) =>
     {
@@ -41,13 +42,18 @@ const MediaViewer = (props: MediaViewerProps) =>
     }
     const onEnd= ()=>
     {
-        setCurrentTime(0)
+       // setCurrentTime(0)
         videoRef.current?.seek(0)
     }
+
+    useEffect(()=>{
+        console.log(currentTime,duration)
+    },[currentTime])
+
     return(
         <SafeAreaView style={{
             flex:1,
-            backgroundColor: theme.background_color
+            backgroundColor: black
         }}>
             <View style={styles.header}>
                 <AntDesign
@@ -71,23 +77,35 @@ const MediaViewer = (props: MediaViewerProps) =>
                     </View>
                     :
                     <View>
+                        <TouchableOpacity
+                        onPress={()=>setPaused(!paused)}
+                        >
                         <Video
+                        paused={paused}
                         repeat
                         onLoad={(time)=>onLoad(time.duration)}
                         onProgress={(time)=>onProgress(time.currentTime)}
                         onEnd={()=>onEnd()}
-                        resizeMode="contain"
+                        resizeMode="cover"
                         source={{uri: uri}}
                         style={styles.video}
                         />
+                        </TouchableOpacity>
+                        <Text
+                        style={{
+                            position:"absolute",
+                            bottom:60,
+                            color: white,
+                            margin:20,
+                            right:20
+                        }}
+                        >{remainTime}</Text>
                         <Slider
-                        animationType="timing"
                         value={currentTime}
                         minimumValue={0}
                         maximumValue={duration}
                         onSlidingComplete={(data)=>onValueChange(data)}
                         maximumTrackTintColor={theme.seconarybackground_color}
-                        allowTouchTrack
                         minimumTrackTintColor={theme.primary_color}
                         thumbStyle={[styles.slider,{
                          backgroundColor: theme.primary_color
@@ -111,7 +129,8 @@ const styles = StyleSheet.create({
     },
     sliderContainer:
     {
-        marginHorizontal:20,
+        alignSelf:"center",
+        width:width * 90/100,
         position:"absolute",
         bottom:50
     },

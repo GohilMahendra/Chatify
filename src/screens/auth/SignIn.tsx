@@ -5,9 +5,8 @@ import { silver, white } from "../../globals/Colors";
 import { useNavigation,NavigationProp } from "@react-navigation/native"
 import { RootStackParams } from '../../navigation/RootNavigation';
 import { useSelector  } from "react-redux";
-import Auth,{FirebaseAuthTypes} from "@react-native-firebase/auth";
 import { RootState, useAppDispatch } from '../../redux/store';
-import { fetchUserData, selectCurrentUser, signInUser } from '../../redux/slices/UserSlice';
+import {  selectCurrentUser, signInUser } from '../../redux/slices/UserSlice';
 import Loader from '../../components/global/Loader';
 const {height,width} = Dimensions.get("window")
 const SignIn = () =>
@@ -34,10 +33,10 @@ const SignIn = () =>
         <SafeAreaView
         style={styles.container}
         >
-            {
+            {/* {
                 loading &&
                 <Loader/>
-            }
+            } */}
             <View style={[styles.innerContainer,{         
                 backgroundColor: theme.background_color,
                 justifyContent:"center"

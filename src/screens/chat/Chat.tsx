@@ -183,7 +183,7 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
-         .orderBy("timestamp","desc")
+         .orderBy("timestamp","asc")
          .limit(pageSize)
 
          const messageResponse = await connectionRef.get()
@@ -355,13 +355,14 @@ const Chat  = () =>
         <View style={styles.inputContainer}>
             <TextInput
             value={text}
+            multiline={true}
             placeholder={"Type Something ..."}
             placeholderTextColor={theme.placeholder_color}
             onChangeText={(text:string)=>setText(text)}
             maxLength={200}
             style={[styles.inputText,{
                 backgroundColor:theme.seconarybackground_color,
-                color: theme.text_color,
+                color: theme.text_color
             }]}
             />
              <TouchableOpacity 
@@ -470,7 +471,7 @@ const Chat  = () =>
         </Modal>
         <Modal
         animationType="fade"
-        transparent={true}
+        transparent={false}
         visible = {mediaViewer!=null}
         onRequestClose={()=>setMediaViewer(null)}
         >
@@ -518,6 +519,7 @@ const styles = StyleSheet.create({
     {
         flexDirection:"row",
         padding:10,
+        alignItems:"center",
         justifyContent:"space-between"
     },
     inputText:
@@ -530,12 +532,18 @@ const styles = StyleSheet.create({
     },
     btnMedia:
     {
-        padding:10,
+        height:50,
+        width:50,
+        justifyContent:"center",
+        alignItems:"center",
         borderRadius:20
     },
     btnSend:
     {
-        padding:10,
+        height:50,
+        width:50,
+        justifyContent:"center",
+        alignItems:"center",
         borderRadius:20
     },
     modaMediaContainer:
