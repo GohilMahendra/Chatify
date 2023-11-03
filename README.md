@@ -67,7 +67,7 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 <img src="screenshots/Screenshot_1699028206.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699024582.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1699028967.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
 <img src="screenshots/Screenshot_1699028501.png" alt="Screenshot 1" width="200" height="500">
