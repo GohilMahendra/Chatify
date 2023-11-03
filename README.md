@@ -39,8 +39,14 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 
 
 ## ScreenShots
-
-
+![Screenshot 1](screenshots/Screenshot_1699023946.png){ width=100px height=100px }
+![Screenshot 2](screenshots/Screenshot_1699023955.png){ width=100px height=100px }
+![Screenshot 2](screenshots/Screenshot_1699024477.png){ width=100px height=100px }
+![Screenshot 2](screenshots/Screenshot_1699023962.png){ width=100px height=100px }
+![Screenshot 2](screenshots/Screenshot_1699023968.png){ width=100px height=100px }
+![Screenshot 2](screenshots/Screenshot_1699024492.png){ width=100px height=100px }
+![Screenshot 2](screenshots/Screenshot_1699024560.png){ width=100px height=100px }
+![Screenshot 2](screenshots/Screenshot_1699024582.png){ width=100px height=100px }
 ## Features
 
 - Light/dark mode toggle
