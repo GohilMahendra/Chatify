@@ -45,10 +45,10 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 <img src="screenshots/Screenshot_1699023955.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699023946.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1699028218.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699024477.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1699024857.png" alt="Screenshot 1" width="200" height="500">
 </td>
 </tr>
 <tr>
@@ -56,7 +56,7 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 <img src="screenshots/Screenshot_1699023968.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699024492.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1699024540.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
 <img src="screenshots/Screenshot_1699024560.png" alt="Screenshot 1" width="200" height="500">
@@ -64,7 +64,7 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 </tr>
 <tr>
 <td>
-<img src="screenshots/Screenshot_1699023962.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1699028206.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
 <img src="screenshots/Screenshot_1699024582.png" alt="Screenshot 1" width="200" height="500">
