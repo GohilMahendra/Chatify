@@ -71,6 +71,8 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 </td>
 </tr>
 </table>
+
+
 ## Features
 
 - Light/dark mode toggle
