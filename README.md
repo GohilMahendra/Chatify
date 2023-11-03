@@ -42,16 +42,13 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 <table>
 <tr>
 <td>
-<img src="screenshots/Screenshot_1699023946.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
 <img src="screenshots/Screenshot_1699023955.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699024477.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1699023946.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699023962.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1699024477.png" alt="Screenshot 1" width="200" height="500">
 </td>
 </tr>
 <tr>
@@ -63,6 +60,11 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 </td>
 <td>
 <img src="screenshots/Screenshot_1699024560.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1699023962.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
 <img src="screenshots/Screenshot_1699024582.png" alt="Screenshot 1" width="200" height="500">
