@@ -39,14 +39,36 @@ Ok , by making this project i brushed up my Typescript and Animations skills on 
 
 
 ## ScreenShots
-<img src="screenshots/Screenshot_1699023946.png" alt="Screenshot 1" width="100" height="100">
-<img src="screenshots/Screenshot_1699023955.png" alt="Screenshot 1" width="100" height="100">
-<img src="screenshots/Screenshot_1699024477.png" alt="Screenshot 1" width="100" height="100">
-<img src="screenshots/Screenshot_1699023962.png" alt="Screenshot 1" width="100" height="100">
-<img src="screenshots/Screenshot_1699023968.png" alt="Screenshot 1" width="100" height="100">
-<img src="screenshots/Screenshot_1699024492.png" alt="Screenshot 1" width="100" height="100">
-<img src="screenshots/Screenshot_1699024560.png" alt="Screenshot 1" width="100" height="100">
-<img src="screenshots/Screenshot_1699024582.png" alt="Screenshot 1" width="100" height="100">
+<table>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1699023946.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699023955.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699024477.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699023962.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1699023968.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699024492.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699024560.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699024582.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+</table>
 ## Features
 
 - Light/dark mode toggle
