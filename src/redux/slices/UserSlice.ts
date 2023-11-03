@@ -48,9 +48,7 @@ export const signInUser = createAsyncThunk(
       try {
         const signInResponse: FirebaseAuthTypes.UserCredential = await Auth().signInWithEmailAndPassword(email, password);
         const userId = signInResponse.user.uid;
-        console.log(userId,"user success login")
         const doc = await firestore().collection("users").doc(userId).get()
-        console.log(JSON.stringify(doc),"doc found")
         const id = doc.id
         const data = doc.data() as Omit<UserResult,"id">
         if(data.picture)
@@ -58,7 +56,6 @@ export const signInUser = createAsyncThunk(
           data.picture = await getImageUrl(data.picture)
         }
         const user = {id,...data} as UserResult
-        console.log(JSON.stringify(user),"user found")
         return user;
       } catch (error) {
         // Handle the error and reject the promise with a payload
@@ -82,7 +79,6 @@ export const fetchUserData = createAsyncThunk('user/fetchUserData', async (userI
   } 
   catch(err)
   {
-    console.log(err)
     return rejectWithValue(err)
   }
 });
@@ -130,15 +126,12 @@ export const UpdateUser = createAsyncThunk('user/UpdateUser',async({
    const updateResponse = await docRef.update(userData)
    updated_user.bio = bio
    updated_user.name = fullName
-
-   console.log(current_user,"current use which is changed")
    return updated_user
 
   }
   catch(err)
   {
     rejectWithValue(err)
-    console.log(err)
   }
 })
 export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
@@ -154,20 +147,16 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
 },{rejectWithValue})=>{
       try
       {
-      console.log("try block exceuted")
-      console.log(userEmail,password)
-      // const userNameExist = await firestore()
-      // .collection("usernames")
-      // .where(firestore.FieldPath.documentId(),"==",userName)
-      // .get()
-      // console.log(JSON.stringify(userNameExist),"got usernames")
-      // if(!userNameExist.empty)
-      // {
-      //   return rejectWithValue("username is already exist !!")
-      // }
+      const userNameExist = await firestore()
+      .collection("usernames")
+      .where(firestore.FieldPath.documentId(),"==",userName)
+      .get()
+      if(!userNameExist.empty)
+      {
+        return rejectWithValue("username is already exist !!")
+      }
      
       const signUp:FirebaseAuthTypes.UserCredential= await Auth().createUserWithEmailAndPassword(userEmail,password)
-      console.log(JSON.stringify(signUp),"Sign up success")
       const userId = signUp.user.uid
      
       const newUser = await firestore().collection("users").doc(userId).set
@@ -178,7 +167,6 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
           user_name: userName,
           bio:""
       })
-      console.log(JSON.stringify(newUser),"added new User sucess")
       const addIntoUserNames = await firestore()
       .collection("usernames")
       .doc(userName)
@@ -188,7 +176,6 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
       }
       catch(err)
       {
-          console.log(JSON.stringify(err))
           return rejectWithValue(JSON.stringify(err))
       }
 })
