@@ -1,4 +1,4 @@
-import { render , screen,waitFor, fireEvent } from "@testing-library/react-native";
+import { render,act,screen,waitFor, fireEvent } from "@testing-library/react-native";
 
 import React, { ReactNode, ReactPortal } from 'react'
 import { ThemeProvider } from "../../src/globals/ThemeProvider";
@@ -17,37 +17,31 @@ jest.mock('@react-navigation/native', () => ({
     }),
   }));
 
-  const initialState: UserType= 
-  {
-      loading: false,
-      error: null,
-      user:
-      {
-          bio:"",
-          email:"",
-          id:"",
-          name:"",
-          picture:"",
-          user_name:""
-      }
-  }
+  // const initialState: UserType= 
+  // {
+  //     loading: false,
+  //     error: null,
+  //     user:
+  //     {
+  //         bio:"",
+  //         email:"",
+  //         id:"",
+  //         name:"",
+  //         picture:"",
+  //         user_name:""
+  //     },
+  //     forgotLinkError:null,
+  //     forgotLinkLoading: false,
+  //     forgotLinkSuccess: false,
+  //     signUpError: null,
+  //     signUpLoading: false,
+  //     signUpSuccess: false
+  // }
   // const store = configureStore({
   //   reducer: (state) => state,
   //   preloadedState: initialState,
   // });
 
-  const mockDispatch = jest.fn();
-
-  jest.mock('../../src/redux/store', () => {
-    // Mock useAppDispatch to return the global mockDispatch
-    const useAppDispatch = () => mockDispatch;
-    const getState = () => initialState
-    return {
-      useAppDispatch,
-      getState
-    };
-  });
-  
 
   const mockAuthUser = {
     "user": {
@@ -96,16 +90,19 @@ jest.mock('@react-navigation/native', () => ({
     };
   });
 
+
+
+
 describe("Sign Up flow test",()=>{
   let SignInComponent:any;
 
 
   // Mock a successful sign-in action
-  mockDispatch.mockImplementation((action) => {
-    if (action.type === signInUser.fulfilled.type) {
-      return Promise.resolve(mockFulfilledAction);
-    }
-  });
+  // mockDispatch.mockImplementation((action) => {
+  //   if (action.type === signInUser.fulfilled.type) {
+  //     return Promise.resolve(mockFulfilledAction);
+  //   }
+  // });
 
   beforeEach(() => {
     // Render the SignUp component before each test
@@ -132,7 +129,16 @@ describe("Sign Up flow test",()=>{
   it("I can submit the details",async()=>
   {
     const btn_signIn = SignInComponent.getByTestId("btn_signIn")
-    fireEvent.press(btn_signIn)
+
+    await act(async()=>{
+      fireEvent.press(btn_signIn)
+    })
+    await waitFor(() => {
+      // Assert that the SignIn action was dispatched
+      const actions = store.dispatch.
+      expect(actions).toContainEqual(signInUser.fulfilled(/* Expected user data */, 'requestId', 'test@example.com'));
+    });
+    
   })
 
 })
