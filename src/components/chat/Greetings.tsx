@@ -17,7 +17,9 @@ const Greetings = (props:GreetingProps) =>
                 <Text style={[styles.textGreeting,{
                      color: theme.text_color,
                 }]}>Good Morning</Text>
-                <Text style={{
+                <Text 
+                testID="text_name"
+                style={{
                     fontSize:20,
                     color: theme.text_color,
                 }}>{user.name}</Text>

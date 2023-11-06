@@ -19,6 +19,7 @@ const ChatCard=(props:ChatCardProps)=>
     const navigation = useNavigation<NavigationProp<chatStackParams,"ChatHome">>()
     return(
         <TouchableOpacity 
+        testID="btn_goToChat"
         onPress={()=>navigation.navigate("Chat",chat.User)}
         style={[styles.container,{
             backgroundColor: theme.background_color,
@@ -33,7 +34,9 @@ const ChatCard=(props:ChatCardProps)=>
                     <View style={{
                         maxWidth:"90%"
                     }}>
-                    <Text style={[styles.textUserName,{            
+                    <Text 
+                    testID="text_userName"
+                    style={[styles.textUserName,{            
                         color: theme.text_color,
                     }]}>{chat.User.name}</Text>
                     <Text style={[styles.textLastMessage,{

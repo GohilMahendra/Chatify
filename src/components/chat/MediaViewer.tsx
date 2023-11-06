@@ -30,11 +30,11 @@ const MediaViewer = (props: MediaViewerProps) =>
     const onProgress =(value:number)=>
     {
         const remainingTime = duration - value;
-    const mins = Math.floor(remainingTime / 60);
-    const secs = Math.floor(remainingTime % 60);
-    const time = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    setRemainTime(time);
-    setCurrentTime(value);
+        const mins = Math.floor(remainingTime / 60);
+        const secs = Math.floor(remainingTime % 60);
+        const time = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        setRemainTime(time);
+        setCurrentTime(value);
     }
     const onValueChange = (value:number) =>
     {
@@ -71,6 +71,7 @@ const MediaViewer = (props: MediaViewerProps) =>
                     type.includes("image")?
                     <View>
                         <Image 
+                        testID={"image_viewer"}
                         source={{uri:uri}}
                         style={styles.imageView}/>
 
@@ -81,6 +82,7 @@ const MediaViewer = (props: MediaViewerProps) =>
                         onPress={()=>setPaused(!paused)}
                         >
                         <Video
+                        testID="video_viewer"
                         paused={paused}
                         repeat
                         onLoad={(time)=>onLoad(time.duration)}

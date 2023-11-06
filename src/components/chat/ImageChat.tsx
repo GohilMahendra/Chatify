@@ -15,12 +15,14 @@ const ImageChat = (props:ImageChatProps) =>
     return(
         <View>
         <Image
+        testID="image_preview"
         resizeMode="contain"
         source={{uri:uri}}
         style={styles.imgChatImage}
         />
         {type.includes("video") && 
         <FontAwesome5
+        testID="icon_play"
         style={{
             position:"absolute",
             top:"45%",
