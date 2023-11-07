@@ -20,16 +20,79 @@ clone the repo and then
   npx react-native run-android
 ```
     
-## Lessons Learned
+## Firebase rules - firestore
+```
+rules_version = '2';
 
-Ok , by making this project i brushed up my Typescript and Animations skills on some extent. Plus here i desgined my backend with NoSql. I learnt denormalised structure to optimise quary reads. so project have
+service cloud.firestore {
+  match /databases/{database}/documents {
 
-- Typescript
-- firebase 
-- redux toolkit
-- basic Animations
-- dark/light mode
+    // This rule allows anyone with your Firestore database reference to view, edit,
+    // and delete all data in your Firestore database. It is useful for getting
+    // started, but it is configured to expire after 30 days because it
+    // leaves your app open to attackers. At that time, all client
+    // requests to your Firestore database will be denied.
+    //
+    // Make sure to write security rules for your app before that time, or else
+    // all client requests to your Firestore database will be denied until you Update
+    // your rules
+    //   match /{document=**} {
+    //   allow read, write,update: if request.auth != null;
+    // }
+      match /users/{userId=*} {
+        allow read: if request.auth != null;
+        allow create, update: if request.auth != null && request.auth.uid == userId;
+      }
+      match /usernames/{allPaths=**}
+      {
+      	allow read: if true;
+        allow create,update: if request.auth != null;
+      }
+      match /stories/{document=**}
+      {
+      	allow read: if request.auth != null;
+   		}
+      match /stories/{userId}/{allPaths=**}
+      {
+   			allow create, update: if request.auth != null && request.auth.uid == userId;
+   		}
+      match /stories/{userId}/userStories/{document=**} {
+      	allow read: if request.auth != null;
+    	}
+      match /stories/{userId}/viewers/{viewerId} {
+        allow read: if request.auth != null;
+      }
+    
+      match /stories/{userId}/viewers/{viewerId=*} {
+        allow read: if request.auth != null
+        allow update,create,write: if request.auth != null && request.auth.uid == viewerId;
+      }
 
+      match /messages/{allPaths=**}
+      {
+          allow read: if request.auth != null
+          allow create,update: if request.auth != null
+      }
+//       match /messages/{userId}/groups/{otherUserId} {
+//       allow create: if request.auth.uid == userId
+//                    && !exists(/databases/$(database)/documents/messages/$(userId)/groups/$(otherUserId));
+//       allow read, write: if request.auth.uid == userId || request.auth.uid == otherUserId;
+//       }
+    
+//       // Allow group chat messaging (if applicable)
+//       match /messages/{userId}/groups/{otherUserId}/{allPaths=**} {
+//         allow read: if request.auth.uid == userId || request.auth.uid == otherUserId;
+//         allow write, update: if request.auth.uid == userId || request.auth.uid == otherUserId;
+//       }
+
+//       // Allow message creation in peer-to-peer and group chats
+//       match /messages/{userId}/groups/{otherUserId}/groupMessages/{messageId} {
+//         allow create: if request.auth.uid == userId;
+//         allow read, write, update: if request.auth.uid == userId || request.auth.uid == otherUserId;
+//       }
+  }
+}
+```
 
 ## Tech Stack
 
