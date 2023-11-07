@@ -25,7 +25,7 @@ const Greetings = (props:GreetingProps) =>
                 }}>{user.name}</Text>
             </View>
                 <Image
-                source={{uri:user.picture || placeholder_image}}
+                source={user.picture?{uri:user.picture}:placeholder_image}
                 style={styles.imgUser}
                 />
            </View> 

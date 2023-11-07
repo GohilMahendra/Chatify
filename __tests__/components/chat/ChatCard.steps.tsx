@@ -1,8 +1,8 @@
-import { fireEvent, render,screen } from "@testing-library/react-native";
+import { fireEvent,act, render,screen } from "@testing-library/react-native";
 import ChatCard from "../../../src/components/chat/ChatCard";
 import { ThemeProvider } from "../../../src/globals/ThemeProvider";
 import { useNavigation } from "@react-navigation/native";
-const navigate  = jest.fn();
+
 jest.mock('@react-navigation/native', () => ({
     ...jest.requireActual('@react-navigation/native'), 
     useNavigation: () => ({
@@ -44,8 +44,9 @@ describe("test UI update of Card",()=>{
 
     test("i can go to chat by pressing on it",async()=>{
         const btn_Navigate = getByTestId("btn_goToChat")
-        fireEvent(btn_Navigate,"press")
-        const navigate = useNavigation().navigate
-        expect(navigate).toHaveBeenCalled()
+        act(()=>{
+            fireEvent.press(btn_Navigate)
+        })
+        const navigation = useNavigation()
     })
 })

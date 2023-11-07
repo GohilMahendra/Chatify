@@ -35,12 +35,15 @@ const ChatComponent = (props:ChatProps) =>
                         <View style={[styles.chatContainer,{
                             backgroundColor: theme.primary_color,
                         }]}>
-                            { item.text && <Text style={{
+                            { item.text && <Text 
+                            testID={"text_senderMessage"}
+                            style={{
                                 color: theme.text_color
                             }}>{item.text}</Text>
                             }
                             {item.fileType?.includes("image") && item.fileUrl && 
                             <TouchableOpacity
+                            testID={"btn_senderMediaPress"}
                             onPress={()=>onMediaPress({
                                 type: item.fileType || "",
                                 uri: item.fileUrl || ""
@@ -54,6 +57,7 @@ const ChatComponent = (props:ChatProps) =>
                             }
                             {item.fileType?.includes("video") && item.thumbnail && 
                             <TouchableOpacity
+                            testID={"btn_senderMediaVideo"}
                             onPress={()=>onMediaPress({
                                 type: item.fileType || "",
                                 uri: item.fileUrl || ""
@@ -72,11 +76,14 @@ const ChatComponent = (props:ChatProps) =>
                 <View style={[styles.userContainer,{    
                 backgroundColor: theme.primary_color,
                 }]}>
-                {item.text && <Text style={{
+                {item.text && <Text 
+                testID="text_messageText"
+                style={{
                         color: white
                     }}>{item.text}</Text> }
                     {(item.fileUrl && item.thumbnail && item.fileType)?
                     <TouchableOpacity
+                    testID={"btn_videoMedia"}
                     onPress={()=>onMediaPress({
                         type: item.fileType || "",
                         uri: item.fileUrl || ""
@@ -90,6 +97,7 @@ const ChatComponent = (props:ChatProps) =>
                     :
                     (item.fileUrl && item.fileType) && 
                     <TouchableOpacity
+                    testID={"btn_imageMedia"}
                     onPress={()=>onMediaPress({
                         type: item.fileType || "",
                         uri: item.fileUrl || ""

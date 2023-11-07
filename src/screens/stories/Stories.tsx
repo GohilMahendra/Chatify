@@ -6,9 +6,10 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import {  storyStackParams } from '../../navigation/StoryStackNavigation';
 import { RootState, useAppDispatch } from '../../redux/store';
 import { useSelector } from 'react-redux';
-import { fetchStories } from '../../redux/slices/StorySlice';
+import { fetchStories } from '../../redux/actions/storyactions';
 import StoryComponent from '../../components/stories/StoryComponent';
 import { white } from '../../globals/Colors';
+import { placeholder_image } from '../../globals/Data';
 const Stories = () =>
 {
     const {theme} = UseTheme()
@@ -74,7 +75,7 @@ const Stories = () =>
                 }]}>
                     <View style={styles.storyCreateContainer}>
                         <Image
-                        source={{uri:user.picture}}
+                        source={user.picture?{uri:user.picture}:placeholder_image}
                         style={styles.imageUser}
                         />
                         

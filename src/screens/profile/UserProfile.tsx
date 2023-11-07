@@ -16,6 +16,7 @@ import { light_pink, ocean_blue, purple_black, red, white } from '../../globals/
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { placeholder_image } from '../../globals/Data';
 
 export type CompositeProfileProps = CompositeScreenProps<
 NativeStackScreenProps<ProfileStackParams,"UserProfile">,
@@ -75,7 +76,7 @@ const UserProfile = () =>
             }}>
             <TouchableOpacity>
                 <Image
-                source={{uri:user.picture?user.picture: "https://picfiles.alphacoders.com/631/631729.png"}}
+                source={user.picture ?{uri:user.picture}:placeholder_image}
                 style={styles.imgUserImage}
                 />
             </TouchableOpacity>

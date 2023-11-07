@@ -9,7 +9,8 @@ import { RootState, useAppDispatch } from '../../redux/store';
 import { black, white } from '../../globals/Colors';
 import { useSelector } from 'react-redux';
 import Video from 'react-native-video';
-import { ViewStory } from '../../redux/slices/StorySlice';
+import { ViewStory } from '../../redux/actions/storyactions';
+import { placeholder_image } from '../../globals/Data';
 const {width,height} = Dimensions.get("window")
 const StoryViewer = () =>
 {
@@ -107,7 +108,7 @@ const StoryViewer = () =>
             {/* user profile section starts */}
             <View style={styles.profileContainer}>
                 <Image
-                source={{uri:userStory.picture}}
+                source={userStory.picture?{uri:userStory.picture}:placeholder_image}
                 style={styles.imageProfile}
                 resizeMode='contain'
                 />

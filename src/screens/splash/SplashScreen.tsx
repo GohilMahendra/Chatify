@@ -6,7 +6,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/RootNavigation';
 import Auth from "@react-native-firebase/auth";
 import { useAppDispatch } from '../../redux/store';
-import { fetchUserData } from '../../redux/slices/UserSlice';
+import { fetchUserData } from '../../redux/actions/UserActions';
 import { white } from '../../globals/Colors';
 const SplashScreen = () =>
 {

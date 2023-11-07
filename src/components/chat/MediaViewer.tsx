@@ -79,10 +79,12 @@ const MediaViewer = (props: MediaViewerProps) =>
                     :
                     <View>
                         <TouchableOpacity
+                        testID={"btn_pauseVideo"}
                         onPress={()=>setPaused(!paused)}
                         >
                         <Video
                         testID="video_viewer"
+                        ref={ref=>videoRef.current = ref}
                         paused={paused}
                         repeat
                         onLoad={(time)=>onLoad(time.duration)}
@@ -103,6 +105,7 @@ const MediaViewer = (props: MediaViewerProps) =>
                         }}
                         >{remainTime}</Text>
                         <Slider
+                        
                         value={currentTime}
                         minimumValue={0}
                         maximumValue={duration}

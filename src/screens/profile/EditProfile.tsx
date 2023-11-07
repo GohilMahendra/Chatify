@@ -8,8 +8,9 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { ProfileStackParams } from '../../navigation/ProfileStackNavigation';
 import { useAppDispatch } from '../../redux/store';
-import { UpdateUser } from '../../redux/slices/UserSlice';
+import { UpdateUser } from '../../redux/actions/UserActions';
 import { Switch } from "react-native-elements";
+import { placeholder_image } from '../../globals/Data';
 const {height,width} = Dimensions.get("window")
 
 const EditProfile = () =>
@@ -75,7 +76,7 @@ const EditProfile = () =>
             onPress={()=>openImagePicker()}
             >
                 <Image
-                source={{uri:profilePicture ? profilePicture : "https://picfiles.alphacoders.com/631/631729.png"}}
+                source={profilePicture?{uri:profilePicture}:placeholder_image}
                 style={styles.imageProfile}
                 />
             </TouchableOpacity>

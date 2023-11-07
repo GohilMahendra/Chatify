@@ -9,7 +9,7 @@ import storage from "@react-native-firebase/storage";
 import { User, UserResult } from '../../types/UserTypes';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../redux/store';
-import { fetchUsers } from '../../redux/slices/SearchSlice';
+import { fetchUsers } from '../../redux/actions/SearchActions';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { chatStackParams } from '../../navigation/ChatStackNavigation';
 import SearchResultCard from '../../components/search/SearchResultCard';

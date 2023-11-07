@@ -7,7 +7,7 @@ import { RootStackParams } from '../../navigation/RootNavigation';
 import Auth ,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { RootState, useAppDispatch } from '../../redux/store';
-import { SignUpUser } from '../../redux/slices/UserSlice';
+import { SignUpUser } from '../../redux/actions/UserActions';
 import { useSelector } from 'react-redux';
 import Loader from '../../components/global/Loader';
 import { checkEmail, checkEmptyField, checkPassword } from '../../globals/utilities';

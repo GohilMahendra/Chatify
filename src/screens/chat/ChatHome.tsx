@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../redux/store';
 import ChatCard from '../../components/chat/ChatCard';
 import Greetings from '../../components/chat/Greetings';
-import { fetchChatUsers, fetchMoreChatUsers } from '../../redux/slices/MessagesSlice';
+import { fetchChatUsers, fetchMoreChatUsers } from '../../redux/actions/MessageActions';
 import Loader from '../../components/global/Loader';
 
 const Home = () =>

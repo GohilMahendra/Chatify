@@ -12,7 +12,7 @@ module.exports = {
     '!**/__tests__/**',
     '!**/node_modules/**',
   ],
-  coverageReporters: ['lcov', 'html', 'text-summary'], 
+  coverageReporters: ['lcov', 'html', 'text'], 
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/",
     "<rootDir>/coverage/",

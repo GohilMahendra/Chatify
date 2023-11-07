@@ -7,7 +7,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParams } from '../../navigation/RootNavigation';
 import { RootState, useAppDispatch } from '../../redux/store';
-import { SendResetLink } from '../../redux/slices/UserSlice';
+import { SendResetLink } from '../../redux/actions/UserActions';
 import { checkEmail, checkEmptyField } from '../../globals/utilities';
 import { useSelector } from 'react-redux';
 const {height,width} = Dimensions.get("window")

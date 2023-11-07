@@ -15,9 +15,10 @@ import storage from "@react-native-firebase/storage";
 import Feather from 'react-native-vector-icons/Feather'
 import ThumbnailPicker from '../../components/chat/ThumbnailPicker';
 import ChatComponent from '../../components/chat/ChatComponent';
-import { sendUserChat } from '../../redux/slices/MessagesSlice';
+import { sendUserChat } from '../../redux/actions/MessageActions';
 import ChatLoader from '../../components/chat/ChatLoader';
 import MediaViewer from '../../components/chat/MediaViewer';
+import { placeholder_image } from '../../globals/Data';
 const {height,width} = Dimensions.get("window")
 export type fileType =
 {
@@ -330,7 +331,7 @@ const Chat  = () =>
             />
             <View style={styles.imageContaier}>
                 <Image
-                source={{uri:route.params.picture}}
+                source={route.params.picture?{uri:route.params.picture}:placeholder_image}
                 style={styles.imgUser}
                 />
                 <Text style={[styles.textUserName,{

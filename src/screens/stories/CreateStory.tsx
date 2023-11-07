@@ -9,7 +9,7 @@ import Auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { StoryUpload } from '../../types/StoryTypes';
 import { RootState, useAppDispatch } from '../../redux/store';
-import { UploadStory } from '../../redux/slices/StorySlice';
+import { UploadStory } from '../../redux/actions/storyactions';
 import { useSelector } from 'react-redux';
 import Loader from '../../components/global/Loader';
 import VideoPreview from '../../components/stories/VideoPreview';
