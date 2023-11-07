@@ -25,7 +25,46 @@ clone the repo and then
 ```bash
   npx react-native run-android
 ```
-    
+
+
+## ScreenShots
+<table>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1699023955.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699028218.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699024857.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1699023968.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699024540.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699024560.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1699028206.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699028967.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1699028501.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+</table>
+
+ 
 ## Firebase rules - firestore
 ```
 rules_version = '2';
@@ -144,44 +183,6 @@ service firebase.storage {
 **Client:** React Native, Redux-ToolKit, Typescript, Jest, React-Native Testing Library
 
 **Server:** firebase
-
-
-## ScreenShots
-<table>
-<tr>
-<td>
-<img src="screenshots/Screenshot_1699023955.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699028218.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699024857.png" alt="Screenshot 1" width="200" height="500">
-</td>
-</tr>
-<tr>
-<td>
-<img src="screenshots/Screenshot_1699023968.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699024540.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699024560.png" alt="Screenshot 1" width="200" height="500">
-</td>
-</tr>
-<tr>
-<td>
-<img src="screenshots/Screenshot_1699028206.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699028967.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699028501.png" alt="Screenshot 1" width="200" height="500">
-</td>
-</tr>
-</table>
 
 
 ## Running Tests
