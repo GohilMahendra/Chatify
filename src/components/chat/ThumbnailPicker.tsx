@@ -70,6 +70,7 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
                     color: theme.text_color
                 }]}>Preview</Text>
                 <AntDesign
+                testID={"btn_close"}
                 onPress={()=>onClose()}
                 name={"closecircleo"}
                 size={30}
@@ -78,6 +79,7 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
             </View>
             <View ref={viewRef}>
                 <Video
+                testID={"video"}
                 repeat
                 paused={false}
                 onLoad={state=>onLoad(state.duration)}
@@ -107,6 +109,7 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
             }}
             />
             <TouchableOpacity 
+            testID={"btn_send"}
             onPress={()=>{onClose(),onSelect()}}
             style={[styles.btnSend,{
                 backgroundColor: theme.primary_color,

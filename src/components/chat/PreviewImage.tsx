@@ -21,6 +21,7 @@ const PreviewImage = (props:ImagePropType) =>
                 <View/>
              </View>
              <Image
+                testID={"image_preview"}
                 source={{uri:uri}}
                 style={{
                     height: height *80/100,
