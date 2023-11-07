@@ -3,6 +3,12 @@
 
 A peer to peer chat application same as Whatsapp made with firebase services firestore,storage etc.
 
+## Features
+
+- Light/dark mode toggle
+- story viewer same as whatsapp
+- Real Time peer to peer chat along with photos and videos
+- Cross Platform
 
 ## Installation
 please make sure you have react native environment setted up if not look into https://reactnative.dev/docs/environment-setup. 
@@ -94,6 +100,45 @@ service cloud.firestore {
 }
 ```
 
+## Firebase rules -storage
+```
+rules_version = '2';
+
+// Craft rules based on data in your Firestore database
+// allow write: if firestore.get(
+//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // This rule allows anyone with your Storage bucket reference to view, edit,
+    // and delete all data in your Storage bucket. It is useful for getting
+    // started, but it is configured to expire after 30 days because it
+    // leaves your app open to attackers. At that time, all client
+    // requests to your Storage bucket will be denied.
+    //
+    // Make sure to write security rules for your app before that time, or else
+    // all client requests to your Storage bucket will be denied until you Update
+    // your rules
+    match /ProfileImages/{userId}/{allPaths=**} {
+      // Allow authenticated users to read profile images
+      allow read: if request.auth != null;
+
+      // Allow the owner of the profile image to write or update it
+      allow write,update: if request.auth != null && request.auth.uid == userId;
+    }
+  	match /stories/{userId}/{allPaths=**}{
+    	allow read: if request.auth != null;
+      allow write,update: if request.auth != null && request.auth.uid == userId;
+    }
+    match /messages/{userId}/{senderUserId=*}/{allPaths=**}
+    {
+    	allow read: if request.auth.uid == userId || request.auth.uid == senderUserId;
+      allow write,update: if request.auth.uid == userId
+    }
+  }
+}
+```
+
 ## Tech Stack
 
 **Client:** React Native, Redux-ToolKit, Typescript, Jest, React-Native Testing Library
@@ -137,14 +182,6 @@ service cloud.firestore {
 </td>
 </tr>
 </table>
-
-
-## Features
-
-- Light/dark mode toggle
-- story viewer same as whatsapp
-- Real Time peer to peer chat along with photos and videos
-- Cross Platform
 
 
 ## Running Tests
