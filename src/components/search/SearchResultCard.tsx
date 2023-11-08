@@ -5,7 +5,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { chatStackParams } from "../../navigation/ChatStackNavigation";
 import { UserResult } from "../../types/UserTypes";
 
-type SearchResultPropType =
+export type SearchResultPropType =
 {
     result: UserResult
 }
@@ -17,6 +17,7 @@ const SearchResultCard = (props:SearchResultPropType) =>
     const navigation = useNavigation<NavigationProp<chatStackParams,"FindChat">>()
     return(
         <TouchableOpacity 
+        testID={"btn_navigateTochat"}
         onPress={()=>navigation.navigate("Chat",result)}
         style={[styles.btnNavigate,{
             backgroundColor: theme.seconarybackground_color

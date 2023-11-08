@@ -8,6 +8,7 @@ const Loader = () =>
     const {theme} = UseTheme()
     return(
         <Modal
+        testID='modal_loader'
         visible={true}
         transparent
         style={styles.container}

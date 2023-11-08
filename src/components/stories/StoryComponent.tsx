@@ -18,6 +18,7 @@ const StoryComponent = (props:StoryUserProps) =>
     const navigation = useNavigation<NavigationProp<storyStackParams,"StoryViewer">>()
     return(
         <TouchableOpacity
+        testID="btn_goToStoryViewer"
         onPress={()=>navigation.navigate("StoryViewer",{user_id:story.id})}
         style={{
            padding:3,

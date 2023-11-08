@@ -16,6 +16,7 @@ const VideoPreview = (props:PreviewType) =>
             flex:0.95
         }}>
             <Video
+            testID="video_preview"
             repeat
             source={{uri:uri}}
             resizeMode="contain"
