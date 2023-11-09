@@ -1,13 +1,14 @@
 import React,{useState,} from 'react';
 import { View,Text,SafeAreaView, TouchableOpacity,TextInput, StyleSheet, Dimensions} from 'react-native';
 import UseTheme from '../../globals/UseTheme';
-import { silver, white } from "../../globals/Colors";
+import { red, silver, white } from "../../globals/Colors";
 import { useNavigation,NavigationProp } from "@react-navigation/native"
 import { RootStackParams } from '../../navigation/RootNavigation';
 import { useSelector  } from "react-redux";
 import { RootState, useAppDispatch } from '../../redux/store';
 import {  selectCurrentUser } from '../../redux/slices/UserSlice';
 import { signInUser } from "../../redux/actions/UserActions";
+import Loader from '../../components/global/Loader';
 const {height,width} = Dimensions.get("window")
 const SignIn = () =>
 {
@@ -33,10 +34,10 @@ const SignIn = () =>
         <SafeAreaView
         style={styles.container}
         >
-            {/* {
+            {
                 loading &&
                 <Loader/>
-            } */}
+            }
             <View style={[styles.innerContainer,{         
                 backgroundColor: theme.background_color,
                 justifyContent:"center"
@@ -46,6 +47,10 @@ const SignIn = () =>
                 }]}>
                     Chatify !
                 </Text>
+                {
+                    error &&
+                    <Text style={styles.errorText}>{JSON.stringify(error)}</Text>
+                }
                 <TextInput
                 testID={"input_email"}
                 value={userEmail}
@@ -149,6 +154,15 @@ const styles  = StyleSheet.create({
         fontSize:35,
         fontWeight:"bold",
         marginVertical:40
+    },
+    errorText:{
+        color:red,
+        fontSize:15,
+        fontWeight:"bold",
+        flexWrap:"wrap",
+        maxWidth:"90%",
+        alignSelf:"center",
+        textAlign:"center"
     }
 }
 )
