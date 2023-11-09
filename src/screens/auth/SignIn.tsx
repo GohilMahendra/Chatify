@@ -8,7 +8,6 @@ import { useSelector  } from "react-redux";
 import { RootState, useAppDispatch } from '../../redux/store';
 import {  selectCurrentUser } from '../../redux/slices/UserSlice';
 import { signInUser } from "../../redux/actions/UserActions";
-import Loader from '../../components/global/Loader';
 const {height,width} = Dimensions.get("window")
 const SignIn = () =>
 {

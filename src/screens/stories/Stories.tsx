@@ -17,7 +17,6 @@ const Stories = () =>
     const dispatch = useAppDispatch()
     const loading = useSelector((state:RootState)=>state.stories.loading)
     const data = useSelector((state:RootState)=>state.stories.stories)
-    console.log(data)
     const user = useSelector((state:RootState)=>state.user.user)
     const error = useSelector((state:RootState)=>state.stories.error)
     const openImagePicker=async()=>
@@ -160,7 +159,8 @@ const styles = StyleSheet.create({
     {
         height:70,
         width:70,
-        borderRadius:70
+        borderRadius:70,
+        resizeMode:"contain"
     },
     plusIconContainer:
     {

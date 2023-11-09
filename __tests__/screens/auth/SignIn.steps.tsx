@@ -78,6 +78,29 @@ jest.mock('@react-navigation/native', () => ({
       },
     },
   };
+  const mockLodervalue = {
+    type: signInUser.pending.type,
+    payload: {
+      // Mock the payload as needed for your test
+      user: {
+        uid: 'user-uid',
+        email: 'user@example.com',
+        displayName: 'John Doe',
+      },
+    },
+  };
+  const mockRejectedValue = {
+    type: signInUser.rejected.type,
+    payload:"error string"
+  };
+
+  jest.mock("../../../src/redux/actions/UserActions",()=>{
+    const allMethods = jest.requireActual("../../../src/redux/actions/UserActions")
+    return{
+      ...allMethods,
+      signInUser: jest.fn().mockre(mockLodervalue),
+    }
+  })
 
   jest.mock('@react-native-firebase/auth', () => {
     const signInWithEmailAndPassword = jest.fn().mockResolvedValue(mockAuthUser);
@@ -95,16 +118,7 @@ jest.mock('@react-navigation/native', () => ({
 describe("Sign Up flow test",()=>{
   let SignInComponent:any;
 
-
-  // Mock a successful sign-in action
-  // mockDispatch.mockImplementation((action) => {
-  //   if (action.type === signInUser.fulfilled.type) {
-  //     return Promise.resolve(mockFulfilledAction);
-  //   }
-  // });
-
   beforeEach(() => {
-    // Render the SignUp component before each test
     SignInComponent = render(
       <Provider store={store}>
          <ThemeProvider>

@@ -43,7 +43,7 @@ const Chat  = () =>
     const sendChatLoading=useSelector((state:RootState)=>state.messages.sendUserChatLoading)
     const dispatch = useAppDispatch()
     const  [lastId,setLastId] = useState<string | null>(null)
-    const pageSize = 2
+    const pageSize = 20
 
     const openImagePicker=async()=>
     {    
@@ -184,7 +184,7 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
-         .orderBy("timestamp","asc")
+         .orderBy("timestamp","desc")
          .limit(pageSize)
 
          const messageResponse = await connectionRef.get()
@@ -231,21 +231,27 @@ const Chat  = () =>
             currentLastId = Messages[Messages.length -1].id
         }
         setLastId(currentLastId)
-        setChats(Messages)
+        setChats(Messages.reverse())
         }
         catch(err)
         {
             console.log(JSON.stringify(err))
         }
     }
+    const handleScroll = async(event:any) => {
+        const scrollY = event.nativeEvent.contentOffset.y;
+        const threshold = 100; // Adjust this value as needed
+      
+        if (scrollY < threshold) {
+          //  await loadMoreMessages()
+        }
+      };
     const loadMoreMessages = async() =>
     {
         try
         {
-        console.log("load more messages")
         if(lastId == null)
         {
-            console.log(lastId,"id stored are null")
             return
         }
         const current_user_id = Auth().currentUser?.uid 
@@ -255,19 +261,15 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
-         .orderBy("timestamp","desc")
+         .orderBy("timestamp","asc")
          .startAfter(lastId)
          .limit(pageSize)
-
          const messageResponse = await connectionRef.get()
-
-         console.log(messageResponse)
          const Messages:Message[] = []
          try
          {
          for(const doc of messageResponse.docs)
          {
-           
              const id = doc.id
              const data = doc.data() as UserMessageType
              const message:Message = {
@@ -291,29 +293,34 @@ const Chat  = () =>
         }
         catch(err)
         {
-            console.log(JSON.stringify(err))
+            console.log(JSON.stringify(err),"error in loop")
         }
 
         const length = Messages.length
         let currentLastId: string | null = null
         if(length >= pageSize)
         {
-            currentLastId = Messages[Messages.length -1].id
+            currentLastId = Messages[Messages.length-1].id
         }
         setLastId(currentLastId)
-        setChats((prevchats)=>[...prevchats,...Messages])
+        //setChats((prevchats)=>[...Messages,...prevchats,])
         }
         catch(err)
         {
-            console.log(JSON.stringify(err))
+            console.log(JSON.stringify(err),"error in loading more")
         }
     }
 
     useEffect(()=>{
-     // loadInitialMessages()
      loadMessages()
      subscribeToMessages()
     },[])
+    useEffect(()=>{
+        if(lastId != null)
+        {
+            loadMoreMessages()
+        }
+    },[lastId])
     return(
         <SafeAreaView style={{
             flex:1,
@@ -349,6 +356,7 @@ const Chat  = () =>
         data={chats}
         renderItem={({item,index})=>renderMessage({item,index})}
         keyExtractor={(item)=>item.id}
+        onScroll={handleScroll}
         //onEndReached={()=>loadMoreMessages()}
         />
         {/* chat section ends */}
