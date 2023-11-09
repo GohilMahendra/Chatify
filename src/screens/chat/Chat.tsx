@@ -42,8 +42,8 @@ const Chat  = () =>
     const [text,setText] = useState("")
     const sendChatLoading=useSelector((state:RootState)=>state.messages.sendUserChatLoading)
     const dispatch = useAppDispatch()
-    const  [lastId,setLastId] = useState<string | null>(null)
-    const pageSize = 20
+    const  [lastTimeStamp,SetlastTimeStamp] = useState<string | null>(null)
+    const pageSize = 7
 
     const openImagePicker=async()=>
     {    
@@ -225,12 +225,12 @@ const Chat  = () =>
         }
 
         const length = Messages.length
-        let currentLastId: string | null = null
+        let currentLastTimeStamp: string | null = null
         if(length >= pageSize)
         {
-            currentLastId = Messages[Messages.length -1].id
+            currentLastTimeStamp = Messages[Messages.length -1].timestamp
         }
-        setLastId(currentLastId)
+        SetlastTimeStamp(currentLastTimeStamp)
         setChats(Messages.reverse())
         }
         catch(err)
@@ -243,14 +243,13 @@ const Chat  = () =>
         const threshold = 100; // Adjust this value as needed
       
         if (scrollY < threshold) {
-          //  await loadMoreMessages()
+            await loadMoreMessages()
         }
       };
     const loadMoreMessages = async() =>
     {
-        try
-        {
-        if(lastId == null)
+        
+        if(lastTimeStamp == null)
         {
             return
         }
@@ -261,10 +260,11 @@ const Chat  = () =>
          .collection("groups")
          .doc(user_id)
          .collection("groupMessages")
-         .orderBy("timestamp","asc")
-         .startAfter(lastId)
+         .orderBy("timestamp","desc")
+         .startAfter(lastTimeStamp)
          .limit(pageSize)
          const messageResponse = await connectionRef.get()
+         console.log(messageResponse)
          const Messages:Message[] = []
          try
          {
@@ -290,20 +290,16 @@ const Chat  = () =>
             
              Messages.push(message)
         }
-        }
-        catch(err)
-        {
-            console.log(JSON.stringify(err),"error in loop")
-        }
+        
 
         const length = Messages.length
-        let currentLastId: string | null = null
+        let currentLastTimeStamp: string | null = null
         if(length >= pageSize)
         {
-            currentLastId = Messages[Messages.length-1].id
+            currentLastTimeStamp = Messages[Messages.length -1].timestamp
         }
-        setLastId(currentLastId)
-        //setChats((prevchats)=>[...Messages,...prevchats,])
+        SetlastTimeStamp(currentLastTimeStamp)
+        setChats((prevchats)=>[...Messages.reverse(),...prevchats,])
         }
         catch(err)
         {
@@ -313,14 +309,9 @@ const Chat  = () =>
 
     useEffect(()=>{
      loadMessages()
-     subscribeToMessages()
+    // subscribeToMessages()
     },[])
-    useEffect(()=>{
-        if(lastId != null)
-        {
-            loadMoreMessages()
-        }
-    },[lastId])
+   
     return(
         <SafeAreaView style={{
             flex:1,
