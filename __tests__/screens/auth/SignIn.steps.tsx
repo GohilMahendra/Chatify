@@ -80,14 +80,6 @@ jest.mock('@react-navigation/native', () => ({
   };
   const mockLodervalue = {
     type: signInUser.pending.type,
-    payload: {
-      // Mock the payload as needed for your test
-      user: {
-        uid: 'user-uid',
-        email: 'user@example.com',
-        displayName: 'John Doe',
-      },
-    },
   };
   const mockRejectedValue = {
     type: signInUser.rejected.type,
@@ -98,7 +90,7 @@ jest.mock('@react-navigation/native', () => ({
     const allMethods = jest.requireActual("../../../src/redux/actions/UserActions")
     return{
       ...allMethods,
-      signInUser: jest.fn().mockre(mockLodervalue),
+      signInUser: jest.fn().mockReturnValue(mockLodervalue),
     }
   })
 

@@ -43,7 +43,7 @@ const Chat  = () =>
     const sendChatLoading=useSelector((state:RootState)=>state.messages.sendUserChatLoading)
     const dispatch = useAppDispatch()
     const  [lastTimeStamp,SetlastTimeStamp] = useState<string | null>(null)
-    const pageSize = 7
+    const pageSize = 10
 
     const openImagePicker=async()=>
     {    
@@ -240,9 +240,8 @@ const Chat  = () =>
     }
     const handleScroll = async(event:any) => {
         const scrollY = event.nativeEvent.contentOffset.y;
-        const threshold = 100; // Adjust this value as needed
-      
-        if (scrollY < threshold) {
+        const threshold = 10; 
+        if (scrollY < threshold ) {
             await loadMoreMessages()
         }
       };
@@ -309,10 +308,16 @@ const Chat  = () =>
 
     useEffect(()=>{
      loadMessages()
-    // subscribeToMessages()
+     subscribeToMessages()
     },[])
-   
+    // useEffect(()=>{
+    //     if(lastId != null)
+    //     {
+    //         loadMoreMessages()
+    //     }
+    // },[lastId])
     return(
+
         <SafeAreaView style={{
             flex:1,
             backgroundColor:theme.background_color
@@ -348,7 +353,6 @@ const Chat  = () =>
         renderItem={({item,index})=>renderMessage({item,index})}
         keyExtractor={(item)=>item.id}
         onScroll={handleScroll}
-        //onEndReached={()=>loadMoreMessages()}
         />
         {/* chat section ends */}
         {sendChatLoading && <ChatLoader/> }
