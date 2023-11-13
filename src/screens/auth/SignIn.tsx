@@ -77,6 +77,7 @@ const SignIn = () =>
                 }]}
                 />
                 <Text
+                testID='btn_navigateForgotPassword'
                 onPress={()=>navigation.navigate("ForgotPassword")}
                 style={[styles.btnForgotPassword,{
                     color:theme.primary_color
@@ -95,6 +96,7 @@ const SignIn = () =>
                 </TouchableOpacity>
 
                 <Text 
+                testID='btn_navigateSignUp'
                 onPress={()=>navigation.navigate("SignUp")}
                 style={{
                     color: theme.primary_color,

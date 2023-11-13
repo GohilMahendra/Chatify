@@ -10,6 +10,7 @@ export const signInUser = createAsyncThunk(
     async ({email,password}:{email:string,password:string}, { rejectWithValue }) => {
       try {
         const signInResponse: FirebaseAuthTypes.UserCredential = await Auth().signInWithEmailAndPassword(email, password);
+        console.log(signInResponse,"response from backedn")
         const userId = signInResponse.user.uid;
         const doc = await firestore().collection("users").doc(userId).get()
         const id = doc.id
@@ -22,7 +23,8 @@ export const signInUser = createAsyncThunk(
         return user;
       } catch (error) {
         // Handle the error and reject the promise with a payload
-        return rejectWithValue('Sign-in failed: ' + error);
+        console.log("Thease error cam",JSON.stringify(error))
+        return rejectWithValue('Sign-in failed: ' + JSON.stringify(error));
       }
     }
   );
