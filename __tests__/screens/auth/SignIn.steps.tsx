@@ -5,7 +5,7 @@ import { ThemeProvider } from "../../../src/globals/ThemeProvider";
 import SignIn from "../../../src/screens/auth/SignIn";
 import { Provider } from "react-redux";
 import store,{ useAppDispatch } from "../../../src/redux/store";
-import firestore from "@react-native-firebase/firestore";
+
 const mockNavigate =jest.fn()
 jest.mock('@react-navigation/native', () => ({
     ...jest.requireActual('@react-navigation/native'), 
@@ -30,32 +30,21 @@ jest.mock("../../../src/globals/utilities",()=>({
     });
   });
 
+const mockGet = jest.fn();
+const mockCollection = jest.fn(() => ({
+  doc: jest.fn(() => ({
+    get: mockGet,
+  })),
+}));
 
+jest.mock('@react-native-firebase/firestore', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    collection: mockCollection,
+  })),
+}));
 describe("Sign Up flow test",()=>{
-  beforeAll(()=>{
-    jest.mock('@react-native-firebase/firestore', () => {
-      const mFirestore = {
-        collection: jest.fn(() => ({
-          doc: jest.fn(() => ({
-            get: jest.fn(async () => {
-              return {
-                data: () => ({
-                  bio:"fake bio",
-                  email:"fake_email",
-                  user_name: "fake_user_name",
-                  name:"full name",
-                  picture:"fake_picture_url"
-                }),
-                id:"fake_id",
-                exists: true
-              };
-            }),
-          })),
-        })),
-      };
-      return () => mFirestore;
-    });  
-  })
+ 
 
   beforeEach(() => {
      render(
@@ -80,7 +69,17 @@ describe("Sign Up flow test",()=>{
   it("I can submit the details and sign In will succeed",async()=>
   {
     const btn_signIn = screen.getByTestId("btn_signIn")
-   
+    mockGet.mockResolvedValueOnce({
+      data: () => ({
+        bio: 'fake bio',
+        email: 'fake_email',
+        user_name: 'fake_user_name',
+        name: 'full name',
+        picture: 'fake_picture_url',
+      }),
+      id: 'fake_id',
+      exists: true,
+    });
     await act(async()=>{
       fireEvent.press(btn_signIn)
     })
@@ -116,26 +115,31 @@ describe("Sign Up flow Negative Scenario",()=>{
       </Provider>
     )
   })
-  beforeAll(()=>{
-    jest.mock('@react-native-firebase/firestore', () => {
-      const mFirestore = {
-        collection: jest.fn(() => ({
-          doc: jest.fn(() => ({
-            get: jest.fn(async()=>{
-              throw new Error('Firestore get operation failed');
-            })
-          })),
-        })),
-      };
-      return () => mFirestore;
-    });  
-  })
-  afterAll(()=>{
-    jest.unmock("@react-native-firebase/firestore")
-  })
+   
 
-  it("If case of Inavalid creantial Api will throw error",()=>{
-
+  it('I can add userName into this', async () =>{
+    const userName = screen.getByTestId("input_email")
+    fireEvent.changeText(userName,"mahendra_gohil")
+    expect(userName.props.value).toBe("mahendra_gohil")
+  })
+ 
+  it('I can add password into this', async () =>{
+    const password = screen.getByTestId("input_password")
+    fireEvent.changeText(password,"King@123")
+    expect(password.props.value).toBe("King@123")
+  })
+  it("I can submit the details and sign In will Fail",async()=>
+  {
+    //assess
+    const btn_signIn = screen.getByTestId("btn_signIn")
+    mockGet.mockRejectedValue("Error Username Alraedy Exist !!")
+    // act
+    await act(async()=>{
+      fireEvent.press(btn_signIn)
+    })
+    // error text should show
+    const text_error = screen.getByTestId("txt_error")
+    expect(text_error).toBeDefined()
   })
 
 

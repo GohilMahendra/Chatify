@@ -21,7 +21,7 @@ export type storyStackParams=
         user_id:string
     }
 }
-export const StoryStackNavigator=()=>
+const StoryStackNavigator=()=>
 {
     const storyStack = createNativeStackNavigator<storyStackParams>()
     return(

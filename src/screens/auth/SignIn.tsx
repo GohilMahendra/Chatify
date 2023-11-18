@@ -49,7 +49,7 @@ const SignIn = () =>
                 </Text>
                 {
                     error &&
-                    <Text style={styles.errorText}>{JSON.stringify(error)}</Text>
+                    <Text testID='txt_error' style={styles.errorText}>{JSON.stringify(error)}</Text>
                 }
                 <TextInput
                 testID={"input_email"}

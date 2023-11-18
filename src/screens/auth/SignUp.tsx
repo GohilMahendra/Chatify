@@ -4,8 +4,6 @@ import UseTheme from '../../globals/UseTheme';
 import { silver, white } from "../../globals/Colors";
 import { useNavigation , NavigationProp} from "@react-navigation/native";
 import { RootStackParams } from '../../navigation/RootNavigation';
-import Auth ,{ FirebaseAuthTypes } from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
 import { RootState, useAppDispatch } from '../../redux/store';
 import { SignUpUser } from '../../redux/actions/UserActions';
 import { useSelector } from 'react-redux';
@@ -39,18 +37,8 @@ const SignUp = () =>
     const navigation = useNavigation<NavigationProp<RootStackParams,"SignUp">>()
     const dispatch = useAppDispatch()
 
-    const restoreErrors=()=>
+    const checkFieldError = () =>
     {
-        setEmptyErrors({
-            email:null,
-            name:null,
-            password:null,
-            user_name:null
-        })
-    }
-    const checkFields = () =>
-    {
-        restoreErrors()
         if(checkEmptyField(userName))
         {
             setEmptyErrors({...emptyErrors,user_name:"* userName cant be empty"})
@@ -83,10 +71,31 @@ const SignUp = () =>
         }
         return true
     }
+    const restoreErrors = () =>
+    {
+        setEmptyErrors({
+            email: null,
+            name: null,
+            password: null,
+            user_name: null,
+        }) 
+    }
+    const checkFields = () =>
+    {
+        setEmptyErrors({
+            email: null,
+            name: null,
+            password: null,
+            user_name: null,
+        })
+        const isError:boolean = checkFieldError()
+        return isError
+    }
       
     const registerUser = async() =>
     {
-     //  checkFields()
+        if(!checkFields())
+        return false;
         dispatch(SignUpUser({
             userEmail,
             userName,
@@ -109,13 +118,14 @@ const SignUp = () =>
                 backgroundColor: theme.background_color,
                 justifyContent:"center"
             }]}>
-                <Text style={{
+                <Text
+                style={{
                     fontSize:35,
                     fontWeight:"bold",
                     color: theme.primary_color,
                     marginVertical:40
                 }}>
-                    Chatify !
+                    Register Here !
                 </Text>
                 {signUpError &&<Text style={{
                     color:"red",
@@ -123,8 +133,9 @@ const SignUp = () =>
                 }}>{signUpError}</Text>
                 }
                 <TextInput
+                testID={"text_userName"}
                 value={userName}
-                onChangeText={(text:string)=>setUserName(text)}
+                onChangeText={(text:string)=>{setUserName(text),restoreErrors()}}
                 placeholder='username ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -135,7 +146,9 @@ const SignUp = () =>
                 />
                 {
                     emptyErrors.user_name &&
-                    <Text style={{
+                    <Text 
+                    testID={"text_errorUserName"}
+                    style={{
                         color: "red",
                         fontSize:15,
                         alignSelf:"flex-start",
@@ -143,8 +156,9 @@ const SignUp = () =>
                     }}>{emptyErrors.user_name}</Text>
                 }
                 <TextInput
+                testID={"text_fullName"}
                 value={fullName}
-                onChangeText={(text:string)=>setFullName(text)}
+                onChangeText={(text:string)=>{setFullName(text),restoreErrors()}}
                 placeholder='name ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -155,7 +169,9 @@ const SignUp = () =>
                 />
                 {
                     emptyErrors.name &&
-                    <Text style={{
+                    <Text 
+                    testID={"text_errorFullName"}
+                    style={{
                         color: "red",
                         fontSize:15,
                         alignSelf:"flex-start",
@@ -163,8 +179,9 @@ const SignUp = () =>
                     }}>{emptyErrors.name}</Text>
                 }
                 <TextInput
+                testID={"text_email"}
                 value={userEmail}
-                onChangeText={(text:string)=>setUserEmail(text)}
+                onChangeText={(text:string)=>{setUserEmail(text),restoreErrors()}}
                 placeholder='email ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -175,7 +192,9 @@ const SignUp = () =>
                 />
                 {
                     emptyErrors.email &&
-                    <Text style={{
+                    <Text 
+                    testID={"text_errorEmail"}
+                    style={{
                         color: "red",
                         fontSize:15,
                         alignSelf:"flex-start",
@@ -183,10 +202,11 @@ const SignUp = () =>
                     }}>{emptyErrors.email}</Text>
                 }
                 <TextInput
+                testID={"text_password"}
                 value={password}
                 textContentType='password'
                 secureTextEntry={true}
-                onChangeText={(text:string)=>setPassword(text)}
+                onChangeText={(text:string)=>{setPassword(text),restoreErrors()}}
                 placeholder='password ....'
                 placeholderTextColor={silver}
                 style={[styles.input,{
@@ -197,7 +217,9 @@ const SignUp = () =>
                 />
                 {
                     emptyErrors.password &&
-                    <Text style={{
+                    <Text 
+                    testID={"text_errorPassword"}
+                    style={{
                         color: "red",
                         fontSize:15,
                         alignSelf:"flex-start",
@@ -205,6 +227,7 @@ const SignUp = () =>
                     }}>{emptyErrors.password}</Text>
                 }
                 <TouchableOpacity
+                testID={"btn_register"}
                 onPress={()=>registerUser()}
                 style={{
                     padding:20,
@@ -224,6 +247,7 @@ const SignUp = () =>
                 </TouchableOpacity>
 
                 <Text 
+                testID={"navigate_signIn"}
                 onPress={()=>navigation.navigate("SignIn")}
                 style={{
                     color: theme.primary_color,

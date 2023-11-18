@@ -14,7 +14,7 @@ export type ProfileStackParams=
     },
     
 }
-export const ProfileStackNavigator=()=>
+const ProfileStackNavigator=()=>
 {
     const ProfileStack = createNativeStackNavigator<ProfileStackParams>()
     return(

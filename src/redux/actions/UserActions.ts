@@ -13,6 +13,7 @@ export const signInUser = createAsyncThunk(
         console.log(signInResponse,"response from backedn")
         const userId = signInResponse.user.uid;
         const doc = await firestore().collection("users").doc(userId).get()
+        console.log(doc,"signInREspnse")
         const id = doc.id
         const data = doc.data() as Omit<UserResult,"id">
         if(data.picture)
@@ -116,6 +117,7 @@ export const SignUpUser = createAsyncThunk("user/SignUpUser",async({
       .collection("usernames")
       .where(firestore.FieldPath.documentId(),"==",userName)
       .get()
+      console.log(userNameExist)
       if(!userNameExist.empty)
       {
         return rejectWithValue("username is already exist !!")

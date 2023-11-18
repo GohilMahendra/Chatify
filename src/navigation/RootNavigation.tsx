@@ -17,7 +17,7 @@ export type RootStackParams=
     ForgotPassword: undefined,
     userTab: NavigatorScreenParams<userTabParams>
 }
-export const RootNavigation=()=>
+const RootNavigation=()=>
 {
     const rootstack = createNativeStackNavigator<RootStackParams>()
     return(

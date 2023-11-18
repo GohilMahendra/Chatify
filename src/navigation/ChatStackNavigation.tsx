@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NativeStackNavigationProp, NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { NavigationContainer } from '@react-navigation/native';
 import ChatHome from '../screens/chat/ChatHome';
 import Chat from '../screens/chat/Chat';
 import FindChat from '../screens/chat/FindChat';
@@ -13,7 +11,7 @@ export type chatStackParams=
     ChatHome: undefined,
     FindChat: undefined
 }
-export const UserTabNavigator=()=>
+const ChatStackNavigator=()=>
 {
     const chatStack = createNativeStackNavigator<chatStackParams>()
     return(
@@ -38,4 +36,4 @@ export const UserTabNavigator=()=>
             </chatStack.Navigator>
     )
 }
-export default UserTabNavigator
+export default ChatStackNavigator

@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";;
 import ChatStackNavigator from "./ChatStackNavigation";
-import Stories from '../screens/stories/Stories';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import UseTheme from '../globals/UseTheme';
 import ProfileStackNavigator, { ProfileStackParams } from './ProfileStackNavigation';
 import { NavigatorScreenParams } from '@react-navigation/native';
 import StoryStackNavigator from './StoryStackNavigation';
-import { View } from "react-native";
 export type userTabParams=
 {
     ChatStack:undefined,
@@ -15,7 +13,7 @@ export type userTabParams=
     ProfileStack: NavigatorScreenParams<ProfileStackParams>
     
 }
-export const UserTabNavigator=()=>
+const UserTabNavigator=()=>
 {
     const userTab = createBottomTabNavigator<userTabParams>()
     const {theme} = UseTheme()
