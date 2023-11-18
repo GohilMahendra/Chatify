@@ -43,6 +43,9 @@ const Chat  = () =>
     const sendChatLoading=useSelector((state:RootState)=>state.messages.sendUserChatLoading)
     const dispatch = useAppDispatch()
     const  [lastTimeStamp,SetlastTimeStamp] = useState<string | null>(null)
+    const [loadMoreLoding,setLoadMoreLoading] = useState<boolean>(false)
+    const [firstLoadComplete,setFirstLoadComplete] = useState<boolean>(false)
+    const scrollOffsetRef = useRef<number>(0);
     const pageSize = 10
 
     const openImagePicker=async()=>
@@ -231,6 +234,7 @@ const Chat  = () =>
             currentLastTimeStamp = Messages[Messages.length -1].timestamp
         }
         SetlastTimeStamp(currentLastTimeStamp)
+        setFirstLoadComplete(true)
         setChats(Messages.reverse())
         }
         catch(err)
@@ -240,8 +244,9 @@ const Chat  = () =>
     }
     const handleScroll = async(event:any) => {
         const scrollY = event.nativeEvent.contentOffset.y;
+        scrollOffsetRef.current = scrollY
         const threshold = 10; 
-        if (scrollY < threshold ) {
+        if (scrollY < threshold && !loadMoreLoding) {
             await loadMoreMessages()
         }
       };
@@ -252,6 +257,8 @@ const Chat  = () =>
         {
             return
         }
+        setLoadMoreLoading(true)
+        setFirstLoadComplete(false)
         const current_user_id = Auth().currentUser?.uid 
         const connectionRef = firestore()
          .collection("messages")
@@ -299,10 +306,12 @@ const Chat  = () =>
         }
         SetlastTimeStamp(currentLastTimeStamp)
         setChats((prevchats)=>[...Messages.reverse(),...prevchats,])
+        setLoadMoreLoading(false)
         }
         catch(err)
         {
             console.log(JSON.stringify(err),"error in loading more")
+            setLoadMoreLoading(false)
         }
     }
 
@@ -310,12 +319,7 @@ const Chat  = () =>
      loadMessages()
      subscribeToMessages()
     },[])
-    // useEffect(()=>{
-    //     if(lastId != null)
-    //     {
-    //         loadMoreMessages()
-    //     }
-    // },[lastId])
+
     return(
 
         <SafeAreaView style={{
@@ -347,7 +351,7 @@ const Chat  = () =>
         {/* navigation header ends */}
         {/* chat section starts */}
         <FlatList
-        onContentSizeChange={()=>flatListRef.current?.scrollToEnd()}
+        onContentSizeChange={()=>{firstLoadComplete && flatListRef.current?.scrollToEnd()}}
         ref={ref=>{flatListRef.current = ref}}
         data={chats}
         renderItem={({item,index})=>renderMessage({item,index})}

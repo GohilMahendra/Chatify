@@ -24,8 +24,9 @@ const StoryViewer = () =>
     const dispatch = useAppDispatch()
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const progress = useRef(new Animated.Value(0)).current
-    const [duration,setDuration] = useState<number>(5)
+    const [duration,setDuration] = useState<number>(0)
     const widthBar = width/userStory.stories.length - userStory.stories.length*3
+    const [paused,setPaused] = useState<boolean>(false)
     const startStory = () =>
     {
         Animated.timing(
@@ -36,17 +37,27 @@ const StoryViewer = () =>
                 useNativeDriver:false,
                 easing: Easing.linear
             }
-        ).start(()=>{
-            nextStory()
+        ).start(({finished})=>{
+          // if(finished)
+           nextStory()
         })
     }
 
-    useEffect(()=>{
-    if(userStory.stories[currentIndex].mime == "image")
+    const onPause = () =>
     {
-        setDuration(5)
+        setPaused(true)
+        progress.stopAnimation()
     }
-    },[currentIndex])
+    const onPlay=()=>
+    {
+        setPaused(false)
+        startStory()
+    }
+
+    useEffect(()=>{
+        if(duration!=0)
+        startStory()
+    },[duration])
 
     useEffect(()=>{
         if(userStory.isViewed == false)
@@ -125,23 +136,32 @@ const StoryViewer = () =>
                 </View>
             </View>
             {/* user profile section ends */}
-            <View style={{
+            <View 
+            
+            style={{
                 flex:1
             }}>
                 {userStory.stories[currentIndex].mime.includes("video")
                 ?
+                        <TouchableOpacity
+                        onLongPress={()=>paused ? onPlay(): onPause()}
+                        >
                         <Video
-                        onLoad={(item)=>{setDuration(item.duration),startStory()}}
-                        resizeMode={"contain"}
+                        
+                        paused={paused}
+                        onLoad={(item)=>{setDuration(item.duration)}}
+                        resizeMode={"cover"}
                         style={styles.mediaVideo}
                         source={{uri:userStory.stories[currentIndex].mediaUrl}}
                         />
+                         </TouchableOpacity>
                         :
                         <Animated.Image
-                        onLoadEnd={()=>startStory()}
+                        onLoadEnd={()=>setDuration(5)}
                         style={styles.mediaImage}
                         source={{uri:userStory.stories[currentIndex].mediaUrl}}
                         />
+                       
                 }
                 <View style={styles.tapContainer}>
                     <TouchableOpacity
@@ -233,8 +253,9 @@ const styles = StyleSheet.create({
     },
     mediaVideo:
     {
-        height: height *90/100,
-        width: width * 90/100,
+        height: height *100/100,
+        width: width * 100/100,
+
         alignSelf:"center"
     },
     mediaImage:
