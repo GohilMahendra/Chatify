@@ -1,5 +1,5 @@
 import  React,{useState} from 'react';
-import { Text,View,TextInput,Dimensions,Image,TouchableOpacity,StyleSheet} from 'react-native';
+import { Text,View,TextInput,Dimensions,Image,TouchableOpacity,StyleSheet, Alert} from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { storyStackParams } from '../../navigation/StoryStackNavigation';
@@ -38,15 +38,25 @@ const CreateStory = () =>
     const [caption,setCaption] = useState("")
     const {theme} = UseTheme()
     const dispath = useAppDispatch()
-    const loading = useSelector((state:RootState)=>state.stories.loading)
+    const loading = useSelector((state:RootState)=>state.stories.uploadLoading)
+    const success = useSelector((state:RootState)=>state.stories.uploadSuccess)
+    const Error = useSelector((state:RootState)=>state.stories.uploadError)
     const addStory = async() =>
     {
-       dispath(UploadStory({
+       await dispath(UploadStory({
         caption: caption,
         mediaUrl: media,
         mime: type
        }))
        
+       if(!loading && !Error)
+       {
+        navigation.goBack()
+       }
+       else
+       {
+        Alert.alert("Error",JSON.stringify(Error))
+       }
     }
     return(
         <View style={{
@@ -115,7 +125,7 @@ const styles = StyleSheet.create(
         header:
         {
             flexDirection:"row",
-            padding:5,
+            padding:10,
             justifyContent:"space-between",
             alignItems:"center" 
         },

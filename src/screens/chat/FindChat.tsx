@@ -4,8 +4,6 @@ Image,TextInput,Dimensions,
 TouchableOpacity,FlatList,StyleSheet} from 'react-native';
 import UseTheme from '../../globals/UseTheme';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import firestore from "@react-native-firebase/firestore";
-import storage from "@react-native-firebase/storage";
 import { User, UserResult } from '../../types/UserTypes';
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../redux/store';
@@ -55,6 +53,7 @@ const FindChat = () =>
             color={theme.text_color}
             />
             <TextInput
+            testID={"input_search"}
             value={search}
             onChangeText={(text:string)=>setSearch(text)}
             placeholder={"search ..."}
@@ -67,6 +66,7 @@ const FindChat = () =>
         </View>
         {/* Header ends for  chat */}
         <FlatList
+        testID={"list_search"}
         data={results}
         keyExtractor={(item)=>item.id}
         renderItem={({item,index})=>renderResults(item,index)}

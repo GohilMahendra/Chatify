@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import firestore from "@react-native-firebase/firestore";
-import Auth from "@react-native-firebase/auth";
 import { UserResult } from "../../types/UserTypes";
 import { getImageUrl } from "../../globals/utilities";
 
@@ -9,7 +8,6 @@ export const fetchUsers = createAsyncThunk('search/fetchUsers', async (searchStr
     {
       
         // quary search over user name
-        const current_user_id = Auth().currentUser?.uid
         const usersCollection = firestore().collection("users")
         const queryByUsername = usersCollection
         .where('user_name', '>=', searchString)

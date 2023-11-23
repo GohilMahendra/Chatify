@@ -13,7 +13,7 @@ import Greetings from '../../components/chat/Greetings';
 import { fetchChatUsers, fetchMoreChatUsers } from '../../redux/actions/MessageActions';
 import Loader from '../../components/global/Loader';
 
-const Home = () =>
+const ChatHome = () =>
 {
     const {theme} = UseTheme()
     const navigation = useNavigation<NavigationProp<chatStackParams,"ChatHome">>()
@@ -105,7 +105,7 @@ const Home = () =>
         </SafeAreaView>
     )
 }
-export default Home
+export default ChatHome
 const styles = StyleSheet.create({
     container:
     {

@@ -5,6 +5,7 @@ import { chatStackParams } from "../../navigation/ChatStackNavigation";
 import { storyStackParams } from "../../navigation/StoryStackNavigation";
 import { StoryUser } from "../../types/StoryTypes";
 import UseTheme from "../../globals/UseTheme";
+import { placeholder_image } from "../../globals/Data";
 
 type StoryUserProps=
 {
@@ -31,7 +32,7 @@ const StoryComponent = (props:StoryUserProps) =>
         >
             <Image
             resizeMode='contain'
-            source={{uri:story.picture}}
+            source={story.picture?{uri:story.picture}:placeholder_image}
             style={{
                 height:70,
                 width:70,

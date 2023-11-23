@@ -1,10 +1,9 @@
 import { render,act,screen,waitFor, fireEvent } from "@testing-library/react-native";
-
-import React, { ReactNode, ReactPortal } from 'react'
+import React from 'react'
 import { ThemeProvider } from "../../../src/globals/ThemeProvider";
 import SignIn from "../../../src/screens/auth/SignIn";
 import { Provider } from "react-redux";
-import store,{ useAppDispatch } from "../../../src/redux/store";
+import store from "../../../src/redux/store";
 
 const mockNavigate =jest.fn()
 jest.mock('@react-navigation/native', () => ({

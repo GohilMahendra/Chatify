@@ -7,6 +7,9 @@ export type StoryType =
     readStoryLoading: boolean,
     readStoryError: string | null,
     readStorySuccess: boolean,
+    uploadLoading: boolean,
+    uploadSuccess: boolean,
+    uploadError: string | null,
     error: string | null,
     stories: UserStory[]
 }
@@ -18,8 +21,10 @@ const initialState: StoryType=
     stories:[],
     readStoryError:null,
     readStoryLoading: false,
-    readStorySuccess: false
-
+    readStorySuccess: false,
+    uploadError:null,
+    uploadLoading: false,
+    uploadSuccess:false
 }
 
 export const StorySlice = createSlice({
@@ -29,15 +34,17 @@ export const StorySlice = createSlice({
     },
     extraReducers(builder){
        builder.addCase(UploadStory.pending,(state)=>{
-        state.loading = true
-        state.error = null
+        state.uploadLoading = true
+        state.uploadError = null
+        state.uploadSuccess = false
        })
        builder.addCase(UploadStory.fulfilled,(state,action)=>{
-        state.loading = false
+        state.uploadLoading = false,
+        state.uploadSuccess = true
        })
        builder.addCase(UploadStory.rejected,(state,action)=>{
-        state.loading = false
-        state.error = action.payload as string
+        state.uploadLoading = false
+        state.uploadError = action.payload as string
        })
        builder.addCase(fetchStories.pending,(state)=>{
         state.loading = true

@@ -147,7 +147,6 @@ const StoryViewer = () =>
                         onLongPress={()=>paused ? onPlay(): onPause()}
                         >
                         <Video
-                        
                         paused={paused}
                         onLoad={(item)=>{setDuration(item.duration)}}
                         resizeMode={"cover"}

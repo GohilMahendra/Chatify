@@ -8,7 +8,7 @@ export type SearchType =
     users: UserResult[]
 }
 
-const initialState: SearchType= 
+export const initialState: SearchType= 
 {
     loading: false,
     error: null,

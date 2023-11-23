@@ -4,7 +4,7 @@ import { ThemeProvider } from "../../../src/globals/ThemeProvider"
 
 
 describe("Greeting component ...",()=>{
-    const {findByTestId,getByTestId} = render(
+    const {getByTestId} = render(
         <ThemeProvider>
              <Greetings
                 user={{

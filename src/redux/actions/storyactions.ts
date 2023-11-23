@@ -5,6 +5,8 @@ import Auth from "@react-native-firebase/auth";
 import { RootState } from "../store";
 import { Story, StoryUser, UserStory } from "../../types/StoryTypes";
 import { getImageUrl } from "../../globals/utilities";
+import { docType } from "../../types/Firebase.types";
+import { UserResult } from "../../types/UserTypes";
 
 const UploadStoryMedia = async(path:string,name:string) =>
 {
@@ -28,19 +30,13 @@ export const UploadStory = createAsyncThunk('story/UploadStory', async ({
 
   if(doc.exists)
   {
-    await storyRef.set({
-      user_name: user.user_name,
-      name: user.name,
-      picture: user.picture,
+    await storyRef.update({
       count: firestore.FieldValue.increment(1)
     })
   }
   else
   {
     await storyRef.set({
-      user_name: user.user_name,
-      name: user.name,
-      picture: user.picture,
       count: 1
     })
   }
@@ -75,11 +71,20 @@ export const fetchStories = createAsyncThunk('story/fetchStories', async (args:s
       {
         
          const id = doc.id
-         const data = doc.data() as Omit<StoryUser,"id">
-      
-        //  const picture = await getImageUrl(data.picture)
-        //  data.picture = picture
-         const storyUser = {id,...data} as StoryUser
+         const data = doc.data() as Pick<StoryUser,"count">
+         const userSnap = await firestore().collection("users").doc(id).get()
+         const userData = userSnap.data() as Omit<UserResult,"id">
+         const userId = userSnap.id
+         const user: UserResult = {id:userId,...userData} 
+         const storyUser: StoryUser = 
+         {
+          id: user.id,
+          count: data.count,
+          isViewed: false,
+          name: user.name,
+          picture: user.picture,
+          user_name: user.user_name
+         }
          console.log(storyUser)
          const isStoryViewed =await firestore()
          .collection("stories")
