@@ -215,6 +215,18 @@ To run tests, run the following command
   yarn test
 ```
 
+## DB Design
+
+<table>
+<tr>
+<td>
+<img src="screenshots/dbChat.PNG" alt="Screenshot 1" width="1000" height="500">
+</td>
+</tr>
+<tr>
+</table>
+
+
 
 ## LinkedIn
 
