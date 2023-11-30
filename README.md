@@ -224,6 +224,36 @@ To run tests, run the following command
 </td>
 </tr>
 <tr>
+<tr>
+<td>
+<img src="screenshots/dbchat2.PNG" alt="Screenshot 1" width="1000" height="500">
+</td>
+</tr>
+<tr>
+<tr>
+<td>
+<img src="screenshots/dbchat3.PNG" alt="Screenshot 1" width="1000" height="500">
+</td>
+</tr>
+<tr>
+<tr>
+<td>
+<img src="screenshots/dbstories1.PNG" alt="Screenshot 1" width="1000" height="500">
+</td>
+</tr>
+<tr>
+<tr>
+<td>
+<img src="screenshots/dbstories2.PNG" alt="Screenshot 1" width="1000" height="500">
+</td>
+</tr>
+<tr>
+<tr>
+<td>
+<img src="screenshots/dbuser.PNG" alt="Screenshot 1" width="1000" height="500">
+</td>
+</tr>
+<tr>
 </table>
 
 
