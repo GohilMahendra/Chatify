@@ -162,8 +162,8 @@ const styles = StyleSheet.create(
         },
         imagePreview:
         {
-            width: width * 90/100,
-            height: height *70/100,
+            width: width ,
+            height: height *90/100,
             alignSelf:"center",
             marginVertical:20
         },

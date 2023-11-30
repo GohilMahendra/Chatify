@@ -31,35 +31,54 @@ clone the repo and then
 <table>
 <tr>
 <td>
-<img src="screenshots/Screenshot_1699023955.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1701375215.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699028218.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1701375222.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699024857.png" alt="Screenshot 1" width="200" height="500">
-</td>
-</tr>
-<tr>
-<td>
-<img src="screenshots/Screenshot_1699023968.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699024540.png" alt="Screenshot 1" width="200" height="500">
-</td>
-<td>
-<img src="screenshots/Screenshot_1699024560.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1701375229.png" alt="Screenshot 1" width="200" height="500">
 </td>
 </tr>
 <tr>
 <td>
-<img src="screenshots/Screenshot_1699028206.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1701375236.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699028967.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1701375242.png" alt="Screenshot 1" width="200" height="500">
 </td>
 <td>
-<img src="screenshots/Screenshot_1699028501.png" alt="Screenshot 1" width="200" height="500">
+<img src="screenshots/Screenshot_1701375245.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1701375260.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1701375287.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1701375382.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1701375387.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1701375468.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1701375474.png" alt="Screenshot 1" width="200" height="500">
+</td>
+</tr>
+<tr>
+<td>
+<img src="screenshots/Screenshot_1701375532.png" alt="Screenshot 1" width="200" height="500">
+</td>
+<td>
+<img src="screenshots/Screenshot_1701375756.png" alt="Screenshot 1" width="200" height="500">
 </td>
 </tr>
 </table>

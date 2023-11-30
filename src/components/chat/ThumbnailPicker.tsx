@@ -88,10 +88,15 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
                 ref={ref=>videoRef.current = ref}
                 source={{uri:videoUri}}
                // currentTime={currentTime.current}
-                resizeMode='contain'
+                resizeMode='cover'
                 style={styles.video}
                 />
             </View>
+            <View style={{
+                position:"absolute",
+                width:width*100/100,
+                bottom:50
+            }}>
             <Slider
             value={currentTime}
             minimumValue={0}
@@ -118,6 +123,7 @@ const ThumbnailPicker = (props:ThumbnailProps) =>
                     color: theme.text_color,
                 }]}>Send</Text>
             </TouchableOpacity>
+            </View>
         </View>
 
     )
@@ -140,9 +146,9 @@ const styles = StyleSheet.create({
     },
     video:
     {
-        width: width* 90/100,
+        width: width,
         alignSelf:"center",
-        height: height *70/100
+        height: height *90/100
     },
     slider:
     {

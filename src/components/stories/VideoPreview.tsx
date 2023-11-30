@@ -20,12 +20,12 @@ const VideoPreview = (props:PreviewType) =>
             testID="video_preview"
             repeat
             source={{uri:uri}}
-            resizeMode="contain"
+            resizeMode="cover"
             paused={paused}
             style={{
                 flex:1,
                // height: height * 70/100,
-                width: width * 90/100,
+                width: width ,
                 alignSelf:"center",
             }}            
             />
