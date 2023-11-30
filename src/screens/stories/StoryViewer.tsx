@@ -144,7 +144,7 @@ const StoryViewer = () =>
                 {userStory.stories[currentIndex].mime.includes("video")
                 ?
                         <TouchableOpacity
-                        onLongPress={()=>paused ? onPlay(): onPause()}
+                        //onLongPress={()=>paused ? onPlay(): onPause()}
                         >
                         <Video
                         paused={paused}
@@ -198,14 +198,28 @@ const styles = StyleSheet.create({
     {
         height:3,
         borderRadius:5,
-        backgroundColor:"silver"
+        backgroundColor:"#A9A9A9",
+        shadowOffset:{
+            height:2,
+            width:1
+        },
+        shadowColor:"black",
+        shadowOpacity:1,
+        shadowRadius:20
     },
     animatedBar:
     {
         position:"absolute",
         borderRadius:5,
-        backgroundColor:"#fff",
-        height:2
+        backgroundColor:"white",
+        height:5,
+        shadowOffset:{
+            height:2,
+            width:1
+        },
+        shadowColor:"black",
+        shadowOpacity:1,
+        shadowRadius:20
     },
     profileContainer:
     {

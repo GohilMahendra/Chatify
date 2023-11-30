@@ -80,6 +80,9 @@ clone the repo and then
 <td>
 <img src="screenshots/Screenshot_1701375756.png" alt="Screenshot 1" width="200" height="500">
 </td>
+<td>
+<img src="screenshots/Screenshot_1701376680.png" alt="Screenshot 1" width="200" height="500">
+</td>
 </tr>
 </table>
 
