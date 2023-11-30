@@ -1,1 +1,1 @@
-export const placeholder_image =  require("../../assets/images/UserPlaceholder.png")
+export const placeholder_image =  require("../../assets/images/images.png")
