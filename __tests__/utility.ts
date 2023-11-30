@@ -1,4 +1,3 @@
-
 export const createFirestoreMocks = (data: any) => {
     const positiveResponse = {
       data: jest.fn().mockReturnValue({

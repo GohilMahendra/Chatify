@@ -3,6 +3,7 @@ import Video from "react-native-video";
 import React,{useState} from 'react'
 type PreviewType = 
 {
+    testID: string,
     uri: string
 }
 const {height,width} = Dimensions.get("window")

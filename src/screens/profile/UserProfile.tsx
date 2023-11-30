@@ -117,7 +117,7 @@ const UserProfile = () =>
                 <TouchableOpacity 
                 onPress={()=>setTheme()}
                 style={[styles.btnEditProfile,{
-                    backgroundColor: light_pink
+                    backgroundColor: theme.primary_color
                 }]}>    
                     <FontAwesome5
                     name={theme.mode == "dark" ?'sun':"moon"}
@@ -132,7 +132,7 @@ const UserProfile = () =>
                 </TouchableOpacity>
                 <TouchableOpacity 
                 style={[styles.btnEditProfile,{
-                    backgroundColor: ocean_blue
+                    backgroundColor: theme.primary_color
                 }]}>    
                     <FontAwesome5
                     name={"gem"}

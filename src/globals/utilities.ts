@@ -2,6 +2,9 @@ import storage from "@react-native-firebase/storage";
 
 export const getImageUrl = async(imageRef:string) =>
 {
+    if(imageRef=="")
+    return ""
+
     const storageRef = storage().ref(imageRef)
     const imageUrl = await storageRef.getDownloadURL()
     return imageUrl

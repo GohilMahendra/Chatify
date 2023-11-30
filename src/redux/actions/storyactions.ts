@@ -23,8 +23,6 @@ export const UploadStory = createAsyncThunk('story/UploadStory', async ({
   try
   {
   const userId = Auth().currentUser?.uid
-  const rootState = getState() as RootState
-  const user = rootState.user.user
   const storyRef = firestore().collection('stories').doc(userId);
   const doc = await storyRef.get()
 
@@ -53,6 +51,7 @@ export const UploadStory = createAsyncThunk('story/UploadStory', async ({
   }
   catch(err)
   {
+    console.log("Errr",JSON.stringify(err))
    return rejectWithValue(JSON.stringify(err) as string)
   }
  
@@ -82,7 +81,7 @@ export const fetchStories = createAsyncThunk('story/fetchStories', async (args:s
           count: data.count,
           isViewed: false,
           name: user.name,
-          picture: user.picture,
+          picture: user.picture? await getImageUrl(user.picture):"",
           user_name: user.user_name
          }
          console.log(storyUser)

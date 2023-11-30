@@ -68,6 +68,7 @@ const Stories = () =>
                 flexDirection:"row",
              }}>
                 <TouchableOpacity 
+                testID={"btn_openPicker"}
                 onPress={()=>openImagePicker()}
                 style={[styles.btnCreateStory,{
                     backgroundColor: theme.seconarybackground_color
@@ -106,6 +107,7 @@ const Stories = () =>
             color: theme.text_color,
             }]}>Recent Updates</Text>
              <FlatList
+             testID={"list_stories"}
              horizontal
              data={data}
              showsHorizontalScrollIndicator={false}

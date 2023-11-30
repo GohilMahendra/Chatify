@@ -30,7 +30,6 @@ export type Story =
 }
 const CreateStory = () =>
 {
- 
     const route = useRoute<RouteProp<storyStackParams,"CreateStory">>()
     const navigation = useNavigation<NavigationProp<storyStackParams,"CreateStory">>()
     const media = route.params.uri
@@ -89,11 +88,13 @@ const CreateStory = () =>
             />
             :
             <VideoPreview
+            testID={"video_preview"}
             uri={media}
             />
         }
             <View style={styles.captionContainer}>
                 <TextInput
+                testID={"input_caption"}
                 value={caption}
                 onChangeText={(text:string)=>setCaption(text)}
                 style={[styles.inputCaption,{
@@ -105,6 +106,7 @@ const CreateStory = () =>
                 placeholderTextColor={theme.placeholder_color}
                 />
                 <TouchableOpacity 
+                testID={"btn_upload"}
                 onPress={()=>addStory()}
                 style={[styles.btnSendStory,{
                     backgroundColor:theme.primary_color

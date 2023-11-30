@@ -49,7 +49,6 @@ const ChatCard=(props:ChatCardProps)=>
                     color:theme.placeholder_color,
                     flexWrap:"wrap"
                 }}>{formatTimestamp(new Date(chat.lastMessage.timestamp).getTime())}</Text>
-            
             </View>
         </TouchableOpacity>
     )
